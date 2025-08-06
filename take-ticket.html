@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Take a Ticket - WaitWizard</title>
+  <link rel="stylesheet" href="take-ticket.css" />
+</head>
+<body>
+  <div class="ticket-form-card">
+    <h2>Take a Ticket</h2>
+    <form id="takeTicketForm" novalidate>
+      <div>
+        <label for="fullname">Full Name *</label>
+        <input type="text" id="fullname" name="fullname" required placeholder="Your full name" />
+      </div>
+
+      <div>
+        <label for="mobile">Mobile Number *</label>
+        <input 
+          type="text" 
+          id="mobile" 
+          name="mobile" 
+          pattern="\d{10}" 
+          maxlength="10" 
+          inputmode="numeric"
+          required 
+          placeholder="10-digit mobile number" 
+          title="Enter 10-digit mobile number" />
+      </div>
+
+      <div>
+        <label for="gender">Gender *</label>
+        <select id="gender" name="gender" required>
+          <option value="" disabled selected>Select gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="age">Age *</label>
+        <input type="number" id="age" name="age" min="0" max="120" required placeholder="Your age" />
+      </div>
+
+      <div class="date-time-group">
+        <div>
+          <label for="apptDate">Appointment Date *</label>
+          <input type="date" id="apptDate" name="apptDate" required />
+        </div>
+        <div>
+          <label for="apptTime">Appointment Time *</label>
+          <input type="time" id="apptTime" name="apptTime" required />
+        </div>
+      </div>
+
+      <div>
+        <label for="symptoms">Reason for Visit / Symptoms</label>
+        <textarea id="symptoms" name="symptoms" placeholder="Briefly describe your symptoms or reason for visit"></textarea>
+      </div>
+
+      <div>
+        <label for="medicalId">Medical Record Number / ID</label>
+        <input type="text" id="medicalId" name="medicalId" placeholder="If previously registered" />
+      </div>
+
+      <div class="button-container">
+        <button type="submit" class="primary-btn">Take Ticket</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('takeTicketForm');
+    const mobileInput = form.mobile;
+
+    // Allow only digits and limit length to 10 for mobile input
+    mobileInput.addEventListener('input', () => {
+      let cleaned = mobileInput.value.replace(/\D/g, '').slice(0, 10);
+      if (cleaned !== mobileInput.value) {
+        mobileInput.value = cleaned;
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        form.reportValidity();
+        return;
+      }
+      // You can handle form submission logic here or trigger backend request
+      e.preventDefault(); // Remove this line when integrating backend
+      alert("Ticket taken successfully!"); // Temporary confirmation
+      form.reset();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - WaitWizard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <header class="header">
+    <h1>Welcome to WaitWizard, <span id="username">Username</span>!</h1>
+    <p>Your one-stop dashboard for queue management.</p>
+  </header>
+
+  <section class="grid-menu">
+    <div class="card" tabindex="0" data-link="home.html">
+      <div class="icon">🏠</div>
+      <div class="label">Home</div>
+    </div>
+    <div class="card" tabindex="0" data-link="take-ticket.html">
+      <div class="icon">🎫</div>
+      <div class="label">Take a Ticket</div>
+    </div>
+    <div class="card" tabindex="0" data-link="my-position.html">
+      <div class="icon">📍</div>
+      <div class="label">My Position</div>
+    </div>
+    <div class="card" tabindex="0" data-link="queue-status.html">
+      <div class="icon">📊</div>
+      <div class="label">Queue Status</div>
+    </div>
+    <div class="card" tabindex="0" data-link="services.html">
+      <div class="icon">🛎️</div>
+      <div class="label">Services</div>
+    </div>
+    <div class="card" tabindex="0" data-link="appointments.html">
+      <div class="icon">📅</div>
+      <div class="label">Appointments</div>
+    </div>
+    <div class="card" tabindex="0" data-link="history.html">
+      <div class="icon">📜</div>
+      <div class="label">History</div>
+    </div>
+    <div class="card" tabindex="0" data-link="settings.html">
+      <div class="icon">⚙</div>
+      <div class="label">Settings</div>
+    </div>
+    <div class="card" tabindex="0" data-link="help-support.html">
+      <div class="icon">❓</div>
+      <div class="label">Help & Support</div>
+    </div>
+    <div class="card" tabindex="0" data-link="notification.html">
+      <div class="icon">🔔</div>
+      <div class="label">Notification</div>
+    </div>
+  </section>
+
+  <script>
+    // Add click handlers for all cards with data-link attribute to redirect
+    document.querySelectorAll('.card[data-link]').forEach(card => {
+      card.style.cursor = 'pointer'; // Show pointer cursor on hover
+      card.addEventListener('click', () => {
+        const targetUrl = card.getAttribute('data-link');
+        if (targetUrl) {
+          window.location.href = targetUrl;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

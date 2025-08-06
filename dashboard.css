@@ -1,0 +1,116 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eaf6fb 0%, #fdf6e3 100%);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  color: #2c3e50;
+}
+
+/* Header section */
+.header {
+  text-align: center;
+  padding: 54px 20px 36px;
+  color: #365f6b;
+}
+.header h1 {
+  font-size: 2.6rem;
+  margin-bottom: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.header p {
+  font-size: 1.16rem;
+  font-weight: 500;
+  color: #668583;
+}
+
+/* Grid menu container */
+.grid-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 26px;
+  width: 91%;
+  max-width: 940px;
+  margin: 0 auto 54px auto;
+}
+
+/* Card styles (for div.card and clickable cards) */
+.card {
+  background: #fff;
+  padding: 28px 12px 22px 12px;
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(60, 80, 120, 0.10);
+  cursor: default;
+  user-select: none;
+  text-align: center;
+  transition: box-shadow 0.22s ease, transform 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Make card cursor pointer for clickable cards */
+.card[data-link] {
+  cursor: pointer;
+}
+
+.card:hover,
+.card:focus {
+  box-shadow: 0 14px 34px rgba(80, 120, 96, 0.14);
+  transform: translateY(-2px) scale(1.04);
+  outline: none;
+}
+
+/* Icon style inside cards */
+.card .icon {
+  font-size: 2.2rem;
+  color: #77bcbe;
+}
+
+/* Label below icon */
+.card .label {
+  color: #365f6b;
+  font-weight: 600;
+  font-size: 1.12rem;
+  letter-spacing: 0.2px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 700px) {
+  .header {
+    padding-top: 32px;
+    padding-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  .grid-menu {
+    gap: 18px;
+    width: 100%;
+    padding: 0 7px;
+  }
+  .card {
+    padding: 15px 0 13px 0;
+    border-radius: 13px;
+  }
+  .card .icon {
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .header {
+    padding-top: 19px;
+    padding-bottom: 13px;
+  }
+  .header h1 {
+    font-size: 1.13rem;
+  }
+}
+
+/* Accessibility focus for cards */
+.card:active {
+  outline: 2px solid #8ab4c6;
+}

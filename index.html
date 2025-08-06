@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Login Page</title>
+    <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Logo positioned above heading, update src as needed -->
+            <img src="logo.jpg" alt="Site Logo" class="site-logo" />
+            <h2>Sign In</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" placeholder="Username" name="username" required />
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Password" name="password" required />
+                </div>
+                <button class="primary-btn" type="submit">Sign In</button>
+            </form>
+            <p class="switch-link">
+                New user? <a href="register.html">Create Account</a>
+            </p>
+        </div>
+    </div>
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+        // Redirect to dashboard page after sign-in click
+        window.location.href = 'dashboard.html';
+      });
+    </script>
+</body>
+</html>
