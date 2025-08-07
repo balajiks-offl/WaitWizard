@@ -2,34 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Login Page</title>
+    <title>Sign In</title>
     <link rel="stylesheet" href="login.css" />
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script>
+      // Your real Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+        authDomain: "digitalqueuesystem.firebaseapp.com",
+        databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+        projectId: "digitalqueuesystem",
+        storageBucket: "digitalqueuesystem.appspot.com",
+        messagingSenderId: "934641075368",
+        appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+        measurementId: "G-TJESH8R15H"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+    </script>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <!-- Logo positioned above heading, update src as needed -->
-            <img src="logo.jpg" alt="Site Logo" class="site-logo" />
+            <img src="logo.jpg" alt="WaitWizard Logo" class="site-logo" />
             <h2>Sign In</h2>
-            <form id="loginForm">
+            <form id="loginForm" autocomplete="on" novalidate>
                 <div class="input-group">
-                    <input type="text" placeholder="Username" name="username" required />
+                    <input type="email" name="email" id="email" placeholder="Email" required autocomplete="username" />
                 </div>
                 <div class="input-group">
-                    <input type="password" placeholder="Password" name="password" required />
+                    <input type="password" name="password" id="password" placeholder="Password" required autocomplete="current-password" />
                 </div>
                 <button class="primary-btn" type="submit">Sign In</button>
             </form>
             <p class="switch-link">
-                New user? <a href="register.html">Create Account</a>
+                Don't have an account? <a href="register.html">Register</a>
             </p>
         </div>
     </div>
+
     <script>
-      document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
-        // Redirect to dashboard page after sign-in click
-        window.location.href = 'dashboard.html';
+      const loginForm = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+
+      loginForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          if (!email.value.trim() || !password.value) {
+              alert('Please enter both email and password.');
+              return;
+          }
+
+          const submitBtn = loginForm.querySelector('button[type="submit"]');
+          const originalBtnText = submitBtn.textContent;
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Signing in...';
+
+          try {
+              await auth.signInWithEmailAndPassword(email.value.trim(), password.value);
+              window.location.href = "dashboard.html"; // adjust as needed
+          } catch (error) {
+              alert("Sign in failed: " + error.message);
+              password.value = '';
+          }
+
+          // Re-enable the button and restore the text
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
       });
     </script>
 </body>

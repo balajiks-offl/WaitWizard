@@ -1,121 +1,109 @@
 body {
-    background: linear-gradient(135deg, #eaf6fb 0%, #fdf6e3 100%);
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-    margin: 0;
-    min-height: 100vh;
+  background: linear-gradient(135deg, #eaf6fb 0%, #fdf6e3 100%);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
 }
-
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
 }
-
 .card {
-    background: #fff;
-    padding: 42px 32px 24px 32px; /* Extra top padding for logo */
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(60, 80, 120, 0.085);
-    min-width: 320px;
-    max-width: 390px;
-    width: 100%;
-    margin: 24px 12px;
-    text-align: center;
+  background: #fff;
+  padding: 42px 32px 24px 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(60, 80, 120, 0.085);
+  min-width: 320px;
+  max-width: 390px;
+  width: 100%;
+  margin: 24px 12px;
+  text-align: center;
 }
-
-/* Logo styling for best visibility and balance */
 .site-logo {
-    display: block;
-    margin: 0 auto 28px auto;
-    width: 110px;
-    max-width: 140px;
-    height: auto;
-    object-fit: contain;
+  display: block;
+  margin: 0 auto 28px auto;
+  width: 110px;
+  max-width: 140px;
+  height: auto;
+  object-fit: contain;
 }
-
 h2 {
-    color: #3b5a6a;
-    letter-spacing: 1px;
-    margin-bottom: 20px;
+  color: #3b5a6a;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
 }
-
 .input-group {
-    width: 100%;
+  width: 100%;
 }
-input[type="text"], input[type="password"] {
-    width: 65%;
-    min-width: 180px;
-    max-width: 280px;
-    display: block;
-    margin: 8px auto 10px auto;
-    font-size: 14px;
-    padding: 8px 12px;
-    border: 1px solid #c4cad0;
-    border-radius: 6px;
-    background: #f5fafb;
-    transition: border 0.2s;
+input[type="email"], input[type="password"] {
+  width: 65%;
+  min-width: 180px;
+  max-width: 280px;
+  display: block;
+  margin: 8px auto 10px auto;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid #c4cad0;
+  border-radius: 6px;
+  background: #f5fafb;
+  transition: border 0.2s;
 }
-
-input[type="text"]:focus,
-input[type="password"]:focus {
-    border-color: #8ab4c6;
-    background: #fff;
-    outline: none;
+input[type="email"]:focus, input[type="password"]:focus {
+  border-color: #8ab4c6;
+  background: #fff;
+  outline: none;
 }
-
 .primary-btn {
-    padding: 12px 0;
-    width: 100%;
-    border: none;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #99c1de, #b6e0c1 85%);
-    color: #3a5a5b;
-    font-size: 17px;
-    margin-top: 10px;
-    font-weight: 500;
-    cursor: pointer;
-    box-shadow: 0 1px 8px rgba(76, 92, 105, 0.11);
-    transition: background 0.21s;
+  padding: 12px 0;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #99c1de, #b6e0c1 85%);
+  color: #3a5a5b;
+  font-size: 17px;
+  margin-top: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 8px rgba(76, 92, 105, 0.11);
+  transition: background 0.21s;
 }
 .primary-btn:hover {
-    background: linear-gradient(90deg, #b6e0c1, #99c1de 85%);
+  background: linear-gradient(90deg, #b6e0c1, #99c1de 85%);
 }
-
 .switch-link {
-    margin-top: 14px;
-    font-size: 14px;
+  margin-top: 14px;
+  font-size: 14px;
 }
-
 a {
-    color: #79a4ea;
-    text-decoration: none;
-    transition: color 0.18s;
+  color: #79a4ea;
+  text-decoration: none;
+  transition: color 0.18s;
 }
 a:hover {
-    color: #5277b6;
-    text-decoration: underline;
+  color: #5277b6;
+  text-decoration: underline;
 }
-
 @media (max-width: 480px) {
-    .container {
-        padding-top: 12px;
-    }
-    .card {
-        min-width: 100%;
-        padding: 18px 6px 18px 6px;
-        border-radius: 0 0 18px 18px;
-    }
-    input[type="text"], input[type="password"] {
-        width: 95%;
-        min-width: unset;
-        max-width: unset;
-    }
-    .site-logo {
-        width: 62px;
-        max-width: 80px;
-        margin-bottom: 14px;
-    }
+  .container {
+    padding-top: 12px;
+  }
+  .card {
+    min-width: 100%;
+    padding: 18px 6px 18px 6px;
+    border-radius: 0 0 18px 18px;
+  }
+  input[type="email"], input[type="password"] {
+    width: 95%;
+    min-width: unset;
+    max-width: unset;
+  }
+  .site-logo {
+    width: 62px;
+    max-width: 80px;
+    margin-bottom: 14px;
+  }
 }
