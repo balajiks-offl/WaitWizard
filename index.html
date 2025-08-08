@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <title>Sign In</title>
     <link rel="stylesheet" href="login.css" />
-    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script>
-      // Your real Firebase config
       const firebaseConfig = {
         apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
         authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -63,16 +61,25 @@
 
           try {
               await auth.signInWithEmailAndPassword(email.value.trim(), password.value);
-              window.location.href = "dashboard.html"; // adjust as needed
+              window.location.href = "dashboard.html";
           } catch (error) {
               alert("Sign in failed: " + error.message);
               password.value = '';
           }
 
-          // Re-enable the button and restore the text
           submitBtn.disabled = false;
           submitBtn.textContent = originalBtnText;
       });
     </script>
+    <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('registered') === 'true') {
+      alert("Account created successfully! Please sign in.");
+      // Optionally, remove the parameter from URL so alert doesn't show on reload:
+      history.replaceState(null, '', window.location.pathname);
+    }
+  });
+</script>
 </body>
 </html>

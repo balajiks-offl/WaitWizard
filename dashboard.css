@@ -7,7 +7,6 @@ body, html {
   color: #2c3e50;
 }
 
-/* Header section */
 .header {
   text-align: center;
   padding: 54px 20px 36px;
@@ -25,7 +24,7 @@ body, html {
   color: #668583;
 }
 
-/* Grid menu container */
+
 .grid-menu {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
@@ -35,7 +34,6 @@ body, html {
   margin: 0 auto 54px auto;
 }
 
-/* Card styles (for div.card and clickable cards) */
 .card {
   background: #fff;
   padding: 28px 12px 22px 12px;
@@ -51,7 +49,6 @@ body, html {
   gap: 16px;
 }
 
-/* Make card cursor pointer for clickable cards */
 .card[data-link] {
   cursor: pointer;
 }
@@ -63,13 +60,11 @@ body, html {
   outline: none;
 }
 
-/* Icon style inside cards */
 .card .icon {
   font-size: 2.2rem;
   color: #77bcbe;
 }
 
-/* Label below icon */
 .card .label {
   color: #365f6b;
   font-weight: 600;
@@ -77,7 +72,6 @@ body, html {
   letter-spacing: 0.2px;
 }
 
-/* Responsive tweaks */
 @media (max-width: 700px) {
   .header {
     padding-top: 32px;
@@ -110,7 +104,6 @@ body, html {
   }
 }
 
-/* Accessibility focus for cards */
 .card:active {
   outline: 2px solid #8ab4c6;
 }

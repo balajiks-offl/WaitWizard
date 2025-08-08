@@ -75,7 +75,6 @@
     const form = document.getElementById('takeTicketForm');
     const mobileInput = form.mobile;
 
-    // Allow only digits and limit length to 10 for mobile input
     mobileInput.addEventListener('input', () => {
       let cleaned = mobileInput.value.replace(/\D/g, '').slice(0, 10);
       if (cleaned !== mobileInput.value) {
@@ -89,9 +88,8 @@
         form.reportValidity();
         return;
       }
-      // You can handle form submission logic here or trigger backend request
-      e.preventDefault(); // Remove this line when integrating backend
-      alert("Ticket taken successfully!"); // Temporary confirmation
+      e.preventDefault(); 
+      alert("Ticket taken successfully!"); 
       form.reset();
     });
   </script>
