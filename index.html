@@ -76,7 +76,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('registered') === 'true') {
       alert("Account created successfully! Please sign in.");
-      // Optionally, remove the parameter from URL so alert doesn't show on reload:
       history.replaceState(null, '', window.location.pathname);
     }
   });

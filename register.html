@@ -4,12 +4,10 @@
     <meta charset="UTF-8" />
     <title>Register</title>
     <link rel="stylesheet" href="styles.css" />
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script>
-        // Your Firebase config - keep your keys as before
         const firebaseConfig = {
             apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
             authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -20,7 +18,6 @@
             appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
             measurementId: "G-TJESH8R15H"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -114,7 +111,6 @@
         const passwordInput = document.getElementById("passwordInput");
         const confirmPasswordInput = document.getElementById("confirmPasswordInput");
 
-        // Restrict phone inputs to digits only, max 10
         function setupDigitOnlyInput(input) {
             input.addEventListener("input", () => {
                 let cleaned = input.value.replace(/\D/g, "");
@@ -139,12 +135,10 @@
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            // Dispatch input events to validate email live
-            emailInput.dispatchEvent(new Event("input"));
+           emailInput.dispatchEvent(new Event("input"));
 
             const phoneRegex = /^\d{10}$/;
 
-            // Phone number validations
             if (!phoneRegex.test(phoneInput.value)) {
                 phoneInput.setCustomValidity("Please enter a valid 10-digit phone number.");
             } else {
@@ -157,20 +151,17 @@
                 altphoneInput.setCustomValidity("");
             }
 
-            // Password match validation
             if (passwordInput.value !== confirmPasswordInput.value) {
                 confirmPasswordInput.setCustomValidity("Passwords do not match!");
             } else {
                 confirmPasswordInput.setCustomValidity("");
             }
 
-            // Check all validations
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
-            // Gather form data
             const firstName = form.firstname.value.trim();
             const lastName = form.lastname.value.trim();
             const gender = form.gender.value;
@@ -182,11 +173,9 @@
             const address = form.address.value.trim();
 
             try {
-                // Create user authentication using Firebase Auth
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
                 const uid = cred.user.uid;
 
-                // Save additional user data into Firestore "users" collection
                 await db.collection("users").doc(uid).set({
                     firstName: firstName,
                     lastName: lastName,
@@ -199,10 +188,8 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Redirect to sign in page after successful registration and saving data
                     window.location.href = "index.html?registered=true";
             } catch (error) {
-                // Show error
                 alert("Registration failed: " + error.message);
             }
         });
