@@ -5,65 +5,101 @@
   <title>Dashboard - WaitWizard</title>
   <link rel="stylesheet" href="dashboard.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+      authDomain: "digitalqueuesystem.firebaseapp.com",
+      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+      projectId: "digitalqueuesystem",
+      storageBucket: "digitalqueuesystem.appspot.com",
+      messagingSenderId: "934641075368",
+      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+      measurementId: "G-TJESH8R15H"
+    };
+
+    // Init Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
   <header class="header">
     <h1>Welcome to WaitWizard, <span id="username">Username</span>!</h1>
-    <p>Your one-stop dashboard for queue management.</p>
+    <p>Easily track, manage, and organize your queues</p>
   </header>
 
   <section class="grid-menu">
-    <div class="card" tabindex="0" data-link="home.html">
-      <div class="icon">🏠</div>
-      <div class="label">Home</div>
-    </div>
-    <div class="card" tabindex="0" data-link="take-ticket.html">
-      <div class="icon">🎫</div>
-      <div class="label">Take a Ticket</div>
-    </div>
-    <div class="card" tabindex="0" data-link="my-position.html">
-      <div class="icon">📍</div>
-      <div class="label">My Position</div>
-    </div>
-    <div class="card" tabindex="0" data-link="queue-status.html">
-      <div class="icon">📊</div>
-      <div class="label">Queue Status</div>
-    </div>
-    <div class="card" tabindex="0" data-link="services.html">
-      <div class="icon">🛎️</div>
-      <div class="label">Services</div>
-    </div>
-    <div class="card" tabindex="0" data-link="appointments.html">
-      <div class="icon">📅</div>
-      <div class="label">Appointments</div>
-    </div>
-    <div class="card" tabindex="0" data-link="history.html">
-      <div class="icon">📜</div>
-      <div class="label">History</div>
-    </div>
-    <div class="card" tabindex="0" data-link="settings.html">
-      <div class="icon">⚙</div>
-      <div class="label">Settings</div>
-    </div>
-    <div class="card" tabindex="0" data-link="help-support.html">
-      <div class="icon">❓</div>
-      <div class="label">Help & Support</div>
-    </div>
-    <div class="card" tabindex="0" data-link="notification.html">
-      <div class="icon">🔔</div>
-      <div class="label">Notification</div>
-    </div>
+    <div class="card" data-link="home.html"><div class="icon">🏠</div><div class="label">Home</div></div>
+    <div class="card" data-link="take-ticket.html"><div class="icon">🎫</div><div class="label">Take a Ticket</div></div>
+    <div class="card" data-link="my-position.html"><div class="icon">📍</div><div class="label">My Position</div></div>
+    <div class="card" data-link="queue-status.html"><div class="icon">📊</div><div class="label">Queue Status</div></div>
+    <div class="card" data-link="services.html"><div class="icon">🛎️</div><div class="label">Services</div></div>
+    <div class="card" data-link="appointments.html"><div class="icon">📅</div><div class="label">Appointments</div></div>
+    <div class="card" data-link="history.html"><div class="icon">📜</div><div class="label">History</div></div>
+    <div class="card" data-link="settings.html"><div class="icon">⚙</div><div class="label">Settings</div></div>
+    <div class="card" data-link="help-support.html"><div class="icon">❓</div><div class="label">Help & Support</div></div>
+    <div class="card" data-link="notification.html"><div class="icon">🔔</div><div class="label">Notification</div></div>
   </section>
 
   <script>
+    // Make cards clickable
     document.querySelectorAll('.card[data-link]').forEach(card => {
-      card.style.cursor = 'pointer'; 
       card.addEventListener('click', () => {
         const targetUrl = card.getAttribute('data-link');
         if (targetUrl) {
           window.location.href = targetUrl;
         }
       });
+    });
+
+    // Highlight the current active card
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.card[data-link]').forEach(card => {
+      const link = card.getAttribute('data-link');
+
+      // Match current page OR default to Home on dashboard.html
+      if (link === currentPage ||
+          (currentPage === "" && link === "home.html") ||
+          (currentPage === "dashboard.html" && link === "home.html")) {
+        card.classList.add('active');
+      }
+    });
+
+    // Auth check + fetch display name
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const docRef = db.collection("users").doc(user.uid);
+          const docSnap = await docRef.get();
+
+          if (docSnap.exists) {
+            const data = docSnap.data();
+            const firstName = data.firstname || data.firstName || "";
+            const lastName = data.lastname || data.lastName || "";
+            
+            if (firstName || lastName) {
+              document.getElementById('username').textContent = `${firstName} ${lastName}`.trim();
+            } else {
+              document.getElementById('username').textContent = user.email.split('@')[0];
+            }
+          } else {
+            document.getElementById('username').textContent = user.email.split('@')[0];
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          document.getElementById('username').textContent = user.email.split('@')[0];
+        }
+      } else {
+        window.location.href = "login.html";
+      }
     });
   </script>
 </body>

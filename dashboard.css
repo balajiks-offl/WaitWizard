@@ -1,3 +1,4 @@
+/* ===== General Reset & Body Styles ===== */
 body, html {
   margin: 0;
   padding: 0;
@@ -7,6 +8,7 @@ body, html {
   color: #2c3e50;
 }
 
+/* ===== Header ===== */
 .header {
   text-align: center;
   padding: 54px 20px 36px;
@@ -24,7 +26,7 @@ body, html {
   color: #668583;
 }
 
-
+/* ===== Main Grid Layout ===== */
 .grid-menu {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
@@ -34,6 +36,7 @@ body, html {
   margin: 0 auto 54px auto;
 }
 
+/* ===== Card Styles ===== */
 .card {
   background: #fff;
   padding: 28px 12px 22px 12px;
@@ -53,6 +56,7 @@ body, html {
   cursor: pointer;
 }
 
+/* Hover & Focus States */
 .card:hover,
 .card:focus {
   box-shadow: 0 14px 34px rgba(80, 120, 96, 0.14);
@@ -60,11 +64,11 @@ body, html {
   outline: none;
 }
 
+/* ===== Icon & Label ===== */
 .card .icon {
   font-size: 2.2rem;
   color: #77bcbe;
 }
-
 .card .label {
   color: #365f6b;
   font-weight: 600;
@@ -72,6 +76,28 @@ body, html {
   letter-spacing: 0.2px;
 }
 
+/* ===== Active Card Highlight ===== */
+.card.active {
+  border: 2px solid #4CAF50;
+  box-shadow: 0 8px 26px rgba(76, 175, 80, 0.25);
+  background-color: #f0fff4;
+  transform: scale(1.02);
+}
+.card.active .icon {
+  color: #4CAF50;
+}
+.card.active .label {
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+/* ===== Click/Tap Active Feedback ===== */
+.card:active {
+  outline: 2px solid #8ab4c6;
+  transform: scale(0.98);
+}
+
+/* ===== Tablet Styles ===== */
 @media (max-width: 700px) {
   .header {
     padding-top: 32px;
@@ -94,6 +120,7 @@ body, html {
   }
 }
 
+/* ===== Mobile Styles ===== */
 @media (max-width: 420px) {
   .header {
     padding-top: 19px;
@@ -102,8 +129,4 @@ body, html {
   .header h1 {
     font-size: 1.13rem;
   }
-}
-
-.card:active {
-  outline: 2px solid #8ab4c6;
 }

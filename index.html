@@ -4,9 +4,14 @@
     <meta charset="UTF-8" />
     <title>Sign In</title>
     <link rel="stylesheet" href="login.css" />
+    
+    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
     <script>
+      // Your Firebase config
       const firebaseConfig = {
         apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
         authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -18,7 +23,9 @@
         measurementId: "G-TJESH8R15H"
       };
       firebase.initializeApp(firebaseConfig);
+
       const auth = firebase.auth();
+      const db = firebase.firestore();
     </script>
 </head>
 <body>
@@ -26,6 +33,7 @@
         <div class="card">
             <img src="logo.jpg" alt="WaitWizard Logo" class="site-logo" />
             <h2>Sign In</h2>
+
             <form id="loginForm" autocomplete="on" novalidate>
                 <div class="input-group">
                     <input type="email" name="email" id="email" placeholder="Email" required autocomplete="username" />
@@ -35,43 +43,72 @@
                 </div>
                 <button class="primary-btn" type="submit">Sign In</button>
             </form>
+
             <p class="switch-link">
                 Don't have an account? <a href="register.html">Register</a>
             </p>
         </div>
     </div>
 
-    <script>
-      const loginForm = document.getElementById('loginForm');
-      const email = document.getElementById('email');
-      const password = document.getElementById('password');
+<script>
+const loginForm = document.getElementById('loginForm');
+const email = document.getElementById('email');
+const password = document.getElementById('password');
 
-      loginForm.addEventListener('submit', async function (e) {
-          e.preventDefault();
+loginForm.addEventListener('submit', async function (e) {
+  e.preventDefault();
 
-          if (!email.value.trim() || !password.value) {
-              alert('Please enter both email and password.');
-              return;
-          }
+  if (!email.value.trim() || !password.value) {
+    alert('Please enter both email and password.');
+    return;
+  }
 
-          const submitBtn = loginForm.querySelector('button[type="submit"]');
-          const originalBtnText = submitBtn.textContent;
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Signing in...';
+  const submitBtn = loginForm.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Signing in...';
 
-          try {
-              await auth.signInWithEmailAndPassword(email.value.trim(), password.value);
-              window.location.href = "dashboard.html";
-          } catch (error) {
-              alert("Sign in failed: " + error.message);
-              password.value = '';
-          }
+  try {
+    // Sign in user with Firebase Auth
+    const userCredential = await auth.signInWithEmailAndPassword(email.value.trim(), password.value);
+    const user = userCredential.user;
+    console.log("Signed in:", user.email, "UID:", user.uid);
 
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
-      });
-    </script>
-    <script>
+    // Fetch role from Firestore
+    const docRef = db.collection("users").doc(user.uid);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      alert("No Firestore record found for this account.");
+      await auth.signOut();
+      return;
+    }
+
+    const role = (docSnap.data().role || "").toLowerCase().trim();
+    console.log("Fetched role from Firestore:", role);
+
+    // Redirect based on role
+    if (role === "admin") {
+      window.location.href = "admin.html";
+    } else if (role === "doctor") {
+      window.location.href = "doctor.html";
+    } else {
+      window.location.href = "dashboard.html"; // default for users or no role
+    }
+
+  } catch (error) {
+    console.error("Login error:", error.message);
+    alert("Sign in failed: " + error.message);
+    password.value = '';
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = originalBtnText;
+});
+</script>
+
+<script>
+  // Optional success message after registration
   window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('registered') === 'true') {
