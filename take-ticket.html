@@ -5,16 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Take a Ticket - WaitWizard</title>
   <link rel="stylesheet" href="take-ticket.css" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase config - from your project
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+      authDomain: "digitalqueuesystem.firebaseapp.com",
+      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+      projectId: "digitalqueuesystem",
+      storageBucket: "digitalqueuesystem.appspot.com",
+      messagingSenderId: "934641075368",
+      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+      measurementId: "G-TJESH8R15H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
   <div class="ticket-form-card">
     <h2>Take a Ticket</h2>
     <form id="takeTicketForm" novalidate>
+
+      <!-- Full Name -->
       <div>
         <label for="fullname">Full Name *</label>
         <input type="text" id="fullname" name="fullname" required placeholder="Your full name" />
       </div>
 
+      <!-- Mobile -->
       <div>
         <label for="mobile">Mobile Number *</label>
         <input 
@@ -29,6 +54,7 @@
           title="Enter 10-digit mobile number" />
       </div>
 
+      <!-- Gender -->
       <div>
         <label for="gender">Gender *</label>
         <select id="gender" name="gender" required>
@@ -39,11 +65,25 @@
         </select>
       </div>
 
+      <!-- Age -->
       <div>
         <label for="age">Age *</label>
         <input type="number" id="age" name="age" min="0" max="120" required placeholder="Your age" />
       </div>
 
+      <!-- Ticket Type -->
+      <div>
+        <label>Ticket Type *</label>
+        <label id="normalLabel"><input type="radio" name="ticketType" value="normal" checked /> Normal</label>
+        <label id="emergencyLabel"><input type="radio" name="ticketType" value="emergency" /> Emergency</label>
+      </div>
+
+      <!-- Emergency Approval Message -->
+      <p id="emergencyMsg" style="display:none; color:red; font-weight:bold; margin-top:5px;">
+        Emergency tickets need admin approval before confirmation.
+      </p>
+
+      <!-- Date & Time -->
       <div class="date-time-group">
         <div>
           <label for="apptDate">Appointment Date *</label>
@@ -51,20 +91,46 @@
         </div>
         <div>
           <label for="apptTime">Appointment Time *</label>
-          <input type="time" id="apptTime" name="apptTime" required />
+          <input type="time" id="apptTime" name="apptTime" required step="300" />
         </div>
       </div>
 
+      <!-- Symptoms -->
       <div>
-        <label for="symptoms">Reason for Visit / Symptoms</label>
+        <label for="symptoms">
+          Reason for Visit / Symptoms <span id="reasonRequired" style="color:red; display:none;">*</span>
+        </label>
         <textarea id="symptoms" name="symptoms" placeholder="Briefly describe your symptoms or reason for visit"></textarea>
       </div>
 
+      <!-- Medical ID -->
       <div>
         <label for="medicalId">Medical Record Number / ID</label>
         <input type="text" id="medicalId" name="medicalId" placeholder="If previously registered" />
       </div>
 
+      <!-- Emergency Contact -->
+      <div>
+        <label for="emergencyContact">Emergency Contact Number</label>
+        <input 
+          type="text" 
+          id="emergencyContact" 
+          name="emergencyContact" 
+          pattern="\d{10}" 
+          maxlength="10" 
+          inputmode="numeric"
+          placeholder="10-digit emergency contact" />
+      </div>
+
+      <!-- Terms & Conditions -->
+      <div>
+        <label>
+          <input type="checkbox" id="terms" name="terms" required />
+          I agree to the Terms & Conditions and consent to data collection.
+        </label>
+      </div>
+
+      <!-- Submit -->
       <div class="button-container">
         <button type="submit" class="primary-btn">Take Ticket</button>
       </div>
@@ -74,23 +140,166 @@
   <script>
     const form = document.getElementById('takeTicketForm');
     const mobileInput = form.mobile;
+    const emergencyContactInput = form.emergencyContact;
+    const emergencyLabel = document.getElementById("emergencyLabel");
+    const normalLabel = document.getElementById("normalLabel");
+    const emergencyMsg = document.getElementById("emergencyMsg");
+    const symptomsField = form.symptoms;
+    const reasonRequiredMark = document.getElementById("reasonRequired");
+    const dateInput = form.apptDate;
+    const timeInput = form.apptTime;
 
-    mobileInput.addEventListener('input', () => {
-      let cleaned = mobileInput.value.replace(/\D/g, '').slice(0, 10);
-      if (cleaned !== mobileInput.value) {
-        mobileInput.value = cleaned;
+    // Set minimum date = today
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+    // Only digits and max 10 for phone numbers
+    [mobileInput, emergencyContactInput].forEach(input => {
+      input.addEventListener('input', () => {
+        let cleaned = input.value.replace(/\D/g, '').slice(0, 10);
+        if (cleaned !== input.value) {
+          input.value = cleaned;
+        }
+      });
+    });
+
+    // Mark reason required for emergency
+    function updateReasonRequirement() {
+      const isEmergency = form.ticketType.value === "emergency";
+      if (isEmergency) {
+        symptomsField.required = true;
+        reasonRequiredMark.style.display = "inline";
+      } else {
+        symptomsField.required = false;
+        reasonRequiredMark.style.display = "none";
+      }
+    }
+    updateReasonRequirement();
+
+    // Ticket type UI behavior
+    document.querySelectorAll('input[name="ticketType"]').forEach(radio => {
+      radio.addEventListener("change", () => {
+        updateReasonRequirement();
+        if (radio.value === "emergency" && radio.checked) {
+          emergencyLabel.style.color = "red";
+          normalLabel.style.color = "";
+          emergencyMsg.style.display = "block";
+        } else if (radio.value === "normal" && radio.checked) {
+          emergencyLabel.style.color = "";
+          normalLabel.style.color = "";
+          emergencyMsg.style.display = "none";
+        }
+      });
+    });
+
+    // Get next 5 minute slot
+    function getNext5MinuteTime() {
+      const now = new Date();
+      now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
+      now.setSeconds(0);
+      return now.toTimeString().slice(0,5);
+    }
+
+    // If date is today, restrict to future time
+    dateInput.addEventListener('change', () => {
+      const selectedDate = dateInput.value;
+      if (selectedDate === dateInput.min) {
+        timeInput.min = getNext5MinuteTime();
+      } else {
+        timeInput.min = "";
       }
     });
 
-    form.addEventListener('submit', (e) => {
+    // Submit handler with time/date validation
+    form.addEventListener('submit', async (e) => {
       if (!form.checkValidity()) {
         e.preventDefault();
         form.reportValidity();
         return;
       }
-      e.preventDefault(); 
-      alert("Ticket taken successfully!"); 
-      form.reset();
+
+      const selectedDate = form.apptDate.value;
+      const selectedTime = form.apptTime.value;
+      if (!selectedDate || !selectedTime) {
+        e.preventDefault();
+        alert("Please select appointment date and time.");
+        return;
+      }
+
+      const [hour, minute] = selectedTime.split(':').map(Number);
+      const appointmentDateTime = new Date(`${selectedDate}T${selectedTime}`);
+      const now = new Date();
+
+      // If today, block earlier time
+      if (selectedDate === dateInput.min && selectedTime < getNext5MinuteTime()) {
+        e.preventDefault();
+        alert(`Time must be after ${getNext5MinuteTime()} today.`);
+        return;
+      }
+
+      // Block if time is past in general
+      if (appointmentDateTime <= now) {
+        e.preventDefault();
+        alert("Appointment date/time must be in the future.");
+        return;
+      }
+
+      // Ensure minutes are multiple of 5
+      if (minute % 5 !== 0) {
+        e.preventDefault();
+        alert("Please select minutes in multiples of 5.");
+        return;
+      }
+
+      e.preventDefault();
+      const selectedType = form.ticketType.value;
+
+      const ticketData = {
+        fullName: form.fullname.value.trim(),
+        mobile: form.mobile.value.trim(),
+        gender: form.gender.value,
+        age: Number(form.age.value),
+        ticketType: selectedType,
+        appointmentDate: form.apptDate.value,
+        appointmentTime: form.apptTime.value,
+        symptoms: form.symptoms.value.trim(),
+        medicalId: form.medicalId.value.trim(),
+        emergencyContact: form.emergencyContact.value.trim(),
+        termsAccepted: form.terms.checked,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        userId: null,
+        status: selectedType === "emergency" ? "Pending Approval" : "Open"
+      };
+
+      try {
+        const user = firebase.auth().currentUser;
+        if (user) {
+          ticketData.userId = user.uid;
+        }
+
+        await db.collection("tickets").add(ticketData);
+
+        if (selectedType === "emergency") {
+          alert("Requested, waiting for approval");
+        } else {
+          alert("Ticket booked successfully!");
+        }
+
+        form.reset();
+        emergencyLabel.style.color = "";
+        normalLabel.style.color = "";
+        emergencyMsg.style.display = "none";
+        reasonRequiredMark.style.display = "none";
+        symptomsField.required = false;
+        timeInput.min = ""; // reset min when clearing
+
+      } catch (error) {
+        console.error("Error saving ticket:", error);
+        alert("Failed to take ticket. Please try again later.");
+      }
     });
   </script>
 </body>

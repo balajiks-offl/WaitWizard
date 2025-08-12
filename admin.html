@@ -5,42 +5,208 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="admin.css">
+
+  <style>
+    /* Button styling */
+    .btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 2px;
+      color: white;
+    }
+    .btn-accept { background-color: #28a745; }
+    .btn-reject { background-color: #dc3545; }
+    .btn-close  { background-color: #6c757d; }
+    .btn-manage { background-color: #007bff; }
+    .btn:hover { opacity: 0.85; }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="container">
     <div class="card dashboard-card">
       <h2>Admin Dashboard</h2>
+
       <div class="stats">
-        <div class="stat-box">Total Tickets: <strong>120</strong></div>
-        <div class="stat-box">Emergencies: <strong>5</strong></div>
-        <div class="stat-box">Cancellations: <strong>3</strong></div>
-        <div class="stat-box">Active Doctors: <strong>8</strong></div>
+        <div class="stat-box">Total Tickets: <strong id="totalTickets">0</strong></div>
+        <div class="stat-box">Emergencies: <strong id="emergencyCount">0</strong></div>
+        <div class="stat-box">Cancellations: <strong id="cancelCount">0</strong></div>
+        <div class="stat-box">Active Doctors: <strong id="doctorCount">0</strong></div>
       </div>
 
-      <h3>Recent Tickets</h3>
+      <!-- ACTION BUTTONS -->
+      <div style="margin:10px 0;">
+        <button class="btn btn-manage" onclick="clearTickets()">Clear Tickets</button>
+        <button class="btn btn-manage" onclick="showClearedTickets()">Show Cleared Tickets</button>
+      </div>
+
+      <h3 id="ticketTableTitle">Upcoming Tickets</h3>
       <table>
         <thead>
           <tr>
-            <th>Ticket #</th>
+            <th>S.No</th>
             <th>User</th>
             <th>Status</th>
             <th>Type</th>
+            <th>Appt Date</th>
+            <th>Appt Time</th>
             <th>Doctor</th>
+            <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>#101</td>
-            <td>John Doe</td>
-            <td>Open</td>
-            <td>Normal</td>
-            <td>Dr. Smith</td>
-          </tr>
+        <tbody id="ticketTableBody">
+          <tr><td colspan="8">Loading tickets...</td></tr>
         </tbody>
       </table>
-
-      <button class="primary-btn">Manage Tickets</button>
     </div>
   </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+      authDomain: "digitalqueuesystem.firebaseapp.com",
+      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+      projectId: "digitalqueuesystem",
+      storageBucket: "digitalqueuesystem.appspot.com",
+      messagingSenderId: "934641075368",
+      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+      measurementId: "G-TJESH8R15H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const ticketTableBody = document.getElementById("ticketTableBody");
+    const totalTicketsElem = document.getElementById("totalTickets");
+    const emergencyCountElem = document.getElementById("emergencyCount");
+    const cancelCountElem = document.getElementById("cancelCount");
+    const doctorCountElem = document.getElementById("doctorCount");
+    const ticketTableTitle = document.getElementById("ticketTableTitle");
+
+    let unsubscribeActive = null;
+
+    function loadActiveTickets() {
+      ticketTableTitle.textContent = "Upcoming Tickets";
+      if (unsubscribeActive) unsubscribeActive();
+
+      unsubscribeActive = db.collection("tickets")
+        .orderBy("appointmentDate", "asc")
+        .orderBy("appointmentTime", "asc")
+        .onSnapshot(snapshot => {
+          let totalTickets = 0, emergencyCount = 0, cancelCount = 0;
+          const ticketsArray = [];
+
+          snapshot.forEach(doc => {
+            const ticket = doc.data();
+            ticketsArray.push({id: doc.id, ...ticket});
+          });
+
+          // Sort again to ensure proper date+time ordering
+          ticketsArray.sort((a, b) => {
+            const dateA = new Date(`${a.appointmentDate}T${a.appointmentTime}`);
+            const dateB = new Date(`${b.appointmentDate}T${b.appointmentTime}`);
+            return dateA - dateB;
+          });
+
+          ticketTableBody.innerHTML = "";
+          ticketsArray.forEach((ticket, index) => {
+            totalTickets++;
+            if (ticket.ticketType === "emergency") emergencyCount++;
+            if (ticket.status === "cancelled") cancelCount++;
+
+            let status = ticket.status || (ticket.ticketType === "emergency" ? "Pending Approval" : "Open");
+
+            let actionButtons = "";
+            if (status === "Pending Approval" && ticket.ticketType === "emergency") {
+              actionButtons = `
+                <button class="btn btn-accept" onclick="updateTicketStatus('${ticket.id}', 'Open')">Accept</button>
+                <button class="btn btn-reject" onclick="updateTicketStatus('${ticket.id}', 'Rejected')">Reject</button>
+              `;
+            } else if (status === "Open") {
+              actionButtons = `
+                <button class="btn btn-close" onclick="updateTicketStatus('${ticket.id}', 'Closed')">Mark Closed</button>
+              `;
+            } else {
+              actionButtons = "-";
+            }
+
+            ticketTableBody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${ticket.fullName || 'N/A'}</td>
+                <td>${status}</td>
+                <td>${ticket.ticketType}</td>
+                <td>${ticket.appointmentDate || '-'}</td>
+                <td>${ticket.appointmentTime || '-'}</td>
+                <td>${ticket.doctorAssigned || '-'}</td>
+                <td>${actionButtons}</td>
+              </tr>
+            `;
+          });
+
+          totalTicketsElem.textContent = totalTickets;
+          emergencyCountElem.textContent = emergencyCount;
+          cancelCountElem.textContent = cancelCount;
+          doctorCountElem.textContent = 8; // placeholder
+        });
+    }
+
+    loadActiveTickets();
+
+    function updateTicketStatus(ticketId, newStatus) {
+      db.collection("tickets").doc(ticketId).update({ status: newStatus })
+        .then(() => alert(`Ticket updated to ${newStatus}`))
+        .catch(err => console.error("Error updating:", err));
+    }
+
+    async function clearTickets() {
+      if (!confirm("Clear all non-open tickets? This will archive them.")) return;
+      const snapshot = await db.collection("tickets").get();
+      const batch = db.batch();
+      const now = new Date();
+      for (const doc of snapshot.docs) {
+        const data = doc.data();
+        if (data.status !== "Open") {
+          batch.set(db.collection("cleared_tickets").doc(doc.id), {...data, clearedAt: now});
+          batch.delete(doc.ref);
+        }
+      }
+      await batch.commit();
+      alert("Cleared all non-open tickets.");
+    }
+
+    async function showClearedTickets() {
+      ticketTableTitle.textContent = "Cleared Tickets";
+      if (unsubscribeActive) unsubscribeActive();
+      const snapshot = await db.collection("cleared_tickets").orderBy("clearedAt", "desc").get();
+      ticketTableBody.innerHTML = "";
+      if (snapshot.empty) {
+        ticketTableBody.innerHTML = "<tr><td colspan='8'>No cleared tickets found</td></tr>";
+        return;
+      }
+      let sNo = 1;
+      snapshot.forEach(doc => {
+        const ticket = doc.data();
+        ticketTableBody.innerHTML += `
+          <tr>
+            <td>${sNo++}</td>
+            <td>${ticket.fullName || 'N/A'}</td>
+            <td>${ticket.status}</td>
+            <td>${ticket.ticketType}</td>
+            <td>${ticket.appointmentDate || '-'}</td>
+            <td>${ticket.appointmentTime || '-'}</td>
+            <td>${ticket.doctorAssigned || '-'}</td>
+            <td>-</td>
+          </tr>
+        `;
+      });
+    }
+  </script>
 </body>
 </html>
