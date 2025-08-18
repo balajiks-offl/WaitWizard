@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="admin.css">
 
   <style>
-    /* Button styling */
     .btn {
       padding: 5px 10px;
       border: none;
@@ -20,11 +19,23 @@
     .btn-accept { background-color: #28a745; }
     .btn-reject { background-color: #dc3545; }
     .btn-close  { background-color: #6c757d; }
-    .btn-manage { background-color: #007bff; }
     .btn:hover { opacity: 0.85; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    h3 {
+      margin-top: 30px;
+    }
   </style>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
@@ -41,13 +52,7 @@
         <div class="stat-box">Active Doctors: <strong id="doctorCount">0</strong></div>
       </div>
 
-      <!-- ACTION BUTTONS -->
-      <div style="margin:10px 0;">
-        <button class="btn btn-manage" onclick="clearTickets()">Clear Tickets</button>
-        <button class="btn btn-manage" onclick="showClearedTickets()">Show Cleared Tickets</button>
-      </div>
-
-      <h3 id="ticketTableTitle">Upcoming Tickets</h3>
+      <h3>Active Tickets</h3>
       <table>
         <thead>
           <tr>
@@ -55,93 +60,129 @@
             <th>User</th>
             <th>Status</th>
             <th>Type</th>
+            <th>Reason</th>
             <th>Appt Date</th>
             <th>Appt Time</th>
             <th>Doctor</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="ticketTableBody">
-          <tr><td colspan="8">Loading tickets...</td></tr>
+        <tbody id="activeTicketsTableBody">
+          <tr><td colspan="9">Loading active tickets...</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Closed Tickets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Reason</th>
+            <th>Appt Date</th>
+            <th>Appt Time</th>
+            <th>Doctor</th>
+          </tr>
+        </thead>
+        <tbody id="closedTicketsTableBody">
+          <tr><td colspan="8">Loading closed tickets...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
-      authDomain: "digitalqueuesystem.firebaseapp.com",
-      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
-      projectId: "digitalqueuesystem",
-      storageBucket: "digitalqueuesystem.appspot.com",
-      messagingSenderId: "934641075368",
-      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
-      measurementId: "G-TJESH8R15H"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+    authDomain: "digitalqueuesystem.firebaseapp.com",
+    databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+    projectId: "digitalqueuesystem",
+    storageBucket: "digitalqueuesystem.appspot.com",
+    messagingSenderId: "934641075368",
+    appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+    measurementId: "G-TJESH8R15H"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    const ticketTableBody = document.getElementById("ticketTableBody");
-    const totalTicketsElem = document.getElementById("totalTickets");
-    const emergencyCountElem = document.getElementById("emergencyCount");
-    const cancelCountElem = document.getElementById("cancelCount");
-    const doctorCountElem = document.getElementById("doctorCount");
-    const ticketTableTitle = document.getElementById("ticketTableTitle");
+  const totalTicketsElem = document.getElementById("totalTickets");
+  const emergencyCountElem = document.getElementById("emergencyCount");
+  const cancelCountElem = document.getElementById("cancelCount");
+  const doctorCountElem = document.getElementById("doctorCount");
 
-    let unsubscribeActive = null;
+  const activeTicketsTableBody = document.getElementById("activeTicketsTableBody");
+  const closedTicketsTableBody = document.getElementById("closedTicketsTableBody");
 
-    function loadActiveTickets() {
-      ticketTableTitle.textContent = "Upcoming Tickets";
-      if (unsubscribeActive) unsubscribeActive();
+  let unsubscribeActive = null;
 
-      unsubscribeActive = db.collection("tickets")
-        .orderBy("appointmentDate", "asc")
-        .orderBy("appointmentTime", "asc")
-        .onSnapshot(snapshot => {
-          let totalTickets = 0, emergencyCount = 0, cancelCount = 0;
-          const ticketsArray = [];
+  function capitalizeFirstLetter(text) {
+    if (!text) return '-';
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  }
 
-          snapshot.forEach(doc => {
-            const ticket = doc.data();
-            ticketsArray.push({id: doc.id, ...ticket});
-          });
+  function loadTickets() {
+    if (unsubscribeActive) unsubscribeActive();
 
-          // Sort again to ensure proper date+time ordering
-          ticketsArray.sort((a, b) => {
-            const dateA = new Date(`${a.appointmentDate}T${a.appointmentTime}`);
-            const dateB = new Date(`${b.appointmentDate}T${b.appointmentTime}`);
-            return dateA - dateB;
-          });
+    unsubscribeActive = db.collection("tickets")
+      .onSnapshot(snapshot => {
+        let totalTickets = 0, emergencyCount = 0, cancelCount = 0;
+        const activeTickets = [];
+        const closedTickets = [];
 
-          ticketTableBody.innerHTML = "";
-          ticketsArray.forEach((ticket, index) => {
-            totalTickets++;
-            if (ticket.ticketType === "emergency") emergencyCount++;
-            if (ticket.status === "cancelled") cancelCount++;
+        snapshot.forEach(doc => {
+          const ticket = { id: doc.id, ...doc.data() };
+          totalTickets++;
+          if (ticket.ticketType === "emergency") emergencyCount++;
+          if (ticket.status === "cancelled") cancelCount++;
 
-            let status = ticket.status || (ticket.ticketType === "emergency" ? "Pending Approval" : "Open");
+          const status = ticket.status || (ticket.ticketType === "emergency" ? "Pending Approval" : "Open");
 
+          if (status.toLowerCase() === "closed") {
+            closedTickets.push({ ...ticket, status });
+          } else {
+            activeTickets.push({ ...ticket, status });
+          }
+        });
+
+        const sortFn = (a, b) => {
+          if (a.appointmentDate && a.appointmentTime && b.appointmentDate && b.appointmentTime) {
+            const [ay, am, ad] = a.appointmentDate.split('-').map(Number);
+            const [ah, amin] = a.appointmentTime.split(':').map(Number);
+            const [by, bm, bd] = b.appointmentDate.split('-').map(Number);
+            const [bh, bmin] = b.appointmentTime.split(':').map(Number);
+            return new Date(ay, am - 1, ad, ah, amin) - new Date(by, bm - 1, bd, bh, bmin);
+          }
+          return 0;
+        };
+        activeTickets.sort(sortFn);
+        closedTickets.sort(sortFn);
+
+        if (activeTickets.length === 0) {
+          activeTicketsTableBody.innerHTML = "<tr><td colspan='9'>No active tickets</td></tr>";
+        } else {
+          activeTicketsTableBody.innerHTML = "";
+          activeTickets.forEach((ticket, index) => {
             let actionButtons = "";
-            if (status === "Pending Approval" && ticket.ticketType === "emergency") {
+            if (ticket.status === "Pending Approval" && ticket.ticketType === "emergency") {
               actionButtons = `
                 <button class="btn btn-accept" onclick="updateTicketStatus('${ticket.id}', 'Open')">Accept</button>
                 <button class="btn btn-reject" onclick="updateTicketStatus('${ticket.id}', 'Rejected')">Reject</button>
               `;
-            } else if (status === "Open") {
-              actionButtons = `
-                <button class="btn btn-close" onclick="updateTicketStatus('${ticket.id}', 'Closed')">Mark Closed</button>
-              `;
+            } else if (ticket.status === "Open") {
+              actionButtons = `<button class="btn btn-close" onclick="updateTicketStatus('${ticket.id}', 'Closed')">Mark Closed</button>`;
             } else {
               actionButtons = "-";
             }
 
-            ticketTableBody.innerHTML += `
+            activeTicketsTableBody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td>${ticket.fullName || 'N/A'}</td>
-                <td>${status}</td>
-                <td>${ticket.ticketType}</td>
+                <td>${ticket.status}</td>
+                <td>${capitalizeFirstLetter(ticket.ticketType)}</td>
+                <td>${ticket.symptoms || '-'}</td>
                 <td>${ticket.appointmentDate || '-'}</td>
                 <td>${ticket.appointmentTime || '-'}</td>
                 <td>${ticket.doctorAssigned || '-'}</td>
@@ -149,64 +190,46 @@
               </tr>
             `;
           });
-
-          totalTicketsElem.textContent = totalTickets;
-          emergencyCountElem.textContent = emergencyCount;
-          cancelCountElem.textContent = cancelCount;
-          doctorCountElem.textContent = 8; // placeholder
-        });
-    }
-
-    loadActiveTickets();
-
-    function updateTicketStatus(ticketId, newStatus) {
-      db.collection("tickets").doc(ticketId).update({ status: newStatus })
-        .then(() => alert(`Ticket updated to ${newStatus}`))
-        .catch(err => console.error("Error updating:", err));
-    }
-
-    async function clearTickets() {
-      if (!confirm("Clear all non-open tickets? This will archive them.")) return;
-      const snapshot = await db.collection("tickets").get();
-      const batch = db.batch();
-      const now = new Date();
-      for (const doc of snapshot.docs) {
-        const data = doc.data();
-        if (data.status !== "Open") {
-          batch.set(db.collection("cleared_tickets").doc(doc.id), {...data, clearedAt: now});
-          batch.delete(doc.ref);
         }
-      }
-      await batch.commit();
-      alert("Cleared all non-open tickets.");
-    }
 
-    async function showClearedTickets() {
-      ticketTableTitle.textContent = "Cleared Tickets";
-      if (unsubscribeActive) unsubscribeActive();
-      const snapshot = await db.collection("cleared_tickets").orderBy("clearedAt", "desc").get();
-      ticketTableBody.innerHTML = "";
-      if (snapshot.empty) {
-        ticketTableBody.innerHTML = "<tr><td colspan='8'>No cleared tickets found</td></tr>";
-        return;
-      }
-      let sNo = 1;
-      snapshot.forEach(doc => {
-        const ticket = doc.data();
-        ticketTableBody.innerHTML += `
-          <tr>
-            <td>${sNo++}</td>
-            <td>${ticket.fullName || 'N/A'}</td>
-            <td>${ticket.status}</td>
-            <td>${ticket.ticketType}</td>
-            <td>${ticket.appointmentDate || '-'}</td>
-            <td>${ticket.appointmentTime || '-'}</td>
-            <td>${ticket.doctorAssigned || '-'}</td>
-            <td>-</td>
-          </tr>
-        `;
+        if (closedTickets.length === 0) {
+          closedTicketsTableBody.innerHTML = "<tr><td colspan='8'>No closed tickets</td></tr>";
+        } else {
+          closedTicketsTableBody.innerHTML = "";
+          closedTickets.forEach((ticket, index) => {
+            closedTicketsTableBody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${ticket.fullName || 'N/A'}</td>
+                <td>${ticket.status}</td>
+                <td>${capitalizeFirstLetter(ticket.ticketType)}</td>
+                <td>${ticket.symptoms || '-'}</td>
+                <td>${ticket.appointmentDate || '-'}</td>
+                <td>${ticket.appointmentTime || '-'}</td>
+                <td>${ticket.doctorAssigned || '-'}</td>
+              </tr>
+            `;
+          });
+        }
+
+        totalTicketsElem.textContent = totalTickets;
+        emergencyCountElem.textContent = emergencyCount;
+        cancelCountElem.textContent = cancelCount;
+        doctorCountElem.textContent = 8; 
+      }, error => {
+        console.error("Error fetching tickets: ", error);
+        activeTicketsTableBody.innerHTML = "<tr><td colspan='9'>Error loading active tickets</td></tr>";
+        closedTicketsTableBody.innerHTML = "<tr><td colspan='8'>Error loading closed tickets</td></tr>";
       });
-    }
-  </script>
+  }
+
+  function updateTicketStatus(ticketId, newStatus) {
+    db.collection("tickets").doc(ticketId).update({ status: newStatus })
+      .then(() => alert(`Ticket updated to ${newStatus}`))
+      .catch(err => console.error("Error updating ticket:", err));
+  }
+
+  loadTickets();
+</script>
 </body>
 </html>

@@ -102,7 +102,6 @@
     </div>
 
     <script>
-        // Get references to elements
         const form = document.getElementById("registerForm");
         const emailInput = document.getElementById("emailInput");
         const emailError = document.getElementById("emailError");
@@ -120,7 +119,6 @@
         setupDigitOnlyInput(phoneInput);
         if (altphoneInput) setupDigitOnlyInput(altphoneInput);
 
-        // Validate email format during input
         emailInput.addEventListener("input", () => {
             const value = emailInput.value;
             if (value.includes("@") && value.includes(".")) {

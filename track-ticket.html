@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Track My Tickets - WaitWizard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 6px 22px rgba(60, 80, 120, 0.1);
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background: #f5f7fa;
+      font-weight: bold;
+    }
+    h1 {
+      text-align: center;
+      color: #365f6b;
+    }
+    .container {
+      width: 95%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>My Tickets</h1>
+    <p>All your tickets (Open, Pending, Closed, Cancelled)</p>
+  </header>
+
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>Ticket ID</th>
+          <th>Full Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+          <th>Mobile</th>
+          <th>Appointment Date</th>
+          <th>Appointment Time</th>
+          <th>Status</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody id="ticketsTable">
+        <tr><td colspan="9">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+    authDomain: "digitalqueuesystem.firebaseapp.com",
+    databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+    projectId: "digitalqueuesystem",
+    storageBucket: "digitalqueuesystem.appspot.com",
+    messagingSenderId: "934641075368",
+    appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+    measurementId: "G-TJESH8R15H"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  const tableBody = document.getElementById('ticketsTable');
+
+  function renderTickets(tickets) {
+    tableBody.innerHTML = "";
+    if (tickets.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="9">No tickets found for your account</td></tr>`;
+      return;
+    }
+    tickets.forEach(t => {
+      tableBody.innerHTML += `
+        <tr>
+          <td>${t.id}</td>
+          <td>${t.fullName || 'N/A'}</td>
+          <td>${t.age || '-'}</td>
+          <td>${t.gender || '-'}</td>
+          <td>${t.mobile || '-'}</td>
+          <td>${t.appointmentDate || '-'}</td>
+          <td>${t.appointmentTime || '-'}</td>
+          <td>${t.status || '-'}</td>
+          <td>${t.ticketType || '-'}</td>
+        </tr>
+      `;
+    });
+  }
+
+  async function fetchAndFilterTickets(user) {
+    try {
+      console.log("Signed-in UID:", user.uid);
+      console.log("Signed-in Email:", user.email);
+
+      const snapshot = await db.collection("tickets").get();
+      console.log(`Total tickets in DB: ${snapshot.size}`);
+
+      const allTickets = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        console.log("Ticket:", doc.id, data);
+        allTickets.push({ id: doc.id, ...data });
+      });
+
+      const myTickets = allTickets.filter(
+        t => t.userId === user.uid || t.userEmail === user.email
+      );
+
+      renderTickets(myTickets);
+    } catch (err) {
+      console.error("Error fetching tickets:", err);
+      tableBody.innerHTML = `<tr><td colspan="9">Error loading tickets</td></tr>`;
+    }
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      fetchAndFilterTickets(user);
+    } else {
+      window.location.href = "index.html";
+    }
+  });
+</script>
+
+</body>
+</html>

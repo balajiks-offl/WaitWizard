@@ -1,4 +1,3 @@
-/* ===== General Reset & Body Styles ===== */
 body, html {
   margin: 0;
   padding: 0;
@@ -8,7 +7,6 @@ body, html {
   color: #2c3e50;
 }
 
-/* ===== Header ===== */
 .header {
   text-align: center;
   padding: 54px 20px 36px;
@@ -26,37 +24,87 @@ body, html {
   color: #668583;
 }
 
-/* ===== Main Grid Layout ===== */
+.top-icons {
+  position: fixed;
+  top: 15px;
+  right: 25px;
+  display: flex;
+  gap: 20px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  z-index: 1000;
+}
+.top-icons span:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+  transition: all 0.2s ease-in-out;
+}
+@media (max-width: 768px) {
+  .top-icons {
+    display: none;
+  }
+}
+
 .grid-menu {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 26px;
   width: 91%;
   max-width: 940px;
-  margin: 0 auto 54px auto;
+  margin: 0 auto 40px auto;
+  justify-items: center; 
 }
 
-/* ===== Card Styles ===== */
+@media (max-width: 992px) {
+  .grid-menu {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .grid-menu {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    width: 100%;
+    padding: 0 7px;
+  }
+}
+
+@media (max-width: 420px) {
+  .grid-menu {
+    grid-template-columns: 1fr;
+  }
+}
+
 .card {
   background: #fff;
-  padding: 28px 12px 22px 12px;
   border-radius: 16px;
   box-shadow: 0 6px 22px rgba(60, 80, 120, 0.10);
-  cursor: default;
   user-select: none;
   text-align: center;
   transition: box-shadow 0.22s ease, transform 0.18s ease;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center; 
+
+  height: 150px; 
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px;
+}
+
+@media (max-height: 800px) {
+  .card {
+    height: 130px;
+  }
 }
 
 .card[data-link] {
   cursor: pointer;
 }
 
-/* Hover & Focus States */
 .card:hover,
 .card:focus {
   box-shadow: 0 14px 34px rgba(80, 120, 96, 0.14);
@@ -64,19 +112,23 @@ body, html {
   outline: none;
 }
 
-/* ===== Icon & Label ===== */
 .card .icon {
+  width: 50px;
+  height: 50px;
   font-size: 2.2rem;
   color: #77bcbe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .card .label {
   color: #365f6b;
   font-weight: 600;
   font-size: 1.12rem;
   letter-spacing: 0.2px;
+  text-align: center;
 }
 
-/* ===== Active Card Highlight ===== */
 .card.active {
   border: 2px solid #4CAF50;
   box-shadow: 0 8px 26px rgba(76, 175, 80, 0.25);
@@ -91,42 +143,48 @@ body, html {
   color: #2e7d32;
 }
 
-/* ===== Click/Tap Active Feedback ===== */
 .card:active {
   outline: 2px solid #8ab4c6;
   transform: scale(0.98);
 }
 
-/* ===== Tablet Styles ===== */
-@media (max-width: 700px) {
-  .header {
-    padding-top: 32px;
-    padding-bottom: 24px;
-  }
-  .header h1 {
-    font-size: 1.5rem;
-  }
-  .grid-menu {
-    gap: 18px;
-    width: 100%;
-    padding: 0 7px;
-  }
-  .card {
-    padding: 15px 0 13px 0;
-    border-radius: 13px;
-  }
-  .card .icon {
-    font-size: 1.7rem;
-  }
+.profile-panel {
+  position: fixed;
+  top: 0;
+  right: -350px; 
+  width: 350px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+  transition: right 0.3s ease-in-out;
+  z-index: 2000;
+  padding: 20px;
+  overflow-y: auto;
 }
-
-/* ===== Mobile Styles ===== */
-@media (max-width: 420px) {
-  .header {
-    padding-top: 19px;
-    padding-bottom: 13px;
-  }
-  .header h1 {
-    font-size: 1.13rem;
-  }
+.profile-panel.open {
+  right: 0;
+}
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+.profile-header h2 {
+  font-size: 1.4rem;
+  color: #365f6b;
+  margin: 0;
+}
+.close-profile {
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+.profile-detail {
+  margin-bottom: 15px;
+}
+.detail-label {
+  font-weight: bold;
+  color: #4CAF50;
 }

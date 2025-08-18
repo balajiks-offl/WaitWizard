@@ -6,13 +6,11 @@
   <link rel="stylesheet" href="dashboard.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
       authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -23,12 +21,72 @@
       appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
       measurementId: "G-TJESH8R15H"
     };
-
-    // Init Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
   </script>
+
+  <style>
+    .profile-panel {
+      position: fixed;
+      top: 0;
+      right: -100%; 
+      width: 350px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+      transition: right 0.3s ease-in-out;
+      z-index: 2000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .profile-panel.open { right: 0; }
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .profile-header h2 {
+      font-size: 1.4rem;
+      color: #365f6b;
+      margin: 0;
+    }
+    .close-profile {
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+    .profile-detail {
+      margin-bottom: 15px;
+    }
+    .detail-label {
+      font-weight: bold;
+      color: #4CAF50;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .profile-detail input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button.save-btn {
+      background: #4CAF50;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    button.save-btn:hover {
+      background: #45a049;
+    }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -36,122 +94,146 @@
     <p>"Track, monitor, and manage your queues without hassle"</p>
   </header>
 
+  <div class="top-icons">
+    <span id="profileIcon" title="Profile">👤</span>
+    <span id="logoutIcon" title="Logout">🚪</span>
+  </div>
+
+  <div id="profilePanel" class="profile-panel">
+    <div class="profile-header">
+      <h2>My Profile</h2>
+      <span class="close-profile" id="closeProfile">&times;</span>
+    </div>
+    <div id="profileContent">Loading profile...</div>
+  </div>
+
   <section class="grid-menu">
-    <!-- Home -->
-    <div class="card" data-link="home.html">
-      <div class="icon">🏠</div>
-      <div class="label">Home</div>
-    </div>
-
-    <!-- Take a Ticket -->
-    <div class="card" data-link="take-ticket.html">
-      <div class="icon">🎫</div>
-      <div class="label">Take a Ticket</div>
-    </div>
-
-    <!-- Track Ticket -->
-    <div class="card" data-link="track-ticket.html">
-      <div class="icon">📍</div>
-      <div class="label">Track Ticket</div>
-    </div>
-
-    <!-- Swap Ticket -->
-    <div class="card" data-link="swap-ticket.html">
-      <div class="icon">🔄</div>
-      <div class="label">Swap Ticket</div>
-    </div>
-
-    <!-- Cancel Ticket -->
-    <div class="card" data-link="cancel-ticket.html">
-      <div class="icon">❌</div>
-      <div class="label">Cancel Ticket</div>
-    </div>
-
-    <!-- Chatbot -->
-    <div class="card" data-link="chatbot.html">
-      <div class="icon">🤖</div>
-      <div class="label">Chatbot</div>
-    </div>
-
-    <!-- History -->
-    <div class="card" data-link="history.html">
-      <div class="icon">📜</div>
-      <div class="label">History</div>
-    </div>
-
-    <!-- Notifications -->
-    <div class="card" data-link="notification.html">
-      <div class="icon">🔔</div>
-      <div class="label">Notifications</div>
-    </div>
-
-    <!-- Profile -->
-    <div class="card" data-link="profile.html">
-      <div class="icon">👤</div>
-      <div class="label">Profile</div>
-    </div>
-
-    <!-- Logout -->
-    <div class="card" id="logoutBtn">
-      <div class="icon">🚪</div>
-      <div class="label">Logout</div>
-    </div>
+    <div class="card" data-link="home.html"><div class="icon">🏠</div><div class="label">Home</div></div>
+    <div class="card" data-link="take-ticket.html"><div class="icon">🎫</div><div class="label">Take a Ticket</div></div>
+    <div class="card" data-link="track-ticket.html"><div class="icon">📍</div><div class="label">Track Ticket</div></div>
+    <div class="card" data-link="swap-ticket.html"><div class="icon">🔄</div><div class="label">Swap Ticket</div></div>
+    <div class="card" data-link="cancel-ticket.html"><div class="icon">❌</div><div class="label">Cancel Ticket</div></div>
+    <div class="card" data-link="chatbot.html"><div class="icon">🤖</div><div class="label">Chatbot</div></div>
+    <div class="card" data-link="history.html"><div class="icon">📜</div><div class="label">History</div></div>
+    <div class="card" data-link="notification.html"><div class="icon">🔔</div><div class="label">Notifications</div></div>
   </section>
 
   <script>
-    // Make cards clickable except Logout
     document.querySelectorAll('.card[data-link]').forEach(card => {
-      card.addEventListener('click', () => {
-        const targetUrl = card.getAttribute('data-link');
-        if (targetUrl) {
-          window.location.href = targetUrl;
+      card.addEventListener('click', () => window.location.href = card.getAttribute('data-link'));
+    });
+
+    const profileIcon = document.getElementById('profileIcon');
+    const profilePanel = document.getElementById('profilePanel');
+    const closeProfile = document.getElementById('closeProfile');
+    const profileContent = document.getElementById('profileContent');
+
+    profileIcon.addEventListener('click', async () => {
+      profilePanel.classList.add('open');
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const docSnap = await db.collection("users").doc(user.uid).get();
+        if (docSnap.exists) {
+          const data = docSnap.data();
+          let dobFormatted = '';
+          if (data.dob?.toDate) {
+            dobFormatted = data.dob.toDate().toLocaleDateString();
+          } else {
+            dobFormatted = data.dob || 'Not provided';
+          }
+          profileContent.innerHTML = `
+            <form id="profileForm">
+              <div class="profile-detail">
+                <label class="detail-label">First Name:</label>
+                <input type="text" name="firstName" value="${data.firstName || ''}" />
+              </div>
+              <div class="profile-detail">
+                <label class="detail-label">Last Name:</label>
+                <input type="text" name="lastName" value="${data.lastName || ''}" />
+              </div>
+              <div class="profile-detail">
+                <label class="detail-label">Phone:</label>
+                <input type="tel" name="phone" value="${data.phone || ''}" />
+              </div>
+              <div class="profile-detail">
+                <label class="detail-label">Date of Birth:</label>
+                <div>${dobFormatted}</div>
+              </div>
+              <button class="save-btn" type="submit">Save</button>
+              <div id="profileMessage" style="margin-top:10px;"></div>
+            </form>
+          `;
+
+          document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const updatedData = {
+              firstName: form.firstName.value.trim(),
+              lastName: form.lastName.value.trim(),
+              phone: form.phone.value.trim()
+            };
+            const msg = document.getElementById('profileMessage');
+            try {
+              await db.collection("users").doc(user.uid).update(updatedData);
+              msg.style.color = "green";
+              msg.textContent = "Profile updated successfully!";
+              const displayName = (updatedData.firstName || updatedData.lastName)
+                ? `${updatedData.firstName} ${updatedData.lastName}`.trim()
+                : user.email.split('@')[0];
+              document.getElementById('username').textContent = displayName;
+            } catch (err) {
+              msg.style.color = "red";
+              msg.textContent = "Error updating profile.";
+              console.error(err);
+            }
+          });
+
+        } else {
+          profileContent.textContent = "No profile data found.";
         }
-      });
+      } catch (err) {
+        console.error(err);
+        profileContent.textContent = "Error loading profile.";
+      }
     });
 
-    // Logout functionality
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      auth.signOut().then(() => {
-        window.location.href = "login.html";
-      }).catch(error => {
-        console.error("Logout error:", error);
-      });
+    closeProfile.addEventListener('click', () => profilePanel.classList.remove('open'));
+
+    document.getElementById('logoutIcon').addEventListener('click', () => {
+      if (confirm("Are you sure you want to logout?")) {
+        auth.signOut().then(() => window.location.href = "index.html")
+          .catch(err => console.error("Logout error:", err));
+      }
     });
 
-    // Highlight active card
     const currentPage = window.location.pathname.split('/').pop();
     document.querySelectorAll('.card[data-link]').forEach(card => {
-      const link = card.getAttribute('data-link');
-      if (link === currentPage ||
-          (currentPage === "" && link === "home.html") ||
-          (currentPage === "dashboard.html" && link === "home.html")) {
+      if (card.getAttribute('data-link') === currentPage ||
+          (!currentPage && card.getAttribute('data-link') === "home.html") ||
+          (currentPage === "dashboard.html" && card.getAttribute('data-link') === "home.html")) {
         card.classList.add('active');
       }
     });
 
-    // Auth check + display name
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          const docRef = db.collection("users").doc(user.uid);
-          const docSnap = await docRef.get();
+          const docSnap = await db.collection("users").doc(user.uid).get();
           if (docSnap.exists) {
-            const data = docSnap.data();
-            const firstName = data.firstname || data.firstName || "";
-            const lastName = data.lastname || data.lastName || "";
-            const displayName = (firstName || lastName)
-              ? `${firstName} ${lastName}`.trim()
+            const d = docSnap.data();
+            const displayName = (d.firstName || d.lastName)
+              ? `${d.firstName || ''} ${d.lastName || ''}`.trim()
               : user.email.split('@')[0];
             document.getElementById('username').textContent = displayName;
           } else {
             document.getElementById('username').textContent = user.email.split('@')[0];
           }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+        } catch {
           document.getElementById('username').textContent = user.email.split('@')[0];
         }
       } else {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
       }
     });
   </script>

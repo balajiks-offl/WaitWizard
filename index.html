@@ -5,13 +5,11 @@
     <title>Sign In</title>
     <link rel="stylesheet" href="login.css" />
     
-    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 
     <script>
-      // Your Firebase config
       const firebaseConfig = {
         apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
         authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -69,12 +67,10 @@ loginForm.addEventListener('submit', async function (e) {
   submitBtn.textContent = 'Signing in...';
 
   try {
-    // Sign in user with Firebase Auth
     const userCredential = await auth.signInWithEmailAndPassword(email.value.trim(), password.value);
     const user = userCredential.user;
     console.log("Signed in:", user.email, "UID:", user.uid);
 
-    // Fetch role from Firestore
     const docRef = db.collection("users").doc(user.uid);
     const docSnap = await docRef.get();
 
@@ -87,13 +83,12 @@ loginForm.addEventListener('submit', async function (e) {
     const role = (docSnap.data().role || "").toLowerCase().trim();
     console.log("Fetched role from Firestore:", role);
 
-    // Redirect based on role
     if (role === "admin") {
       window.location.href = "admin.html";
     } else if (role === "doctor") {
       window.location.href = "doctor.html";
     } else {
-      window.location.href = "dashboard.html"; // default for users or no role
+      window.location.href = "dashboard.html";
     }
 
   } catch (error) {
@@ -107,7 +102,6 @@ loginForm.addEventListener('submit', async function (e) {
 });
 </script>
 <script>
-  // Optional success message after registration
   window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('registered') === 'true') {
