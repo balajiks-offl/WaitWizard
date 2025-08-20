@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Doctor Dashboard</title>
-  <link rel="stylesheet" href="doctor.css">
+  <link rel="stylesheet" href="doctor.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="container">
     <div class="card dashboard-card">
       <h2>Doctor Dashboard</h2>
 
-      <h3>Assigned Tickets</h3>
+      <h3>Open Tickets</h3>
       <table>
         <thead>
           <tr>
@@ -22,22 +25,15 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>#201</td>
-            <td>Alice Brown</td>
-            <td>Emergency</td>
-            <td>Pending</td>
-            <td>
-              <button class="accept-btn">Accept</button>
-              <button class="reject-btn">Reject</button>
-            </td>
-          </tr>
+        <tbody id="ticketsTableBody">
+          <tr><td colspan="5">Loading tickets...</td></tr>
         </tbody>
       </table>
 
-      <button class="primary-btn">View History</button>
+      <button class="primary-btn" onclick="viewHistory()">View History</button>
     </div>
   </div>
+
+  <script src="doctor.js"></script>
 </body>
 </html>
