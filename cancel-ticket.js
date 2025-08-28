@@ -1,4 +1,4 @@
-// Firebase initialization (keep in sync with your project config)
+
 const firebaseConfig = {
   apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
   authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -23,8 +23,6 @@ function showTickets(tickets) {
     ticketList.innerHTML = "<p class='message'>You have no open or pending tickets.</p>";
     return;
   }
-
-  // Build table with header
   const table = document.createElement('table');
   table.innerHTML = `
     <thead>
@@ -59,14 +57,13 @@ function showTickets(tickets) {
   ticketList.innerHTML = "";
   ticketList.appendChild(table);
 
-  // Attach cancel handlers
   tbody.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (!confirm("Are you sure you want to cancel this ticket?")) return;
       const ticketId = btn.getAttribute('data-id');
       try {
         await db.collection("tickets").doc(ticketId).update({ status: "Cancelled" });
-        // Remove row on success
+        
         btn.closest('tr').remove();
 
         if (tbody.children.length === 0) {

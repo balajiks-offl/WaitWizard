@@ -3,56 +3,102 @@
 <head>
   <meta charset="UTF-8" />
   <title>Swap Ticket - WaitWizard</title>
-  <link rel="stylesheet" href="dashboard.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-
   <style>
+    body {
+      background: linear-gradient(125deg,#f6fafb 0%,#f5f3ed 100%);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 44px 0 60px;
+    }
+    .page-title {
+      font-size: 3.2rem;
+      color: #355f6b;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      color: #57768c;
+      text-align: center;
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+    .container { width: 90%; max-width: 800px; margin: 0 auto; }
+    .tickets-section {
+      margin-bottom: 45px;
+    }
+    .section-title {
+      color: #365f6b;
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      text-align: left;
+      letter-spacing: 0.8px;
+    }
     .ticket, .swap-request {
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 22px rgba(60, 80, 120, 0.1);
-      padding: 16px;
-      margin-bottom: 20px;
+      border-radius: 18px;
+      box-shadow: 0 6px 22px rgba(60, 80, 120, 0.10);
+      padding: 22px 26px 20px 26px;
+      margin-bottom: 24px;
+      font-size: 1.08rem;
       transition: all 0.2s ease-in-out;
+      max-width: 98vw;
     }
     .ticket:hover, .swap-request:hover {
       box-shadow: 0 14px 34px rgba(80, 120, 96, 0.14);
       transform: translateY(-2px);
     }
-    h2 { color: #365f6b; margin-bottom: 10px; }
     button {
       background: #4CAF50;
       border: none;
       color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 0.95rem;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1.06rem;
       cursor: pointer;
-      margin-top: 8px;
+      margin-top: 13px;
+      margin-right: 8px;
+      font-weight: 500;
+      transition: background .18s;
     }
     button:hover { background: #45a049; }
-    button.danger { background: #e74c3c; }
-    button.danger:hover { background: #c0392b; }
-    #userTickets, #swapRequests { margin-top: 15px; }
-    .container { width: 90%; max-width: 800px; margin: 0 auto; }
+    button.danger { background: #e74c3c;}
+    button.danger:hover {background: #c0392b;}
+    .ticket-id-number {
+      font-family: monospace;
+      font-weight: bold;
+      color: #365f6b;
+      padding-left: 2px;
+      background: none;
+      white-space: nowrap;
+      letter-spacing: 1.3px;
+      font-size: 1.10em;
+    }
+    @media (max-width: 700px) {
+      .page-title { font-size: 2.1rem; }
+      .section-title { font-size: 1.25rem; }
+      .ticket, .swap-request { font-size: 0.97rem; padding: 10px; }
+      button { font-size: 0.97rem; padding: 7px 11px;}
+      .container { max-width: 99vw; padding: 0 2vw; }
+    }
   </style>
 </head>
 <body>
-
-  <header class="header">
-    <h1>Swap Ticket</h1>
-    <p>Request swaps and respond to swap offers</p>
-  </header>
-
+  <div class="page-title">Swap Ticket</div>
+  <div class="subtitle">Request swaps and respond to swap offers</div>
   <div class="container">
-    <h2>Your Open Tickets</h2>
-    <div id="userTickets">Loading...</div>
-
-    <h2>Incoming Swap Requests</h2>
+    <div class="tickets-section">
+      <div class="section-title">Your Open Tickets</div>
+      <div id="userTickets">Loading...</div>
+    </div>
+    <div class="section-title">Incoming Swap Requests</div>
     <div id="swapRequests">Loading...</div>
   </div>
 
@@ -71,6 +117,17 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // Converts a string (ticket/UID) to a 5-digit number for display
+    function ticketIdToFiveDigit(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      const num = Math.abs(hash % 100000);
+      return num.toString().padStart(5, '0');
+    }
+
     function renderTickets(tickets) {
       const c = document.getElementById('userTickets');
       c.innerHTML = "";
@@ -79,9 +136,10 @@
         return;
       }
       tickets.forEach(t => {
+        const numericTicketId = ticketIdToFiveDigit(t.id);
         c.innerHTML += `
           <div class="ticket">
-            <div><b>Ticket ID:</b> ${t.id}</div>
+            <div><b>Ticket ID:</b> <span class="ticket-id-number">${numericTicketId}</span></div>
             <div><b>Appointment:</b> ${t.appointmentDate} at ${t.appointmentTime}</div>
             <div><b>Status:</b> ${t.status}</div>
             <button onclick="requestSwap('${t.id}')">Request Swap</button>
@@ -105,7 +163,7 @@
       await db.collection("swapRequests").add({
         fromUser: uid,
         fromTicketId: ticketId,
-        toUser: null, 
+        toUser: null,
         toTicketId: ticketId,
         status: "pending",
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -120,11 +178,16 @@
         c.textContent = 'No incoming swap requests.';
         return;
       }
+      const shownReqs = new Set();
       reqs.forEach(r => {
+        if (shownReqs.has(r.id)) return; // prevent duplicates
+        shownReqs.add(r.id);
+        const numericFromTicketId = ticketIdToFiveDigit(r.fromTicketId);
+        const numericFromUserId = ticketIdToFiveDigit(r.fromUser);
         c.innerHTML += `
           <div class="swap-request">
-            <div><b>From User UID:</b> ${r.fromUser}</div>
-            <div><b>Ticket:</b> ${r.fromTicketId}</div>
+            <div><b>From User:</b> <span class="ticket-id-number">${numericFromUserId}</span></div>
+            <div><b>Ticket:</b> <span class="ticket-id-number">${numericFromTicketId}</span></div>
             <button onclick="acceptSwap('${r.id}', '${r.fromTicketId}', '${r.toTicketId}')">Accept</button>
             <button class="danger" onclick="declineSwap('${r.id}')">Decline</button>
           </div>

@@ -8,154 +8,72 @@ const firebaseConfig = {
   appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
   measurementId: "G-TJESH8R15H"
 };
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const form = document.getElementById('takeTicketForm');
-const mobileInput = form.mobile;
-const emergencyContactInput = form.emergencyContact;
-const emergencyLabel = document.getElementById("emergencyLabel");
-const normalLabel = document.getElementById("normalLabel");
-const emergencyMsg = document.getElementById("emergencyMsg");
-const symptomsField = form.symptoms;
-const reasonRequiredMark = document.getElementById("reasonRequired");
-const dateInput = form.apptDate;
-const timeInput = form.apptTime;
-let savedDateTimeNode = null; 
+const ticketForm = document.getElementById('takeTicketForm');
+const emergencyMsg = document.getElementById('emergencyMsg');
+const successModal = document.getElementById('successModal');
 
-const today = new Date();
-const yyyy = today.getFullYear();
-const mm = String(today.getMonth() + 1).padStart(2, '0');
-const dd = String(today.getDate()).padStart(2, '0');
-dateInput.min = `${yyyy}-${mm}-${dd}`;
-
-[mobileInput, emergencyContactInput].forEach(input => {
-  input.addEventListener('input', () => {
-    let cleaned = input.value.replace(/\D/g, '').slice(0, 10);
-    if (cleaned !== input.value) input.value = cleaned;
+document.getElementsByName('ticketType').forEach(el => {
+  el.addEventListener('change', function() {
+    emergencyMsg.style.display = (this.value === 'emergency') ? 'block' : 'none';
   });
 });
 
-function updateReasonRequirement() {
-  if (form.ticketType.value === "emergency") {
-    symptomsField.required = true;
-    reasonRequiredMark.style.display = "inline";
-  } else {
-    symptomsField.required = false;
-    reasonRequiredMark.style.display = "none";
-  }
-}
-updateReasonRequirement();
+ticketForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
 
-document.querySelectorAll('input[name="ticketType"]').forEach(radio => {
-  radio.addEventListener("change", () => {
-    updateReasonRequirement();
-    if (radio.value === "emergency" && radio.checked) {
-      emergencyLabel.style.color = "red";
-      normalLabel.style.color = "";
-      emergencyMsg.style.display = "block";
-      const node = document.getElementById("dateTimeFields");
-      if (node) {
-        savedDateTimeNode = node;
-        node.remove();
-      }
-    } else if (radio.value === "normal" && radio.checked) {
-      emergencyLabel.style.color = "";
-      normalLabel.style.color = "";
-      emergencyMsg.style.display = "none";
-      if (!document.getElementById("dateTimeFields") && savedDateTimeNode) {
-        const symptomsDiv = document.getElementById("symptoms").parentNode;
-        symptomsDiv.parentNode.insertBefore(savedDateTimeNode, symptomsDiv);
-        savedDateTimeNode = null;
-      }
-    }
-  });
-});
+  const fullName = ticketForm.fullname.value.trim();
+  const mobile = ticketForm.mobile.value.trim();
+  const gender = ticketForm.gender.value;
+  const age = ticketForm.age.value;
+  const ticketType = ticketForm.ticketType.value;
+  const appointmentDate = ticketForm.apptDate.value;
+  const appointmentTime = ticketForm.apptTime.value;
+  const symptoms = ticketForm.symptoms.value.trim();
+  const medicalId = ticketForm.medicalId.value.trim();
+  const emergencyContact = ticketForm.emergencyContact.value.trim();
+  const termsAccepted = ticketForm.terms.checked;
 
-function getNext5MinuteTime() {
-  const now = new Date();
-  now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
-  now.setSeconds(0);
-  return now.toTimeString().slice(0,5);
-}
-
-form.addEventListener('change', () => {
-  if (form.apptDate && form.apptDate.value === dateInput.min) {
-    form.apptTime.min = getNext5MinuteTime();
-  } else if (form.apptTime) {
-    form.apptTime.min = "";
-  }
-});
-
-form.addEventListener('submit', async (e) => {
-  if (!form.checkValidity()) {
-    e.preventDefault();
-    form.reportValidity();
+  if (!fullName || !mobile || !gender || !age || !ticketType || !appointmentDate || !appointmentTime || !termsAccepted) {
+    alert('Please fill all required fields and agree to Terms.');
     return;
   }
 
-  const selectedType = form.ticketType.value;
-  const selectedDate = form.apptDate ? form.apptDate.value : null;
-  const selectedTime = form.apptTime ? form.apptTime.value : null;
-  const now = new Date();
-
-  if (selectedType === "normal") {
-    if (!selectedDate || !selectedTime) {
-      e.preventDefault();
-      alert("Please select appointment date and time.");
-      return;
-    }
-    const [hour, minute] = selectedTime.split(':').map(Number);
-    const appointmentDateTime = new Date(`${selectedDate}T${selectedTime}`);
-    if (selectedDate === dateInput.min && selectedTime < getNext5MinuteTime()) {
-      e.preventDefault();
-      alert(`Time must be after ${getNext5MinuteTime()} today.`);
-      return;
-    }
-    if (appointmentDateTime <= now) {
-      e.preventDefault();
-      alert("Appointment date/time must be in the future.");
-      return;
-    }
-    if (minute % 5 !== 0) {
-      e.preventDefault();
-      alert("Please select minutes in multiples of 5.");
-      return;
-    }
-  }
-
-  e.preventDefault();
-  const ticketData = {
-    fullName: form.fullname.value.trim(),
-    mobile: form.mobile.value.trim(),
-    gender: form.gender.value,
-    age: Number(form.age.value),
-    ticketType: selectedType,
-    appointmentDate: selectedType === "normal" ? selectedDate : "",
-    appointmentTime: selectedType === "normal" ? selectedTime : "",
-    symptoms: form.symptoms.value.trim(),
-    medicalId: form.medicalId.value.trim(),
-    emergencyContact: form.emergencyContact.value.trim(),
-    termsAccepted: form.terms.checked,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    userId: null,
-    status: selectedType === "emergency" ? "Pending Approval" : "Open"
-  };
-
   try {
-    const user = firebase.auth().currentUser;
-    if (user) ticketData.userId = user.uid;
+    const user = auth.currentUser;
+    if (!user) {
+      alert('You must be signed in to take a ticket.');
+      return;
+    }
+
+    const ticketData = {
+      userId: user.uid,
+      fullName, mobile, gender, age,
+      ticketType,
+      appointmentDate,
+      appointmentTime,
+      symptoms,
+      medicalId,
+      emergencyContact,
+      status: ticketType === 'emergency' ? 'Pending' : 'Open',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
     await db.collection("tickets").add(ticketData);
-    alert(selectedType === "emergency" ? "Requested, waiting for approval" : "Ticket booked successfully!");
-    form.reset();
-    emergencyLabel.style.color = "";
-    normalLabel.style.color = "";
-    emergencyMsg.style.display = "none";
-    reasonRequiredMark.style.display = "none";
-    symptomsField.required = false;
-  } catch (error) {
-    console.error("Error saving ticket:", error);
-    alert("Failed to take ticket. Please try again later.");
+    showSuccessModal();
+  } catch (err) {
+    alert("Error booking ticket: " + err.message);
   }
 });
+
+window.showSuccessModal = function() {
+  successModal.classList.add('active');
+};
+window.closeSuccessModal = function() {
+  successModal.classList.remove('active');
+  ticketForm.reset();
+};

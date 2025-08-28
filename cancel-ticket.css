@@ -16,10 +16,10 @@ body {
   padding: 28px 30px 24px 30px;
   border-radius: 16px;
   box-shadow: 0 6px 22px rgba(60, 80, 120, 0.10);
-  max-width: 720px;      /* Increased max width */
+  max-width: 720px;      
   width: 100%;
   box-sizing: border-box;
-  overflow-x: auto;      /* Enable horizontal scroll if needed */
+  overflow-x: auto;      
 }
 
 h2 {
@@ -35,14 +35,14 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
-  table-layout: auto; /* Allow column widths based on content */
+  table-layout: auto; 
   font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-  white-space: nowrap; /* Prevent wrapping inside cells on larger screens */
+  white-space: nowrap; 
 }
 
 th, td {
   border: 1px solid #b3c3b7;
-  padding: 12px 18px; /* More horizontal padding */
+  padding: 12px 18px; 
   text-align: left;
   vertical-align: middle;
   font-size: 15px;
@@ -105,7 +105,7 @@ button.cancel-btn:hover {
   th, td {
     padding: 10px 8px;
     font-size: 14px;
-    white-space: normal; /* allow wrapping in small screens */
+    white-space: normal; 
   }
 
   button.cancel-btn {

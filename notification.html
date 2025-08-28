@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notifications - WaitWizard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0; padding: 40px 0;
+    }
+    .container {
+      width: 95%; max-width: 1100px; margin: 0 auto; padding-bottom: 40px;
+    }
+    h1 {
+      color: #365f6b; font-size: 2.8rem; font-weight: bold; text-align:center; margin-bottom: 8px;
+    }
+    p.subtitle {
+      color: #5a7484; text-align:center; font-size:1.15rem; margin-bottom: 30px;
+    }
+
+    .notification-group {
+      margin-bottom: 30px;
+    }
+    .group-title {
+      font-size: 1.5rem; font-weight: 600; color: #355f6b; margin-bottom: 12px;
+      border-bottom: 1px solid #d3ddef; padding-bottom: 4px;
+    }
+    .notification {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 6px 22px rgba(60, 80, 120, 0.10);
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      font-size: 1.05rem;
+    }
+    .notification:hover {
+      box-shadow: 0 14px 34px rgba(80, 120, 96, 0.14);
+      transform: translateY(-2px);
+    }
+    .notification.unread {
+      font-weight: 700;
+      background: #e9f8ed;
+    }
+    .notification-icon {
+      font-size: 1.65rem;
+      flex-shrink: 0;
+      width: 36px;
+      text-align: center;
+    }
+    .notification-content {
+      flex-grow: 1;
+      overflow-wrap: break-word;
+    }
+    .notification-message {
+      margin: 0 0 6px 0;
+      color: #365f6b;
+    }
+    .notification-time {
+      font-size: 0.85rem;
+      color: #6a7a8c;
+      margin-top: 2px;
+      letter-spacing: 0.2px;
+    }
+    .notif-actions {
+      display: flex;
+      gap: 10px;
+      margin-left: 16px;
+    }
+    button.action-btn {
+      background: #4CAF50; color: white; border: none;
+      border-radius: 8px; padding: 6px 14px;
+      cursor: pointer; font-size: 0.9rem; font-weight: 600;
+      transition: background 0.2s ease;
+    }
+    button.action-btn:hover {
+      background: #45a049;
+    }
+    button.clear-btn {
+      background: #e74c3c;
+    }
+    button.clear-btn:hover {
+      background: #c0392b;
+    }
+    .clear-all-btn {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      float: right;
+      margin-bottom: 20px;
+      transition: background 0.18s;
+      font-weight: 600;
+    }
+    .clear-all-btn:hover {
+      background: #c0392b;
+    }
+    .no-notifications {
+      text-align: center;
+      font-size: 1.3rem;
+      color: #5a7484;
+      margin-top: 60px;
+      font-weight: 500;
+    }
+    @media (max-width: 700px) {
+      .notification {
+        font-size: 0.95rem;
+        padding: 14px 16px;
+      }
+      h1 { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Notifications</h1>
+    <p class="subtitle">Stay up to date with your tickets, queue, swaps, and reminders</p>
+    <button class="clear-all-btn" id="clearAllBtn" style="display:none;">Clear All Notifications</button>
+
+    <div id="notificationsContainer"></div>
+    <div id="noNotifications" class="no-notifications" style="display:none;">
+      You have no notifications right now.
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+      authDomain: "digitalqueuesystem.firebaseapp.com",
+      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+      projectId: "digitalqueuesystem",
+      storageBucket: "digitalqueuesystem.appspot.com",
+      messagingSenderId: "934641075368",
+      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+      measurementId: "G-TJESH8R15H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function formatDate(ts) {
+      if(!ts) return '-';
+      const date = ts.toDate ? ts.toDate() : new Date(ts);
+      return date.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    function getIcon(type) {
+      switch(type) {
+        case 'cancel': return '❌';
+        case 'reminder': return '⏰';
+        case 'swap-request': return '🔄';
+        case 'swap-confirm': return '✅';
+        case 'closed': return '🏁';
+        case 'new': return '🎟️';
+        case 'chat': return '💬';
+        case 'system': return '🔔';
+        default: return '🔔';
+      }
+    }
+
+    function groupNotifications(notifications) {
+      const groups = {};
+      const now = new Date();
+      notifications.forEach(n => {
+        const dateObj = n.timestamp ? (n.timestamp.toDate ? n.timestamp.toDate() : new Date(n.timestamp)) : null;
+        let key = 'Unknown Date';
+        if(dateObj) {
+          const diffMs = now - dateObj;
+          const diffDays = diffMs / (24*60*60*1000);
+          if(diffDays < 1 && dateObj.getDate() === now.getDate()) key = 'Today';
+          else if(diffDays < 2 && dateObj.getDate() === (now.getDate()-1)) key = 'Yesterday';
+          else {
+            key = dateObj.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric'});
+          }
+        }
+        if(!groups[key]) groups[key] = [];
+        groups[key].push(n);
+      });
+      return groups;
+    }
+
+    function createNotificationElement(n) {
+      const div = document.createElement('div');
+      div.className = 'notification' + (n.read ? '' : ' unread');
+      div.title = n.read ? 'Read' : 'Unread';
+
+      const iconDiv = document.createElement('div');
+      iconDiv.className = 'notification-icon';
+      iconDiv.textContent = getIcon(n.type);
+
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'notification-content';
+
+      const messageP = document.createElement('p');
+      messageP.className = 'notification-message';
+      messageP.textContent = n.message;
+
+      const timeP = document.createElement('p');
+      timeP.className = 'notification-time';
+      timeP.textContent = formatDate(n.timestamp);
+
+      contentDiv.appendChild(messageP);
+      contentDiv.appendChild(timeP);
+
+      const actionsDiv = document.createElement('div');
+      actionsDiv.className = 'notif-actions';
+
+      if(n.relatedTicketId) {
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'action-btn';
+        viewBtn.textContent = 'View Ticket';
+        viewBtn.onclick = () => {
+          window.location.href = `ticket_details.html?id=${n.relatedTicketId}`;
+        };
+        actionsDiv.appendChild(viewBtn);
+      }
+
+      const clearBtn = document.createElement('button');
+      clearBtn.className = 'action-btn clear-btn';
+      clearBtn.textContent = 'Clear';
+      clearBtn.onclick = () => {
+        db.collection('notifications').doc(n.id).delete().then(() => loadNotifications());
+      };
+      actionsDiv.appendChild(clearBtn);
+
+      div.appendChild(iconDiv);
+      div.appendChild(contentDiv);
+      div.appendChild(actionsDiv);
+
+      return div;
+    }
+
+    function renderNotificationGroups(groups) {
+      const container = document.getElementById('notificationsContainer');
+      container.innerHTML = '';
+      const groupKeys = Object.keys(groups).sort((a,b) => {
+        if(a === 'Today') return -1;
+        if(b === 'Today') return 1;
+        if(a === 'Yesterday') return -1;
+        if(b === 'Yesterday') return 1;
+        return new Date(b) - new Date(a);
+      });
+
+      groupKeys.forEach(gk => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'notification-group';
+
+        const title = document.createElement('div');
+        title.className = 'group-title';
+        title.textContent = gk;
+        groupDiv.appendChild(title);
+
+        groups[gk].forEach(n => {
+          const notifElem = createNotificationElement(n);
+          groupDiv.appendChild(notifElem);
+        });
+
+        container.appendChild(groupDiv);
+      });
+    }
+
+    async function loadNotifications() {
+      const user = auth.currentUser;
+      if(!user) {
+        document.getElementById('noNotifications').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('noNotifications').style.display = 'none';
+
+      const snapshot = await db.collection('notifications')
+        .where('userId','==',user.uid)
+        .orderBy('timestamp','desc')
+        .get();
+
+      const notifications = [];
+      snapshot.forEach(doc => {
+        notifications.push({ id: doc.id, ...doc.data() });
+      });
+
+      if(notifications.length === 0) {
+        document.getElementById('notificationsContainer').innerHTML = '';
+        document.getElementById('noNotifications').style.display = 'block';
+        document.getElementById('clearAllBtn').style.display = 'none';
+      } else {
+        document.getElementById('noNotifications').style.display = 'none';
+        document.getElementById('clearAllBtn').style.display = 'inline-block';
+        const grouped = groupNotifications(notifications);
+        renderNotificationGroups(grouped);
+      }
+    }
+
+    document.getElementById('clearAllBtn').onclick = async function() {
+      if(!confirm("Clear all notifications? This cannot be undone.")) return;
+      const user = auth.currentUser;
+      if(!user) return;
+
+      const snapshot = await db.collection('notifications')
+        .where('userId', '==', user.uid).get();
+
+      const batch = db.batch();
+      snapshot.forEach(doc => batch.delete(doc.ref));
+
+      await batch.commit();
+      loadNotifications();
+    };
+
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        loadNotifications();
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
   authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -27,7 +26,6 @@ auth.onAuthStateChanged(user => {
 });
 
 function listenToTickets() {
-  // Listen to all tickets with status 'Open' or 'Accepted' by this doctor
   db.collection("tickets")
     .where("status", "in", ["Open", "Accepted"])
     .onSnapshot(snapshot => {
@@ -38,9 +36,7 @@ function listenToTickets() {
         tickets.push(data);
       });
 
-      // Filter tickets:
-      // Show only tickets with status 'Open' and with no doctor assigned
-      // Or tickets assigned to this doctor with status 'Accepted' (to show Completed button)
+   
       const visibleTickets = tickets.filter(ticket => {
         if (ticket.status === "Open" && !ticket.doctorAssigned) return true;
         if (ticket.status === "Accepted" && ticket.doctorAssigned === currentDoctorId) return true;
@@ -64,16 +60,13 @@ function renderTickets(tickets) {
     let actionsHTML = "";
 
     if (ticket.status === "Open" && index === 0) {
-      // Only FIRST ticket has Accept / Reject buttons
       actionsHTML = `
         <button class="accept-btn" onclick="acceptTicket('${ticket.id}')">Accept</button>
         <button class="reject-btn" onclick="rejectTicket('${ticket.id}')">Reject</button>
       `;
     } else if (ticket.status === "Open") {
-      // Tickets other than first open ticket show no actions
       actionsHTML = `-`;
     } else if (ticket.status === "Accepted" && ticket.doctorAssigned === currentDoctorId) {
-      // Show Completed button for ticket accepted by this doctor
       actionsHTML = `
         <button class="completed-btn" onclick="completeTicket('${ticket.id}')">Completed</button>
       `;
@@ -93,8 +86,7 @@ function renderTickets(tickets) {
   });
 }
 
-// Accept a ticket: assign doctor ID and set status to 'Accepted'
-// Removes from others' views since it has assigned doctor now
+
 function acceptTicket(ticketId) {
   db.collection("tickets").doc(ticketId).get().then(doc => {
     if (!doc.exists) {
@@ -118,7 +110,6 @@ function acceptTicket(ticketId) {
   });
 }
 
-// Reject ticket: change status to 'Rejected' (optional)
 function rejectTicket(ticketId) {
   if (!confirm("Are you sure you want to reject this ticket?")) return;
   db.collection("tickets").doc(ticketId).update({
@@ -131,7 +122,6 @@ function rejectTicket(ticketId) {
   });
 }
 
-// Complete ticket: status to 'Closed' with confirmation popup
 function completeTicket(ticketId) {
   if (!confirm("Are you sure you want to mark this ticket as completed?")) return;
   db.collection("tickets").doc(ticketId).update({

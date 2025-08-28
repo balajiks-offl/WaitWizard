@@ -6,32 +6,51 @@ const firebaseConfig = {
   storageBucket: "digitalqueuesystem.appspot.com",
   messagingSenderId: "934641075368",
   appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
-  measurementId: "G-TJESH8R15H"
+  measurementId: "G-TJESH8R15H",
 };
-firebase.initializeApp(firebaseConfig);
 
+firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const loginForm = document.getElementById('loginForm');
-const email = document.getElementById('email');
-const password = document.getElementById('password');
+const loginForm = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
 
-loginForm.addEventListener('submit', async function (e) {
+const submitBtn = loginForm.querySelector('button[type="submit"]');
+const btnText = document.getElementById('login-btn-text');
+const btnSpinner = document.getElementById('login-btn-spinner');
+
+const togglePwd = document.getElementById("togglePwd");
+togglePwd.addEventListener("click", () => {
+  if (password.type === "password") {
+    password.type = "text";
+    togglePwd.textContent = "🔍";
+  } else {
+    password.type = "password";
+    togglePwd.textContent = "🔒";
+  }
+});
+
+loginForm.addEventListener("submit", async function (e) {
   e.preventDefault();
 
   if (!email.value.trim() || !password.value) {
-    alert('Please enter both email and password.');
+    loginForm.classList.add("shake");
+    setTimeout(() => loginForm.classList.remove("shake"), 400);
+    alert("Please enter both email and password.");
     return;
   }
 
-  const submitBtn = loginForm.querySelector('button[type="submit"]');
-  const originalBtnText = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Signing in...';
+  btnText.style.display = "none";
+  btnSpinner.style.display = "inline-block";
 
   try {
-    const userCredential = await auth.signInWithEmailAndPassword(email.value.trim(), password.value);
+    const userCredential = await auth.signInWithEmailAndPassword(
+      email.value.trim(),
+      password.value
+    );
     const user = userCredential.user;
     console.log("Signed in:", user.email, "UID:", user.uid);
 
@@ -41,6 +60,9 @@ loginForm.addEventListener('submit', async function (e) {
     if (!docSnap.exists) {
       alert("No Firestore record found for this account.");
       await auth.signOut();
+      submitBtn.disabled = false;
+      btnText.style.display = "";
+      btnSpinner.style.display = "none";
       return;
     }
 
@@ -54,21 +76,22 @@ loginForm.addEventListener('submit', async function (e) {
     } else {
       window.location.href = "dashboard.html";
     }
-
   } catch (error) {
     console.error("Login error:", error.message);
     alert("Sign in failed: " + error.message);
-    password.value = '';
+    password.value = "";
+  } finally {
+    submitBtn.disabled = false;
+    btnText.style.display = "";
+    btnSpinner.style.display = "none";
   }
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = originalBtnText;
 });
 
-window.addEventListener('DOMContentLoaded', () => {
+// Alert on successful registration redirect
+window.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('registered') === 'true') {
+  if (urlParams.get("registered") === "true") {
     alert("Account created successfully! Please sign in.");
-    history.replaceState(null, '', window.location.pathname);
+    history.replaceState(null, "", window.location.pathname);
   }
 });

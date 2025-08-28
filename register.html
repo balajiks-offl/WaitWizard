@@ -1,196 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Register</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
-            authDomain: "digitalqueuesystem.firebaseapp.com",
-            databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
-            projectId: "digitalqueuesystem",
-            storageBucket: "digitalqueuesystem.appspot.com",
-            messagingSenderId: "934641075368",
-            appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
-            measurementId: "G-TJESH8R15H"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register</title>
+  <link rel="stylesheet" href="register.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h2>Create Account</h2>
-            <form id="registerForm" novalidate>
-                <div class="input-row">
-                    <input type="text" placeholder="First Name" name="firstname" required />
-                    <input type="text" placeholder="Last Name" name="lastname" required />
-                </div>
-                <label class="label-title">Gender</label>
-                <div class="gender-group">
-                    <label class="gender-option">
-                        <input type="radio" name="gender" value="male" required />
-                        <span class="gender-icon">&#9794;</span> Male
-                    </label>
-                    <label class="gender-option">
-                        <input type="radio" name="gender" value="female" required />
-                        <span class="gender-icon">&#9792;</span> Female
-                    </label>
-                    <label class="gender-option">
-                        <input type="radio" name="gender" value="other" required />
-                        <span class="gender-icon">&#9895;</span> Other
-                    </label>
-                </div>
-                <input
-                    type="text"
-                    placeholder="Phone No"
-                    name="phone"
-                    id="phoneInput"
-                    required
-                    pattern="\d{10}"
-                    maxlength="10"
-                    inputmode="numeric"
-                    title="Please enter exactly 10 digits"
-                />
-                <input
-                    type="text"
-                    placeholder="Alternate Phone No (optional)"
-                    name="altphone"
-                    id="altphoneInput"
-                    pattern="\d{10}"
-                    maxlength="10"
-                    inputmode="numeric"
-                    title="Please enter exactly 10 digits"
-                />
-                <input type="email" placeholder="Email" name="email" id="emailInput" required />
-                <div
-                    id="emailError"
-                    style="color: #d9534f; font-size: 13px; display: none; margin-top: -8px; margin-bottom: 10px;"
-                >
-                    Invalid email address
-                </div>
-                <input
-                    type="password"
-                    placeholder="Password"
-                    name="password"
-                    id="passwordInput"
-                    required
-                    minlength="6"
-                />
-                <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    name="confirmPassword"
-                    id="confirmPasswordInput"
-                    required
-                    minlength="6"
-                />
-                <input type="date" placeholder="Date of Birth" name="dob" required />
-                <textarea placeholder="Address" name="address" rows="2" required></textarea>
-                <button class="primary-btn" type="submit" id="submitBtn">Register</button>
-            </form>
-            <p class="switch-link">
-                Already have an account? <a href="index.html">Sign In</a>
-            </p>
+  <div class="container">
+    <div class="card">
+      <h2>Register</h2>
+      <form id="registerForm" novalidate>
+        <label for="firstname" class="label-title">First Name</label>
+        <input type="text" id="firstname" name="firstname" required />
+
+        <label for="lastname" class="label-title">Last Name</label>
+        <input type="text" id="lastname" name="lastname" required />
+
+        <div class="gender-group">
+          <label class="label-title">Gender</label>
+          <label class="gender-option">
+            <input type="radio" name="gender" value="male" required />
+            <span class="gender-icon">♂</span> Male
+          </label>
+          <label class="gender-option">
+            <input type="radio" name="gender" value="female" />
+            <span class="gender-icon">♀</span> Female
+          </label>
+          <label class="gender-option">
+            <input type="radio" name="gender" value="other" />
+            <span class="gender-icon">⚧</span> Other
+          </label>
         </div>
+
+        <label for="phoneInput" class="label-title">Phone Number</label>
+        <input type="tel" id="phoneInput" name="phone" required />
+        <div id="phoneError" class="error-msg"></div>
+
+        <label for="altphoneInput" class="label-title">Alternate Phone Number</label>
+        <input type="tel" id="altphoneInput" name="altphone" />
+        <div id="altphoneError" class="error-msg"></div>
+
+        <label for="emailInput" class="label-title">Email</label>
+        <input type="email" id="emailInput" name="email" required />
+        <div id="emailError" class="error-msg">Invalid email address</div>
+
+        <label for="passwordInput" class="label-title">Password</label>
+        <input type="password" id="passwordInput" name="password" required />
+
+        <label for="confirmPasswordInput" class="label-title">Confirm Password</label>
+        <input type="password" id="confirmPasswordInput" name="confirmPassword" required />
+        <div id="confirmPasswordError" class="error-msg"></div>
+
+        <label for="dob" class="label-title">Date of Birth</label>
+        <input type="date" id="dob" name="dob" required />
+
+        <label for="address" class="label-title">Address</label>
+        <textarea id="address" name="address" rows="3" required></textarea>
+
+        <button type="submit" class="primary-btn">Register</button>
+      </form>
+      <div class="switch-link">
+        Already have an account? <a href="index.html">Login here</a>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const form = document.getElementById("registerForm");
-        const emailInput = document.getElementById("emailInput");
-        const emailError = document.getElementById("emailError");
-        const phoneInput = document.getElementById("phoneInput");
-        const altphoneInput = document.getElementById("altphoneInput");
-        const passwordInput = document.getElementById("passwordInput");
-        const confirmPasswordInput = document.getElementById("confirmPasswordInput");
-
-        function setupDigitOnlyInput(input) {
-            input.addEventListener("input", () => {
-                let cleaned = input.value.replace(/\D/g, "");
-                input.value = cleaned.slice(0, 10);
-            });
-        }
-        setupDigitOnlyInput(phoneInput);
-        if (altphoneInput) setupDigitOnlyInput(altphoneInput);
-
-        emailInput.addEventListener("input", () => {
-            const value = emailInput.value;
-            if (value.includes("@") && value.includes(".")) {
-                emailError.style.display = "none";
-                emailInput.setCustomValidity("");
-            } else {
-                emailError.style.display = "block";
-                emailInput.setCustomValidity("Invalid email address");
-            }
-        });
-
-        form.addEventListener("submit", async function (e) {
-            e.preventDefault();
-
-           emailInput.dispatchEvent(new Event("input"));
-
-            const phoneRegex = /^\d{10}$/;
-
-            if (!phoneRegex.test(phoneInput.value)) {
-                phoneInput.setCustomValidity("Please enter a valid 10-digit phone number.");
-            } else {
-                phoneInput.setCustomValidity("");
-            }
-
-            if (altphoneInput.value && !phoneRegex.test(altphoneInput.value)) {
-                altphoneInput.setCustomValidity("Please enter a valid 10-digit alternate phone number.");
-            } else {
-                altphoneInput.setCustomValidity("");
-            }
-
-            if (passwordInput.value !== confirmPasswordInput.value) {
-                confirmPasswordInput.setCustomValidity("Passwords do not match!");
-            } else {
-                confirmPasswordInput.setCustomValidity("");
-            }
-
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            const firstName = form.firstname.value.trim();
-            const lastName = form.lastname.value.trim();
-            const gender = form.gender.value;
-            const phone = form.phone.value.trim();
-            const altPhone = altphoneInput.value.trim();
-            const email = form.email.value.trim();
-            const password = form.password.value;
-            const dob = form.dob.value;
-            const address = form.address.value.trim();
-
-            try {
-                const cred = await auth.createUserWithEmailAndPassword(email, password);
-                const uid = cred.user.uid;
-
-                await db.collection("users").doc(uid).set({
-                    firstName: firstName,
-                    lastName: lastName,
-                    gender: gender,
-                    phone: phone,
-                    altPhone: altPhone,
-                    email: email,
-                    dob: dob,
-                    address: address,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                    window.location.href = "index.html?registered=true";
-            } catch (error) {
-                alert("Registration failed: " + error.message);
-            }
-        });
-    </script>
+  <script src="register.js"></script>
 </body>
 </html>
