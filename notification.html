@@ -6,137 +6,215 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
-      background: #f5f7fa;
+      background: linear-gradient(120deg, #b6e0fe 0%, #ffffff 80%);
       font-family: 'Segoe UI', sans-serif;
-      margin: 0; padding: 40px 0;
+      margin: 0;
+      padding: 0;
+      color: #174071;
+      min-height: 100vh;
     }
     .container {
-      width: 95%; max-width: 1100px; margin: 0 auto; padding-bottom: 40px;
+      width: 98%;
+      max-width: 950px;
+      margin: 44px auto 0;
+      position: relative;
+      padding-bottom: 50px;
     }
     h1 {
-      color: #365f6b; font-size: 2.8rem; font-weight: bold; text-align:center; margin-bottom: 8px;
+      color: #2463c5;
+      font-size: 2.6rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
     }
     p.subtitle {
-      color: #5a7484; text-align:center; font-size:1.15rem; margin-bottom: 30px;
+      color: #4271ba;
+      text-align: center;
+      font-size: 1.09rem;
+      margin-bottom: 35px;
+      letter-spacing: 0.2px;
     }
-
+    #notificationBadge {
+      position: fixed;
+      top: 19px;
+      right: 34px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 50%;
+      min-width: 32px;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.13rem;
+      font-weight: bold;
+      box-shadow: 0 2px 18px rgba(37, 99, 235, 0.13);
+      z-index: 1001;
+      cursor: pointer;
+      user-select: none;
+      border: 2px solid #fff;
+      animation: badgePulse 1.4s infinite;
+    }
+    @keyframes badgePulse {
+      0% { box-shadow: 0 0 15px #2563eb55; }
+      60% { box-shadow: 0 0 30px #2563eb33; }
+      100% { box-shadow: 0 0 15px #2563eb77; }
+    }
     .notification-group {
-      margin-bottom: 30px;
+      margin-bottom: 40px;
+      max-width: 97vw;
     }
     .group-title {
-      font-size: 1.5rem; font-weight: 600; color: #355f6b; margin-bottom: 12px;
-      border-bottom: 1px solid #d3ddef; padding-bottom: 4px;
+      font-size: 1.23rem;
+      font-weight: 700;
+      color: #2463c5;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #e0f2fe;
+      padding-bottom: 7px;
+      padding-left: 7px;
+      user-select: none;
+      letter-spacing: .5px;
+      background: linear-gradient(90deg,#f0f5fe,#e0f2fe,transparent 80%);
+      border-radius: 10px 10px 0 0;
     }
     .notification {
       background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 6px 22px rgba(60, 80, 120, 0.10);
-      padding: 18px 22px;
-      margin-bottom: 16px;
-      transition: all 0.2s ease-in-out;
+      border-radius: 17px;
+      box-shadow: 0 6px 18px rgba(33,57,93, .06);
+      padding: 19px 24px;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      font-size: 1.05rem;
+      gap: 14px;
+      font-size: 1.13rem;
+      user-select: text;
+      opacity: 0;
+      transform: translateY(20px) scale(0.97);
+      animation: notiFadeIn .55s forwards;
+      transition: box-shadow .3s, background .22s, border-left .2s;
+      border-left: 8px solid transparent;
+      position: relative;
+      cursor: default;
     }
-    .notification:hover {
-      box-shadow: 0 14px 34px rgba(80, 120, 96, 0.14);
-      transform: translateY(-2px);
+    @keyframes notiFadeIn {
+      to { opacity: 1; transform: translateY(0) scale(1);}
     }
     .notification.unread {
-      font-weight: 700;
-      background: #e9f8ed;
+      font-weight: bold;
+      background: #e3f3ff;
+      box-shadow: 0 0 20px #bae6fd77;
+      border-left: 8px solid #2563eb;
+    }
+    .notification:hover {
+      box-shadow: 0 12px 26px #e0f2fe99;
+      background: #f0faff;
     }
     .notification-icon {
-      font-size: 1.65rem;
+      font-size: 1.68rem;
       flex-shrink: 0;
-      width: 36px;
+      width: 42px;
       text-align: center;
-    }
-    .notification-content {
-      flex-grow: 1;
-      overflow-wrap: break-word;
+      color: #2563eb;
+      user-select: none;
+      transition: color .21s;
     }
     .notification-message {
-      margin: 0 0 6px 0;
-      color: #365f6b;
+      margin: 0 0 7px 0;
+      color: #174071;
+      font-weight: 450;
+      letter-spacing: .03em;
     }
     .notification-time {
-      font-size: 0.85rem;
-      color: #6a7a8c;
-      margin-top: 2px;
-      letter-spacing: 0.2px;
+      font-size: 0.94rem;
+      color: #4271ba;
+      margin-top: 3px;
+      letter-spacing: .17px;
+      font-weight: 400;
     }
     .notif-actions {
       display: flex;
-      gap: 10px;
-      margin-left: 16px;
+      gap: 13px;
+      margin-left: 14px;
+      user-select: none;
+      flex-shrink: 0;
     }
     button.action-btn {
-      background: #4CAF50; color: white; border: none;
-      border-radius: 8px; padding: 6px 14px;
-      cursor: pointer; font-size: 0.9rem; font-weight: 600;
-      transition: background 0.2s ease;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 16px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background .18s;
+      outline: none;
+      user-select: none;
     }
     button.action-btn:hover {
-      background: #45a049;
+      background: #174071;
     }
     button.clear-btn {
-      background: #e74c3c;
+      background: #e02469;
     }
     button.clear-btn:hover {
-      background: #c0392b;
+      background: #a60947;
     }
     .clear-all-btn {
-      background: #e74c3c;
-      border: none;
+      background: #e02469;
       color: white;
-      padding: 10px 22px;
-      border-radius: 12px;
-      font-size: 1rem;
-      cursor: pointer;
-      float: right;
-      margin-bottom: 20px;
-      transition: background 0.18s;
-      font-weight: 600;
+      border: none;
+      border-radius: 15px;
+      padding: 12px 35px;
+      font-size: 1.12rem;
+      font-weight: bold;
+      display: block;
+      margin: 38px auto 0 auto;
+      max-width: 250px;
+      transition: background .22s;
+      user-select: none;
+      letter-spacing: .07em;
+      box-shadow: 0 0 15px #f9c0ce33;
     }
     .clear-all-btn:hover {
-      background: #c0392b;
+      background: #a60947;
     }
     .no-notifications {
       text-align: center;
-      font-size: 1.3rem;
-      color: #5a7484;
-      margin-top: 60px;
+      font-size: 1.19rem;
+      color: #3575b8;
+      margin-top: 70px;
       font-weight: 500;
+      user-select: none;
+      letter-spacing: .05em;
+      animation: notiFadeIn .5s;
     }
-    @media (max-width: 700px) {
-      .notification {
-        font-size: 0.95rem;
-        padding: 14px 16px;
-      }
-      h1 { font-size: 2.2rem; }
+    @media (max-width: 800px){
+      h1{ font-size:2rem;}
+      .container{ max-width: 99vw;}
+      .notification, .notification-group{ font-size: 0.97rem;}
+      .group-title{ font-size:1.05rem;}
+      button.action-btn, .clear-all-btn{ font-size:0.98rem;}
     }
   </style>
 </head>
 <body>
+  <div id="notificationBadge" title="Unread Notifications">0</div>
   <div class="container">
     <h1>Notifications</h1>
     <p class="subtitle">Stay up to date with your tickets, queue, swaps, and reminders</p>
-    <button class="clear-all-btn" id="clearAllBtn" style="display:none;">Clear All Notifications</button>
-
     <div id="notificationsContainer"></div>
+    <button class="clear-all-btn" id="clearAllBtn" style="display:none;">Clear All Notifications</button>
     <div id="noNotifications" class="no-notifications" style="display:none;">
       You have no notifications right now.
     </div>
   </div>
-
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-
   <script>
+    // Firestore configuration & initialization
     const firebaseConfig = {
       apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
       authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -151,180 +229,181 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    function formatDate(ts) {
-      if(!ts) return '-';
-      const date = ts.toDate ? ts.toDate() : new Date(ts);
-      return date.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-    }
+    let notifications = [];
+    let user = null;
+    const notificationsContainer = document.getElementById('notificationsContainer');
+    const noNotificationsDiv = document.getElementById('noNotifications');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const notificationBadge = document.getElementById('notificationBadge');
 
+    function formatDate(ts) {
+      if(!ts) return '';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
     function getIcon(type) {
       switch(type) {
-        case 'cancel': return '❌';
-        case 'reminder': return '⏰';
+        case 'queue-update': return '📊';
+        case 'ticket': return '🎟️';
         case 'swap-request': return '🔄';
         case 'swap-confirm': return '✅';
+        case 'reminder': return '⏰';
+        case 'cancel': return '❌';
         case 'closed': return '🏁';
-        case 'new': return '🎟️';
-        case 'chat': return '💬';
         case 'system': return '🔔';
         default: return '🔔';
       }
     }
-
-    function groupNotifications(notifications) {
-      const groups = {};
-      const now = new Date();
-      notifications.forEach(n => {
+    function groupNotifications(notifs) {
+      const groups = {}, now = new Date();
+      notifs.forEach(n => {
         const dateObj = n.timestamp ? (n.timestamp.toDate ? n.timestamp.toDate() : new Date(n.timestamp)) : null;
         let key = 'Unknown Date';
-        if(dateObj) {
-          const diffMs = now - dateObj;
-          const diffDays = diffMs / (24*60*60*1000);
-          if(diffDays < 1 && dateObj.getDate() === now.getDate()) key = 'Today';
-          else if(diffDays < 2 && dateObj.getDate() === (now.getDate()-1)) key = 'Yesterday';
-          else {
-            key = dateObj.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric'});
-          }
+        if(dateObj){
+          const diffDays = (now-dateObj) / (24*60*60*1000);
+          if(diffDays<1 && dateObj.getDate()===now.getDate()) key='Today';
+          else if(diffDays<2 && dateObj.getDate()===(now.getDate()-1)) key='Yesterday';
+          else key = dateObj.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric'});
         }
-        if(!groups[key]) groups[key] = [];
+        if(!groups[key]) groups[key]=[];
         groups[key].push(n);
       });
       return groups;
     }
-
-    function createNotificationElement(n) {
-      const div = document.createElement('div');
-      div.className = 'notification' + (n.read ? '' : ' unread');
-      div.title = n.read ? 'Read' : 'Unread';
-
-      const iconDiv = document.createElement('div');
-      iconDiv.className = 'notification-icon';
-      iconDiv.textContent = getIcon(n.type);
-
-      const contentDiv = document.createElement('div');
-      contentDiv.className = 'notification-content';
-
-      const messageP = document.createElement('p');
-      messageP.className = 'notification-message';
-      messageP.textContent = n.message;
-
-      const timeP = document.createElement('p');
-      timeP.className = 'notification-time';
-      timeP.textContent = formatDate(n.timestamp);
-
-      contentDiv.appendChild(messageP);
-      contentDiv.appendChild(timeP);
-
-      const actionsDiv = document.createElement('div');
-      actionsDiv.className = 'notif-actions';
-
-      if(n.relatedTicketId) {
-        const viewBtn = document.createElement('button');
-        viewBtn.className = 'action-btn';
-        viewBtn.textContent = 'View Ticket';
-        viewBtn.onclick = () => {
-          window.location.href = `ticket_details.html?id=${n.relatedTicketId}`;
+    function createNotificationElement(n){
+      const div=document.createElement('div');
+      div.className='notification'+(n.read?'':' unread');
+      div.setAttribute('role','listitem');
+      div.setAttribute('tabindex','0');
+      div.dataset.id=n.id;
+      div.onclick=()=>toggleReadStatus(n.id, !n.read);
+      const iconDiv=document.createElement('div');
+      iconDiv.className='notification-icon';
+      iconDiv.textContent=getIcon(n.type);
+      const contentDiv=document.createElement('div');
+      const msgP=document.createElement('div');
+      msgP.className='notification-message';
+      msgP.textContent=n.message;
+      const timeP=document.createElement('div');
+      timeP.className='notification-time';
+      timeP.textContent=formatDate(n.timestamp);
+      contentDiv.appendChild(msgP); contentDiv.appendChild(timeP);
+      contentDiv.className='notification-content';
+      const actionsDiv=document.createElement('div');
+      actionsDiv.className='notif-actions';
+      if(n.relatedTicketId){
+        const viewBtn=document.createElement('button');
+        viewBtn.className='action-btn';
+        viewBtn.textContent="View Ticket";
+        viewBtn.onclick=e=>{
+          e.stopPropagation();
+          window.location.href=`ticket_details.html?id=${n.relatedTicketId}`;
         };
         actionsDiv.appendChild(viewBtn);
       }
-
-      const clearBtn = document.createElement('button');
-      clearBtn.className = 'action-btn clear-btn';
-      clearBtn.textContent = 'Clear';
-      clearBtn.onclick = () => {
-        db.collection('notifications').doc(n.id).delete().then(() => loadNotifications());
+      const clearBtn=document.createElement('button');
+      clearBtn.className='action-btn clear-btn';
+      clearBtn.textContent='Clear';
+      clearBtn.onclick=e=>{
+        e.stopPropagation();
+        clearNotification(n.id);
       };
       actionsDiv.appendChild(clearBtn);
-
       div.appendChild(iconDiv);
       div.appendChild(contentDiv);
       div.appendChild(actionsDiv);
-
       return div;
     }
-
-    function renderNotificationGroups(groups) {
-      const container = document.getElementById('notificationsContainer');
-      container.innerHTML = '';
-      const groupKeys = Object.keys(groups).sort((a,b) => {
-        if(a === 'Today') return -1;
-        if(b === 'Today') return 1;
-        if(a === 'Yesterday') return -1;
-        if(b === 'Yesterday') return 1;
-        return new Date(b) - new Date(a);
+    function renderNotificationGroups(groups){
+      notificationsContainer.innerHTML='';
+      const groupKeys=Object.keys(groups).sort((a,b)=>{
+        if(a==='Today')return -1;if(b==='Today')return 1;
+        if(a==='Yesterday')return -1;if(b==='Yesterday')return 1;
+        return new Date(b)-new Date(a);
       });
-
-      groupKeys.forEach(gk => {
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'notification-group';
-
-        const title = document.createElement('div');
-        title.className = 'group-title';
-        title.textContent = gk;
+      if(groupKeys.length===0){
+        noNotificationsDiv.style.display='block';clearAllBtn.style.display='none';notificationBadge.style.display='none';
+      }else{
+        noNotificationsDiv.style.display='none';clearAllBtn.style.display='inline-block';
+        notificationBadge.style.display=(notifications.filter(n=>!n.read).length>0)?'inline-flex':'none';
+        notificationBadge.textContent=notifications.filter(n=>!n.read).length;
+      }
+      groupKeys.forEach(gk=>{
+        const groupDiv=document.createElement('div');
+        groupDiv.className='notification-group';
+        const title=document.createElement('div');
+        title.className='group-title';
+        title.textContent=gk;
         groupDiv.appendChild(title);
-
-        groups[gk].forEach(n => {
-          const notifElem = createNotificationElement(n);
-          groupDiv.appendChild(notifElem);
-        });
-
-        container.appendChild(groupDiv);
+        groups[gk].forEach(n=>groupDiv.appendChild(createNotificationElement(n)));
+        notificationsContainer.appendChild(groupDiv);
       });
     }
-
-    async function loadNotifications() {
-      const user = auth.currentUser;
-      if(!user) {
-        document.getElementById('noNotifications').style.display = 'block';
-        return;
-      }
-
-      document.getElementById('noNotifications').style.display = 'none';
-
-      const snapshot = await db.collection('notifications')
-        .where('userId','==',user.uid)
-        .orderBy('timestamp','desc')
-        .get();
-
-      const notifications = [];
-      snapshot.forEach(doc => {
-        notifications.push({ id: doc.id, ...doc.data() });
-      });
-
-      if(notifications.length === 0) {
-        document.getElementById('notificationsContainer').innerHTML = '';
-        document.getElementById('noNotifications').style.display = 'block';
-        document.getElementById('clearAllBtn').style.display = 'none';
-      } else {
-        document.getElementById('noNotifications').style.display = 'none';
-        document.getElementById('clearAllBtn').style.display = 'inline-block';
-        const grouped = groupNotifications(notifications);
-        renderNotificationGroups(grouped);
-      }
+    async function loadNotifications(){
+      if(!user)return;
+      notifications=[];
+      const snapshot=await db.collection('notifications').where('userId','==',user.uid).orderBy('timestamp','desc').get();
+      snapshot.forEach(doc=>{notifications.push({id:doc.id,...doc.data()});});
+      renderNotificationGroups(groupNotifications(notifications));
+      updateBadge();
     }
-
-    document.getElementById('clearAllBtn').onclick = async function() {
-      if(!confirm("Clear all notifications? This cannot be undone.")) return;
-      const user = auth.currentUser;
-      if(!user) return;
-
-      const snapshot = await db.collection('notifications')
-        .where('userId', '==', user.uid).get();
-
-      const batch = db.batch();
-      snapshot.forEach(doc => batch.delete(doc.ref));
-
+    function updateBadge(){
+      const count=notifications.filter(n=>!n.read).length;
+      notificationBadge.textContent=count;
+      notificationBadge.style.display=(count>0)?'inline-flex':'none';
+    }
+    async function toggleReadStatus(id,read){
+      await db.collection('notifications').doc(id).update({read});
+      notifications.find(n=>n.id===id).read=read;
+      renderNotificationGroups(groupNotifications(notifications));
+      updateBadge();
+    }
+    async function clearNotification(id){
+      await db.collection('notifications').doc(id).delete();
+      notifications=notifications.filter(n=>n.id!==id);
+      renderNotificationGroups(groupNotifications(notifications));
+      updateBadge();
+    }
+    async function clearAllNotifications(){
+      if(!confirm("Clear all notifications? This cannot be undone."))return;
+      const snapshot=await db.collection('notifications').where('userId','==',user.uid).get();
+      const batch=db.batch();
+      snapshot.forEach(doc=>batch.delete(doc.ref));
       await batch.commit();
+      notifications=[];
+      renderNotificationGroups(groupNotifications(notifications));
+      updateBadge();
+    }
+    clearAllBtn.addEventListener('click',clearAllNotifications);
+    notificationBadge.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+    auth.onAuthStateChanged(userState=>{
+      if(!userState){window.location.href='index.html';return;}
+      user=userState;
       loadNotifications();
-    };
-
-    auth.onAuthStateChanged(user => {
-      if(user) {
-        loadNotifications();
-      } else {
-        window.location.href = 'index.html';
-      }
     });
+    // Sound popup for new unread notification
+    function playNotificationSound(){
+      try{
+        const ctx=new AudioContext();
+        const o=ctx.createOscillator();
+        const g=ctx.createGain();
+        o.type='triangle';o.frequency.value=550;
+        o.connect(g);g.connect(ctx.destination);
+        o.start();g.gain.exponentialRampToValueAtTime(0.00001,ctx.currentTime+0.15);
+        setTimeout(()=>ctx.close(),220);
+      }catch{}
+    }
+    let lastNotifCount=0;
+    setInterval(async()=>{
+      if(!user)return;
+      const snap=await db.collection('notifications').where('userId','==',user.uid).where('read','==',false).get();
+      if(snap.size>lastNotifCount){
+        playNotificationSound();
+        lastNotifCount=snap.size;
+      }else{
+        lastNotifCount=snap.size;
+      }
+    },13000);
   </script>
 </body>
 </html>

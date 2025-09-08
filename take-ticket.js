@@ -34,8 +34,6 @@ ticketForm.addEventListener('submit', async function(e) {
   const appointmentDate = ticketForm.apptDate.value;
   const appointmentTime = ticketForm.apptTime.value;
   const symptoms = ticketForm.symptoms.value.trim();
-  const medicalId = ticketForm.medicalId.value.trim();
-  const emergencyContact = ticketForm.emergencyContact.value.trim();
   const termsAccepted = ticketForm.terms.checked;
 
   if (!fullName || !mobile || !gender || !age || !ticketType || !appointmentDate || !appointmentTime || !termsAccepted) {
@@ -52,13 +50,14 @@ ticketForm.addEventListener('submit', async function(e) {
 
     const ticketData = {
       userId: user.uid,
-      fullName, mobile, gender, age,
+      fullName,
+      mobile,
+      gender,
+      age,
       ticketType,
       appointmentDate,
       appointmentTime,
       symptoms,
-      medicalId,
-      emergencyContact,
       status: ticketType === 'emergency' ? 'Pending' : 'Open',
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     };

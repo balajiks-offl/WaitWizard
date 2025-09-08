@@ -5,169 +5,29 @@
   <title>History - WaitWizard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      background: #f5f7fa;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 40px 0;
-    }
-    .container {
-      width: 95%;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding-bottom: 40px;
-      position: relative;
-      box-sizing: border-box;
-    }
-    h1 {
-      color: #365f6b;
-      font-size: 2.8rem;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    p.subtitle {
-      color: #5a7484;
-      text-align: center;
-      font-size: 1.15rem;
-      margin-bottom: 30px;
-    }
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 20px;
-    }
-    table {
-      width: 100%;
-      min-width: 800px;
-      border-collapse: separate;
-      border-spacing: 0;
-      border-radius: 18px 18px 0 0;
-      background: #fff;
-      box-shadow: 0 8px 28px rgba(40,60,120,0.10);
-      overflow: hidden;
-      margin-bottom: 0;
-    }
-    thead th {
-      background: #f5f7fa;
-      color: #365f6b;
-      font-weight: bold;
-      font-size: 1.05rem;
-      padding: 14px 12px;
-      border-bottom: 2px solid #e9ecf2;
-      letter-spacing: 0.5px;
-      text-align: left;
-      white-space: nowrap;
-    }
-    tbody td {
-      padding: 13px 12px;
-      font-size: 1.02rem;
-      font-weight: 500;
-      color: #355f6b;
-      border-bottom: 1px solid #f2f2f2;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-    tbody .loading-row td {
-      text-align: center;
-      font-size: 1.15rem;
-      color: #5a7484;
-      font-weight: 500;
-      padding: 30px 0;
-    }
-    .ticket-id {
-      font-weight: 700;
-      font-family: monospace;
-      color: #365f6b;
-      min-width: 70px;
-    }
-    .action-btn {
-      background: #4CAF50;
-      border: none;
-      color: white;
-      padding: 6px 14px;
-      font-size: 0.95rem;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .action-btn:hover {
-      background: #45a049;
-    }
-    .no-history {
-      text-align: center;
-      color: #5a7484;
-      font-size: 1.2rem;
-      margin-top: 40px;
-      display: none;
-    }
-    #modalOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    #modalOverlay.show {
-      display: flex;
-      opacity: 1;
-    }
-    #ticketDetailsModal {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 22px rgba(60,80,120,0.25);
-      padding: 28px 22px;
-      max-width: 450px;
-      width: 90%;
-      transform: translateY(-40px);
-      opacity: 0;
-      transition: all 0.3s ease;
-    }
-    #modalOverlay.show #ticketDetailsModal {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    #ticketDetailsModal h3 {
-      margin-top: 0;
-      margin-bottom: 20px;
-      color: #365f6b;
-    }
-    #ticketDetailsModal div {
-      margin-bottom: 12px;
-      color: #365f6b;
-      font-size: 1.05rem;
-    }
-    #ticketDetailsModal button.close-btn {
-      background: #e74c3c;
-      border: none;
-      color: white;
-      padding: 10px 22px;
-      cursor: pointer;
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: background 0.3s ease;
-      margin-top: 10px;
-      display: block;
-      width: 100%;
-    }
-    #ticketDetailsModal button.close-btn:hover {
-      background: #c0392b;
-    }
-    @media (max-width: 900px) {
-      h1 { font-size: 2.1rem;}
-      .table-responsive { min-width: 375px; }
-      table { min-width: 600px; }
-    }
+    body { background: #f5f7fa; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 40px 0; }
+    .container { width: 95%; max-width: 1100px; margin: 0 auto; padding-bottom: 40px; position: relative; box-sizing: border-box; }
+    h1 { color: #365f6b; font-size: 2.8rem; font-weight: bold; text-align: center; margin-bottom: 8px; }
+    p.subtitle { color: #5a7484; text-align: center; font-size: 1.15rem; margin-bottom: 30px; }
+    .table-responsive { width:100%; overflow-x:auto; margin-top: 20px; }
+    table { width: 100%; min-width: 800px; border-collapse: separate; border-spacing: 0; border-radius: 18px 18px 0 0; background: #fff; box-shadow: 0 8px 28px rgba(40,60,120,0.10); overflow: hidden; margin-bottom: 0;}
+    thead th { background: #f5f7fa; color: #365f6b; font-weight: bold; font-size: 1.05rem; padding: 14px 12px; border-bottom: 2px solid #e9ecf2; letter-spacing: 0.5px; text-align: left; white-space: nowrap;}
+    tbody td { padding: 13px 12px; font-size: 1.02rem; font-weight: 500; color: #355f6b; border-bottom: 1px solid #f2f2f2; vertical-align: middle; white-space: nowrap;}
+    tbody tr:last-child td { border-bottom: none; }
+    tbody .loading-row td { text-align: center; font-size: 1.15rem; color: #5a7484; font-weight: 500; padding: 30px 0;}
+    .ticket-id { font-weight: 700; font-family: monospace; color: #365f6b; min-width: 70px;}
+    .action-btn { background: #4CAF50; border: none; color: white; padding: 6px 14px; font-size: 0.95rem; border-radius: 5px; cursor: pointer; transition: background 0.3s ease;}
+    .action-btn:hover { background: #45a049; }
+    .no-history { text-align: center; color: #5a7484; font-size: 1.2rem; margin-top: 40px; display: none; }
+    #modalOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease;}
+    #modalOverlay.show { display: flex; opacity: 1; }
+    #ticketDetailsModal { background: #fff; border-radius: 16px; box-shadow: 0 6px 22px rgba(60,80,120,0.25); padding: 28px 22px; max-width: 450px; width: 90%; transform: translateY(-40px); opacity: 0; transition: all 0.3s ease;}
+    #modalOverlay.show #ticketDetailsModal { transform: translateY(0); opacity: 1; }
+    #ticketDetailsModal h3 { margin-top: 0; margin-bottom: 20px; color: #365f6b; }
+    #ticketDetailsModal div { margin-bottom: 12px; color: #365f6b; font-size: 1.05rem;}
+    #ticketDetailsModal button.close-btn { background: #e74c3c; border: none; color: white; padding: 10px 22px; cursor: pointer; border-radius: 6px; font-size: 1rem; transition: background 0.3s ease; margin-top: 10px; display:block; width:100%;}
+    #ticketDetailsModal button.close-btn:hover { background: #c0392b;}
+    @media (max-width: 900px) { h1{font-size:2.1rem;} .table-responsive{min-width:375px;} table{min-width:600px;} }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
@@ -176,7 +36,7 @@
 <body>
   <div class="container">
     <h1>History</h1>
-    <p class="subtitle">View your past tickets (Closed, Cancelled, Swapped)</p>
+    <p class="subtitle">View your full ticket history (Open, Closed, Cancelled, Swapped and more)</p>
     <div class="table-responsive">
       <table id="historyTable">
         <thead>
@@ -194,9 +54,7 @@
         </tbody>
       </table>
     </div>
-    <div id="noHistory" class="no-history">
-      No past ticket history found.
-    </div>
+    <div id="noHistory" class="no-history">No ticket history found.</div>
   </div>
   <div id="modalOverlay">
     <div id="ticketDetailsModal">
@@ -206,6 +64,7 @@
     </div>
   </div>
   <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
       authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -220,9 +79,10 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // Hash a string to a 5-digit ticket number
     function ticketIdToFiveDigit(ticketId) {
       let hash = 0;
-      for(let i=0; i<ticketId.length; i++){
+      for (let i = 0; i < ticketId.length; i++) {
         hash = ((hash << 5) - hash) + ticketId.charCodeAt(i);
         hash |= 0;
       }
@@ -233,7 +93,7 @@
     function renderHistory(tickets) {
       const historyBody = document.getElementById('historyBody');
       const noHistory = document.getElementById('noHistory');
-      if (tickets.length === 0) {
+      if (!tickets.length) {
         historyBody.innerHTML = '';
         historyBody.style.display = 'none';
         noHistory.style.display = 'block';
@@ -257,37 +117,31 @@
       });
     }
 
-    async function fetchHistory(userId) {
-      try {
-        const statuses = ["Closed", "Cancelled", "Swapped"];
-        const ticketsMap = new Map();
-
-        for (const status of statuses) {
-          const snapshot = await db.collection("tickets")
-            .where("userId", "==", userId)
-            .where("status", "==", status)
-            .get();
+    // Real-time Firestore listener for full automation
+    let unsubscribe = null;
+    function fetchHistory(userId) {
+      // Remove previous listener if any
+      if (unsubscribe) unsubscribe();
+      // Listen to ALL tickets for this user, no status filter!
+      unsubscribe = db.collection("tickets")
+        .where("userId", "==", userId)
+        .onSnapshot(snapshot => {
+          const tickets = [];
           snapshot.forEach(doc => {
-            if (!ticketsMap.has(doc.id)) {
-              ticketsMap.set(doc.id, { id: doc.id, ...doc.data() });
-            }
+            tickets.push({ id: doc.id, ...doc.data() });
           });
-        }
-
-        const tickets = Array.from(ticketsMap.values());
-        // Sort tickets by appointmentDate descending if available
-        tickets.sort((a,b) => {
-          if (!a.appointmentDate) return 1;
-          if (!b.appointmentDate) return -1;
-          return new Date(b.appointmentDate) - new Date(a.appointmentDate);
+          // Sort by appointmentDate descending
+          tickets.sort((a, b) => {
+            if (!a.appointmentDate) return 1;
+            if (!b.appointmentDate) return -1;
+            return new Date(b.appointmentDate) - new Date(a.appointmentDate);
+          });
+          renderHistory(tickets);
+        }, error => {
+          const historyBody = document.getElementById('historyBody');
+          historyBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: red;">Failed to load history.</td></tr>`;
+          console.error(error);
         });
-
-        renderHistory(tickets);
-      } catch (error) {
-        console.error("Error fetching history: ", error);
-        const historyBody = document.getElementById('historyBody');
-        historyBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: red;">Failed to load history.</td></tr>`;
-      }
     }
 
     async function viewTicketDetails(ticketId) {
@@ -318,11 +172,11 @@
       }
     }
 
-    function closeModal(){
-      const modalOverlay = document.getElementById('modalOverlay');
-      modalOverlay.classList.remove('show');
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('show');
     }
 
+    // Auth state: setup real-time listener after login
     auth.onAuthStateChanged(user => {
       if (user) {
         fetchHistory(user.uid);
