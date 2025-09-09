@@ -139,25 +139,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      try {
-        const docSnap = await db.collection("users").doc(user.uid).get();
-        if (docSnap.exists) {
-          const d = docSnap.data();
-          const displayName = (d.firstName || d.lastName)
-            ? `${d.firstName || ''} ${d.lastName || ''}`.trim()
-            : user.email.split('@')[0];
-          document.getElementById('username').textContent = displayName;
-        } else {
-          document.getElementById('username').textContent = user.email.split('@')[0];
-        }
-      } catch {
-        document.getElementById('username').textContent = user.email.split('@')[0];
+  if (user) {
+    try {
+      const docSnap = await db.collection("users").doc(user.uid).get();
+      if (docSnap.exists) {
+        const d = docSnap.data();
+        // Show lastName first, then firstName, no fallback to email prefix
+        const displayName = `${d.firstname} ${d.lastname}`.trim();
+        document.getElementById('username').textContent = displayName;
+      } else {
+        // No profile found - you can choose what to do here, e.g., clear username
+        document.getElementById('username').textContent = '';
       }
-    } else {
-      window.location.href = "index.html";
+    } catch {
+      document.getElementById('username').textContent = '';
     }
-  });
+  } else {
+    window.location.href = "index.html";
+  }
+});
 
   const dashboardMain = document.getElementById('dashboardMain');
   document.querySelectorAll('.card[data-link]').forEach(card => {

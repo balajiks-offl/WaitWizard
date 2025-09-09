@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notifications</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #e6f2e6; }
+    h2 { color: #2d662d; }
+    #notifications { max-width: 600px; margin-top: 20px; }
+    .notif { background: #ccffcc; margin-bottom: 10px; padding: 10px; border-radius: 5px; }
+    .timestamp { font-size: 0.8em; color: #555; }
+  </style>
+</head>
+<body>
+  <h2>Your Notifications</h2>
+  <div id="notifications"><p>Waiting for notifications...</p></div>
+  <script>
+    // Fully automated: just set the userId here to 'user1'
+    const userId = 'user1';
+    const ws = new WebSocket(`ws://${location.hostname}:3000/?userId=${userId}`);
+
+    const notificationsDiv = document.getElementById('notifications');
+    notificationsDiv.innerHTML = '';
+
+    ws.onopen = () => {
+      notificationsDiv.innerHTML = '<p>Connected to notification server!</p>';
+    };
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const notifElem = document.createElement('div');
+      notifElem.className = 'notif';
+      notifElem.innerHTML = `<strong>${data.message}</strong><div class="timestamp">${new Date(data.timestamp).toLocaleString()}</div>`;
+      notificationsDiv.prepend(notifElem);
+    };
+    ws.onclose = () => {
+      const closedMsg = document.createElement('div');
+      closedMsg.textContent = 'Connection to notification server closed.';
+      notificationsDiv.appendChild(closedMsg);
+    };
+  </script>
+</body>
+</html>
