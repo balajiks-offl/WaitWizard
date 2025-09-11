@@ -2,42 +2,306 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Notifications</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #e6f2e6; }
-    h2 { color: #2d662d; }
-    #notifications { max-width: 600px; margin-top: 20px; }
-    .notif { background: #ccffcc; margin-bottom: 10px; padding: 10px; border-radius: 5px; }
-    .timestamp { font-size: 0.8em; color: #555; }
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #365f6b;
+      background: linear-gradient(120deg, #eaf6fb 0%, #fdf6e3 100%);
+    }
+    h2 {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 2.4rem;
+      letter-spacing: 0.02em;
+      color: #365f6b;
+      font-weight: 700;
+      margin-bottom: 2.1rem;
+      /* no background, no box, clean and classic */
+    }
+    #login {
+      text-align: center;
+      margin-top: 2.7rem;
+    }
+    #notificationList {
+      max-width: 760px;
+      margin: 0 auto 50px auto;
+      padding: 0 8px 40px 8px;
+    }
+    .notification-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px 26px 13px 26px;
+      margin-bottom: 27px;
+      box-shadow: 0 5px 24px rgba(60,80,120,0.12), 0 1.5px 7px #eaf6fb;
+      transition: box-shadow 0.23s, transform 0.23s;
+      animation: fadeInSlide 0.65s cubic-bezier(.49,1.6,.55,1.05);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+    .notification-card:hover {
+      box-shadow: 0 12px 44px rgba(60,80,120,0.18), 0 2.5px 18px #c9f5e7;
+      transform: translateY(-3px) scale(1.017);
+    }
+    @keyframes fadeInSlide {
+      from { opacity: 0; transform: translateX(36px);}
+      to { opacity: 1; transform: translateX(0);}
+    }
+    .notification-message {
+      font-size: 1.22rem;
+      font-weight: 600;
+      color: #356c5d;
+      margin-bottom: 7px;
+      word-break: break-word;
+    }
+    .notification-time {
+      font-size: 1.01rem;
+      color: #7eacb4;
+      text-align: right;
+      padding-right: 2px;
+      margin-bottom: 2px;
+    }
+    .no-notifications {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 40px;
+      color: #888;
+    }
+    .remove-btn {
+      position: absolute;
+      top: 10px;
+      right: 18px;
+      background: linear-gradient(90deg,#ff7c7c,#ffe387 120%);
+      border: none;
+      color: #31414c;
+      padding: 4px 16px;
+      border-radius: 7px;
+      font-size: 1.03rem;
+      cursor: pointer;
+      box-shadow: 0 1px 7px rgba(255,115,51,0.07);
+      font-weight: 700;
+      opacity: 0.67;
+      transition: opacity 0.21s, box-shadow 0.17s, transform 0.14s;
+      z-index: 3;
+    }
+    .remove-btn:hover {
+      opacity: 1;
+      background: linear-gradient(90deg,#ffe387,#ff7c7c 120%);
+      box-shadow: 0 2px 18px #fccfc7;
+      transform: scale(1.1);
+    }
+    /* Custom modal */
+    #confirmModalBG {
+      display: none;
+      position: fixed; z-index: 9999; inset: 0; background: rgba(44,78,112,0.10);
+      justify-content: center; align-items: center;
+      width: 100vw; height: 100vh;
+    }
+    #confirmModal {
+      background: #fff;
+      padding: 36px 36px 28px 36px;
+      border-radius: 18px;
+      min-width: 280px;
+      max-width: 98vw;
+      box-shadow: 0 7px 32px #c9e1ed;
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #365f6b;
+      animation: fadeInModal 0.34s;
+    }
+    @keyframes fadeInModal {
+      from { opacity: 0; transform: translateY(70px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .confirm-actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+    }
+    .modal-btn {
+      padding: 10px 42px;
+      font-size: 1.07rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(90deg,#dceee8 0%,#b3fff4 100%);
+      color: #356c5d;
+      box-shadow: 0 2px 16px #eef8e3;
+      transition: background 0.17s, box-shadow 0.17s;
+    }
+    .modal-btn:hover {
+      background: linear-gradient(90deg,#bbe1e3 0%,#e5f3ee 100%);
+      color: #245f39;
+    }
+    .danger-btn {
+      background: linear-gradient(90deg,#ffa67b 0%,#fc5864 100%);
+      color: #333;
+    }
+    .danger-btn:hover {
+      background: linear-gradient(90deg,#fc5864 0%,#ffa67b 100%);
+      color: #fff;
+    }
+    @media (max-width: 600px) {
+      h2 { font-size: 1.5rem; margin-bottom: 1.2rem; padding:0;}
+      #notificationList { padding: 0 2px; }
+      .notification-card { padding: 9px 7px 8px 13px; }
+      .notification-message { font-size: 1.02rem;}
+      .remove-btn { padding: 2px 7px; font-size: 0.92rem;}
+      #confirmModal { padding:15px 7px 18px 7px; font-size:1rem;}
+      .modal-btn {padding: 9px 15px;}
+    }
   </style>
 </head>
 <body>
-  <h2>Your Notifications</h2>
-  <div id="notifications"><p>Waiting for notifications...</p></div>
+  <h2>Notifications</h2>
+  <div id="notificationList">Loading...</div>
+  <div id="login" style="display:none">
+    <h3>Sign in to view notifications</h3>
+    <input id="email" type="email" placeholder="Email" autocomplete="email"/>
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password"/>
+    <button onclick="login()">Sign In</button>
+    <p id="loginError" style="color:red;"></p>
+  </div>
+  <!-- Custom confirmation modal -->
+  <div id="confirmModalBG">
+    <div id="confirmModal">
+      <div id="confirmModalMsg"></div>
+      <div class="confirm-actions">
+        <button id="confirmOkBtn" class="modal-btn danger-btn">Yes, Remove</button>
+        <button id="confirmCancelBtn" class="modal-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script>
-    // Fully automated: just set the userId here to 'user1'
-    const userId = 'user1';
-    const ws = new WebSocket(`ws://${location.hostname}:3000/?userId=${userId}`);
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+      authDomain: "digitalqueuesystem.firebaseapp.com",
+      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+      projectId: "digitalqueuesystem",
+      storageBucket: "digitalqueuesystem.appspot.com",
+      messagingSenderId: "934641075368",
+      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+      measurementId: "G-TJESH8R15H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
 
-    const notificationsDiv = document.getElementById('notifications');
-    notificationsDiv.innerHTML = '';
+    // --- UI HOOKS ---
+    const notificationList = document.getElementById("notificationList");
+    const loginDiv = document.getElementById("login");
+    const loginError = document.getElementById("loginError");
 
-    ws.onopen = () => {
-      notificationsDiv.innerHTML = '<p>Connected to notification server!</p>';
+    // --- Custom Confirmation Modal Logic ---
+    let confirmAction = null;
+    function showConfirmModal(message, onConfirm) {
+      document.getElementById("confirmModalMsg").innerText = message;
+      document.getElementById("confirmModalBG").style.display = "flex";
+      confirmAction = onConfirm;
+    }
+    document.getElementById("confirmOkBtn").onclick = function() {
+      document.getElementById("confirmModalBG").style.display = "none";
+      if (typeof confirmAction === "function") confirmAction();
     };
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const notifElem = document.createElement('div');
-      notifElem.className = 'notif';
-      notifElem.innerHTML = `<strong>${data.message}</strong><div class="timestamp">${new Date(data.timestamp).toLocaleString()}</div>`;
-      notificationsDiv.prepend(notifElem);
+    document.getElementById("confirmCancelBtn").onclick = function() {
+      document.getElementById("confirmModalBG").style.display = "none";
     };
-    ws.onclose = () => {
-      const closedMsg = document.createElement('div');
-      closedMsg.textContent = 'Connection to notification server closed.';
-      notificationsDiv.appendChild(closedMsg);
-    };
+
+    // --- Stylish Remove ---
+    async function removeNotification(docId) {
+      showConfirmModal("Do you really want to remove this notification?", async () => {
+        await db.collection("notifications").doc(docId).delete();
+      });
+    }
+
+    // --- RENDER NOTIFICATIONS ---
+    function renderNotifications(user) {
+      db.collection("notifications")
+        .orderBy("timestamp", "desc")
+        .onSnapshot(snapshot => {
+          notificationList.innerHTML = "";
+          if(snapshot.empty) {
+            notificationList.innerHTML = "<div class='no-notifications'>No notifications found.</div>";
+            return;
+          }
+          snapshot.forEach(doc => {
+            const data = doc.data();
+
+            let userName = "";
+            if (data.userName && typeof data.userName === "string") {
+              userName = data.userName;
+            } else if (data.userEmail) {
+              userName = data.userEmail.split("@")[0].replace(/\./g," ").toUpperCase();
+            } else {
+              userName = "Unknown User";
+            }
+
+            let msg = "";
+            if (data.type === "cancellation") {
+              msg = `Ticket canceled by <b>${userName}</b>${data.bookingTime ? ` for <b>${data.bookingTime}</b>` : ''}.`;
+            } else if (data.type === "booking") {
+              msg = `Ticket booked by <b>${userName}</b>` +
+                (data.bookingTime ? ` for <b>${data.bookingTime}</b>` : '') + ".";
+            } else if (data.type === "swap") {
+              msg = `Ticket swapped by <b>${userName}</b>.`;
+            } else {
+              msg = data.message || "";
+            }
+            const div = document.createElement("div");
+            div.className = "notification-card";
+            div.innerHTML = `
+              <button class="remove-btn" title="Remove" onclick="removeNotification('${doc.id}')">&times; Remove</button>
+              <div class="notification-message">${msg}</div>
+              <div class="notification-time">
+                ${data.timestamp ? data.timestamp.toDate().toLocaleString() : "Unknown time"}
+              </div>
+            `;
+            notificationList.appendChild(div);
+          });
+        }, error => {
+          console.error("Error loading notifications:", error);
+          notificationList.innerHTML = "<div class='no-notifications'>Unable to load notifications.</div>";
+        });
+    }
+
+    // --- AUTH HANDLING ---
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginDiv.style.display = "none";
+        notificationList.innerHTML = "Loading...";
+        renderNotifications(user);
+      } else {
+        notificationList.innerHTML = "";
+        loginDiv.style.display = "";
+      }
+    });
+
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          loginError.textContent = "";
+        })
+        .catch(err => {
+          loginError.textContent = err.message;
+        });
+    }
+
+    // Expose for inline onclick
+    window.removeNotification = removeNotification;
   </script>
 </body>
 </html>
