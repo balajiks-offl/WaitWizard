@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Tickets - WaitWizard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #eaf6fb 0%, #fdf6e3 100%);
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #2c3e50;
+      min-height: 100vh;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: #365f6b;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #5a7484;
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .ticket-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(60, 80, 120, 0.1);
+      border-left: 4px solid #4CAF50;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .ticket-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(60, 80, 120, 0.15);
+    }
+
+    .ticket-card.emergency {
+      border-left-color: #e74c3c;
+    }
+
+    .ticket-card.pending {
+      border-left-color: #f39c12;
+    }
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .ticket-id {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #365f6b;
+    }
+
+    .ticket-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-open {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-waiting {
+      background: #cce5ff;
+      color: #004085;
+    }
+
+    .status-closed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .ticket-info {
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #365f6b;
+    }
+
+    .info-value {
+      color: #5a7484;
+    }
+
+    .ticket-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-cancel {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      background: #c0392b;
+    }
+
+    .btn-track {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-track:hover {
+      background: #2980b9;
+    }
+
+    .no-tickets {
+      text-align: center;
+      padding: 60px 20px;
+      color: #5a7484;
+    }
+
+    .no-tickets h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #5a7484;
+      font-size: 1.1rem;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .modal h3 {
+      color: #365f6b;
+      margin-bottom: 20px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .modal-btn-confirm {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .modal-btn-confirm:hover {
+      background: #c0392b;
+    }
+
+    .modal-btn-cancel {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .modal-btn-cancel:hover {
+      background: #7f8c8d;
+    }
+
+    @media (max-width: 768px) {
+      .tickets-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .ticket-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>My Active Tickets</h1>
+    <p>View and manage your current ticket bookings</p>
+  </div>
+
+  <div class="container">
+    <div id="ticketsContainer" class="loading">
+      Loading your tickets...
+    </div>
+  </div>
+
+  <!-- Cancel Confirmation Modal -->
+  <div id="cancelModal" class="modal">
+    <div class="modal-content">
+      <h3>Cancel Ticket</h3>
+      <p>Are you sure you want to cancel this ticket? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button id="confirmCancel" class="modal-btn modal-btn-confirm">Yes, Cancel</button>
+        <button id="cancelCancel" class="modal-btn modal-btn-cancel">No, Keep</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+      authDomain: "digitalqueuesystem.firebaseapp.com",
+      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+      projectId: "digitalqueuesystem",
+      storageBucket: "digitalqueuesystem.appspot.com",
+      messagingSenderId: "934641075368",
+      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+      measurementId: "G-TJESH8R15H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let ticketToCancel = null;
+
+    // Generate 5-digit ticket ID from document ID
+    function generateTicketId(docId) {
+      let hash = 0;
+      for (let i = 0; i < docId.length; i++) {
+        hash = ((hash << 5) - hash) + docId.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash % 100000).toString().padStart(5, '0');
+    }
+
+    // Format date for display
+    function formatDate(dateString) {
+      if (!dateString) return 'Not set';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    // Format time for display
+    function formatTime(timeString) {
+      if (!timeString) return 'Not set';
+      const [hours, minutes] = timeString.split(':');
+      const date = new Date();
+      date.setHours(parseInt(hours), parseInt(minutes));
+      return date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+
+    // Render tickets
+    function renderTickets(tickets) {
+      const container = document.getElementById('ticketsContainer');
+      
+      if (tickets.length === 0) {
+        container.innerHTML = `
+          <div class="no-tickets">
+            <h3>No Active Tickets</h3>
+            <p>You don't have any active tickets at the moment.</p>
+            <p>Book a new appointment to get started!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const ticketsHTML = tickets.map(ticket => {
+        const ticketId = generateTicketId(ticket.id);
+        const statusClass = `status-${ticket.status.toLowerCase().replace(' ', '-')}`;
+        const cardClass = ticket.ticketType === 'emergency' ? 'ticket-card emergency' : 
+                          ticket.status === 'Pending' ? 'ticket-card pending' : 'ticket-card';
+
+        return `
+          <div class="${cardClass}">
+            <div class="ticket-header">
+              <div class="ticket-id">#${ticketId}</div>
+              <div class="ticket-status ${statusClass}">${ticket.status}</div>
+            </div>
+            <div class="ticket-info">
+              <div class="info-row">
+                <span class="info-label">Name:</span>
+                <span class="info-value">${ticket.fullName || 'Not provided'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Date:</span>
+                <span class="info-value">${formatDate(ticket.appointmentDate)}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Time:</span>
+                <span class="info-value">${formatTime(ticket.appointmentTime)}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Type:</span>
+                <span class="info-value">${ticket.ticketType || 'Normal'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Mobile:</span>
+                <span class="info-value">${ticket.mobile || 'Not provided'}</span>
+              </div>
+              ${ticket.symptoms ? `
+                <div class="info-row">
+                  <span class="info-label">Symptoms:</span>
+                  <span class="info-value">${ticket.symptoms}</span>
+                </div>
+              ` : ''}
+            </div>
+            <div class="ticket-actions">
+              ${ticket.status === 'Open' || ticket.status === 'Pending' ? 
+                `<button class="btn btn-cancel" onclick="showCancelModal('${ticket.id}')">Cancel Ticket</button>` : 
+                ''
+              }
+              <button class="btn btn-track" onclick="trackTicket('${ticket.id}')">View Details</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="tickets-grid">${ticketsHTML}</div>`;
+    }
+
+    // Load user tickets with real-time updates
+    function loadUserTickets() {
+      if (!currentUser) return;
+
+      // Real-time listener for active tickets
+      db.collection("tickets")
+        .where("userId", "==", currentUser.uid)
+        .where("status", "in", ["Open", "Pending", "Waiting", "Not Arrived"])
+        .orderBy("timestamp", "desc")
+        .onSnapshot(snapshot => {
+          const tickets = [];
+          snapshot.forEach(doc => {
+            tickets.push({ id: doc.id, ...doc.data() });
+          });
+          renderTickets(tickets);
+        }, error => {
+          console.error("Error loading tickets:", error);
+          document.getElementById('ticketsContainer').innerHTML = `
+            <div class="no-tickets">
+              <h3>Error Loading Tickets</h3>
+              <p>Unable to load your tickets. Please try refreshing the page.</p>
+            </div>
+          `;
+        });
+    }
+
+    // Show cancel confirmation modal
+    window.showCancelModal = function(ticketId) {
+      ticketToCancel = ticketId;
+      document.getElementById('cancelModal').style.display = 'block';
+    };
+
+    // Hide cancel modal
+    function hideCancelModal() {
+      document.getElementById('cancelModal').style.display = 'none';
+      ticketToCancel = null;
+    }
+
+    // Cancel ticket
+    async function cancelTicket() {
+      if (!ticketToCancel) return;
+
+      try {
+        // Get ticket data for notification
+        const ticketDoc = await db.collection("tickets").doc(ticketToCancel).get();
+        if (!ticketDoc.exists) {
+          alert("Ticket not found.");
+          return;
+        }
+
+        const ticketData = ticketDoc.data();
+        
+        // Update ticket status
+        await db.collection("tickets").doc(ticketToCancel).update({
+          status: "Cancelled",
+          cancelledAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Add cancellation notification
+        await db.collection("notifications").add({
+          type: "cancellation",
+          userId: currentUser.uid,
+          userName: ticketData.fullName || currentUser.displayName || "User",
+          ticketId: ticketToCancel,
+          message: `Ticket cancelled successfully`,
+          bookingTime: `${ticketData.appointmentDate} at ${ticketData.appointmentTime}`,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          read: false
+        });
+
+        // Show success message
+        alert("Ticket cancelled successfully!");
+        
+        hideCancelModal();
+      } catch (error) {
+        console.error("Error cancelling ticket:", error);
+        alert("Error cancelling ticket. Please try again.");
+      }
+    }
+
+    // Track ticket (placeholder)
+    window.trackTicket = function(ticketId) {
+      // Redirect to track ticket page or show details
+      window.location.href = `track-ticket.html?id=${ticketId}`;
+    };
+
+    // Modal event listeners
+    document.getElementById('confirmCancel').addEventListener('click', cancelTicket);
+    document.getElementById('cancelCancel').addEventListener('click', hideCancelModal);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('cancelModal');
+      if (event.target === modal) {
+        hideCancelModal();
+      }
+    });
+
+    // Auth state observer
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadUserTickets();
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

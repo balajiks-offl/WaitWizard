@@ -12,13 +12,158 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+let currentUser = null;
+let notificationListener = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   
   const profileIcon = document.getElementById('profileIcon');
   const profilePanel = document.getElementById('profilePanel');
   const closeProfile = document.getElementById('closeProfile');
   const profileContent = document.getElementById('profileContent');
+  
+  // Notification elements
+  const notificationBell = document.getElementById('notificationBell');
+  const notificationDropdown = document.getElementById('notificationDropdown');
+  const notificationBadge = document.getElementById('notificationBadge');
+  const notificationList = document.getElementById('notificationList');
+  const clearAllNotifications = document.getElementById('clearAllNotifications');
+  
   let currentProfile = {};
+  
+  // Notification functionality
+  function loadNotifications() {
+    if (!currentUser || notificationListener) return;
+    
+    notificationListener = db.collection("notifications")
+      .where("userId", "==", currentUser.uid)
+      .orderBy("timestamp", "desc")
+      .limit(20)
+      .onSnapshot(snapshot => {
+        const notifications = [];
+        snapshot.forEach(doc => {
+          notifications.push({ id: doc.id, ...doc.data() });
+        });
+        
+        renderNotifications(notifications);
+        updateNotificationBadge(notifications);
+      });
+  }
+  
+  function renderNotifications(notifications) {
+    if (notifications.length === 0) {
+      notificationList.innerHTML = '<div class="no-notifications">No new notifications</div>';
+      return;
+    }
+    
+    const notificationHTML = notifications.map(notification => {
+      const isUnread = !notification.read;
+      const timeAgo = getTimeAgo(notification.timestamp);
+      
+      return `
+        <div class="notification-item ${isUnread ? 'unread' : ''}" onclick="markAsRead('${notification.id}')">
+          <div class="notification-message">${notification.message || getNotificationMessage(notification)}</div>
+          <div class="notification-time">${timeAgo}</div>
+        </div>
+      `;
+    }).join('');
+    
+    notificationList.innerHTML = notificationHTML;
+  }
+  
+  function getNotificationMessage(notification) {
+    switch(notification.type) {
+      case 'booking':
+        return `New appointment booked for ${notification.bookingTime}`;
+      case 'cancellation':
+        return `Appointment cancelled for ${notification.bookingTime}`;
+      case 'swap':
+        return `Ticket swap completed`;
+      case 'queue_update':
+        return `Your queue position has been updated`;
+      case 'doctor_emergency':
+        return `Doctor emergency - your appointment may be delayed`;
+      default:
+        return notification.message || 'New notification';
+    }
+  }
+  
+  function getTimeAgo(timestamp) {
+    if (!timestamp) return 'Just now';
+    
+    const now = new Date();
+    const notificationTime = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const diffInMinutes = Math.floor((now - notificationTime) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d ago`;
+  }
+  
+  function updateNotificationBadge(notifications) {
+    const unreadCount = notifications.filter(n => !n.read).length;
+    
+    if (unreadCount > 0) {
+      notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+      notificationBadge.style.display = 'flex';
+    } else {
+      notificationBadge.style.display = 'none';
+    }
+  }
+  
+  window.markAsRead = async function(notificationId) {
+    try {
+      await db.collection("notifications").doc(notificationId).update({
+        read: true
+      });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+  
+  // Toggle notification dropdown
+  notificationBell.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isVisible = notificationDropdown.style.display === 'block';
+    notificationDropdown.style.display = isVisible ? 'none' : 'block';
+  });
+  
+  // Clear all notifications
+  clearAllNotifications.addEventListener('click', async () => {
+    if (!currentUser) return;
+    
+    if (confirm('Are you sure you want to clear all notifications?')) {
+      try {
+        const snapshot = await db.collection("notifications")
+          .where("userId", "==", currentUser.uid)
+          .get();
+        
+        const batch = db.batch();
+        snapshot.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+        
+        await batch.commit();
+        notificationDropdown.style.display = 'none';
+      } catch (error) {
+        console.error("Error clearing notifications:", error);
+        alert("Error clearing notifications. Please try again.");
+      }
+    }
+  });
+  
+  // Close notification dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!notificationBell.contains(e.target)) {
+      notificationDropdown.style.display = 'none';
+    }
+  });
+  
   function renderProfileView(data) {
     let dob = data.dob;
     let dobFormatted = '';
@@ -140,6 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   auth.onAuthStateChanged(async (user) => {
   if (user) {
+    currentUser = user;
+    loadNotifications();
+    
     try {
       const docSnap = await db.collection("users").doc(user.uid).get();
       if (docSnap.exists) {
@@ -155,6 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('username').textContent = '';
     }
   } else {
+    currentUser = null;
+    if (notificationListener) {
+      notificationListener();
+      notificationListener = null;
+    }
     window.location.href = "index.html";
   }
 });

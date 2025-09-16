@@ -98,12 +98,59 @@ async function cancelTicket(ticketId) {
       ticket.appointmentTime ? ticket.appointmentTime : ""
     );
 
+    // Show real-time cancellation popup
+    showCancellationPopup(userName, ticket.appointmentDate, ticket.appointmentTime);
+    
     showCancelCenterModal("Ticket canceled successfully!");
     loadTickets();
 
   } catch(err) {
     alert("Error canceling ticket: " + err.message);
   }
+}
+
+// Real-time cancellation popup
+function showCancellationPopup(name, date, time) {
+  const popup = document.createElement('div');
+  popup.style.cssText = `
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000;
+  `;
+  
+  popup.innerHTML = `
+    <div style="
+      background: white; border-radius: 16px; padding: 30px;
+      max-width: 400px; width: 90%; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    ">
+      <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+      <h2 style="color: #e74c3c; margin-bottom: 15px;">Ticket Cancelled</h2>
+      <p style="color: #5a7484; margin-bottom: 20px;">
+        The appointment for <strong>${name}</strong>
+        on <strong>${date}</strong> at <strong>${time}</strong> has been cancelled.
+      </p>
+      <button onclick="this.parentElement.parentElement.remove();" 
+        style="
+          background: #e74c3c; color: white; border: none; 
+          padding: 12px 30px; border-radius: 8px; 
+          font-weight: 600; cursor: pointer; font-size: 16px;
+        ">
+        OK
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(popup);
+  
+  // Auto-remove after 8 seconds
+  setTimeout(() => {
+    if (popup.parentElement) {
+      popup.remove();
+    }
+  }, 8000);
 }
 
 function showTickets(tickets) {

@@ -78,13 +78,61 @@ ticketForm.addEventListener('submit', async function(e) {
       fullName, user.uid, appointmentDate, appointmentTime
     );
 
+    // Show real-time confirmation popup
+    showBookingConfirmationPopup(fullName, appointmentDate, appointmentTime);
+    
     // Only this—no green popups, just your own modal
-    showSuccessModal();
 
   } catch (err) {
     alert("Error booking ticket: " + err.message);
   }
 });
+
+// Real-time booking confirmation popup
+function showBookingConfirmationPopup(name, date, time) {
+  const popup = document.createElement('div');
+  popup.style.cssText = `
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000;
+  `;
+  
+  popup.innerHTML = `
+    <div style="
+      background: white; border-radius: 16px; padding: 30px;
+      max-width: 400px; width: 90%; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    ">
+      <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
+      <h2 style="color: #365f6b; margin-bottom: 15px;">Booking Confirmed!</h2>
+      <p style="color: #5a7484; margin-bottom: 20px;">
+        Your appointment has been successfully booked for <strong>${name}</strong>
+        on <strong>${date}</strong> at <strong>${time}</strong>.
+      </p>
+      <button onclick="this.parentElement.parentElement.remove(); ticketForm.reset();" 
+        style="
+          background: linear-gradient(90deg, #b6e0c1, #e0e9b6 90%);
+          color: #446856; border: none; padding: 12px 30px;
+          border-radius: 8px; font-weight: 600; cursor: pointer;
+          font-size: 16px;
+        ">
+        OK
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(popup);
+  
+  // Auto-remove after 10 seconds
+  setTimeout(() => {
+    if (popup.parentElement) {
+      popup.remove();
+      ticketForm.reset();
+    }
+  }, 10000);
+}
 
 window.showSuccessModal = function() {
   successModal.classList.add('active');
