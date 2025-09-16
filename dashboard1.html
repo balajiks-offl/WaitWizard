@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - WaitWizard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <style>
+    .top-icons {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Welcome to WaitWizard, <span id="username"></span>!</h1>
+    <p>"Track, monitor, and manage your queues without hassle"</p>
+  </header>
+  <div class="top-icons">
+    <span id="profileIcon" title="Profile" role="button" tabindex="0">
+      <img src="profile.png" alt="Profile Icon" style="width:42px; height:42px;">
+    </span>
+    <span id="logoutIcon" title="Logout" role="button" tabindex="0">
+      <img src="logout.png" alt="Logout Icon" style="width:36px; height:36px;">
+    </span>
+  </div>
+  <!-- Profile Panel -->
+  <div id="profilePanel" class="profile-panel" aria-hidden="true">
+    <div class="profile-avatar-bar">
+      <div class="profile-avatar">
+        <img src="profile.png" alt="Profile Icon" style="width:42px; height:42px;">
+      </div>
+      <h2>My Profile</h2>
+      <span class="close-profile" id="closeProfile" role="button" tabindex="0" aria-label="Close Profile Panel">&times;</span>
+    </div>
+    <div id="profileContent" class="profile-content-card">Loading profile...</div>
+  </div>
+  <main id="dashboardMain">
+    <section class="grid-menu">
+      <div class="card active" data-link="home.html" role="button" tabindex="0">
+    <div class="icon">
+        <img src="icons/home.png" alt="Home" />
+    </div>
+    <div class="label">Home</div>
+</div>
+
+<div class="card" data-link="take-ticket.html" role="button" tabindex="0">
+    <div class="icon">
+        <img src="icons/appointment.png" alt="Book Appointment" />
+    </div>
+    <div class="label">Book Appointment</div>
+</div>
+
+<div class="card" data-link="track-ticket.html" role="button" tabindex="0">
+    <div class="icon">
+        <img src="icons/track.png" alt="Track Appointment" />
+    </div>
+    <div class="label">Track Appointment</div>
+</div>
+
+<div class="card" data-link="swap-ticket.html" role="button" tabindex="0">
+    <div class="icon">
+        <img src="icons/swap.png" alt="Swap Appointment" />
+    </div>
+    <div class="label">Swap Appointment</div>
+</div>
+
+<div class="card" data-link="cancel-ticket.html" role="button" tabindex="0">
+    <div class="icon">
+        <img src="icons/cancel.png" alt="Cancel Appointment" />
+    </div>
+    <div class="label">Cancel Appointment</div>
+</div>
+
+<div class="card" data-link="chatbot.html" role="button" tabindex="0">
+    <div class="icon">
+        <img src="icons/chatbot.png" alt="Chatbot" />
+    </div>
+    <div class="label">Chatbot</div>
+</div>
+
+<div class="card" data-link="history.html" role="button" tabindex="0">
+    <div class="icon">
+        <img src="icons/history.png" alt="History" />
+    </div>
+    <div class="label">History</div>
+</div>
+
+<div class="card" data-link="notifications.html" role="button" tabindex="0">
+
+    <div class="icon">
+        <img src="icons/notification.png" alt="Notifications" />
+    </div>
+    <div class="label">Notifications</div>
+    
+</div>
+    </section>
+  </main>
+  <div id="logoutDialogOverlay" class="logout-dialog-overlay" style="display:none;">
+    <div class="logout-dialog">
+      <div class="dialog-title">Are you sure you want to logout?</div>
+      <div class="dialog-actions">
+        <button id="logoutOk" class="dialog-btn ok-btn">OK</button>
+        <button id="logoutCancel" class="dialog-btn cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <script src="dashboard.js"></script>
+</body>
+</html>

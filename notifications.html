@@ -10,7 +10,8 @@
       min-height: 100vh;
       font-family: 'Segoe UI', Arial, sans-serif;
       color: #365f6b;
-      background: linear-gradient(120deg, #eaf6fb 0%, #fdf6e3 100%);
+      background: radial-gradient(ellipse farthest-corner at 70% 10%, #eaf6fb 0%, #d7f7e8 50%, #fdf6e3 100%);
+      transition: background 0.7s cubic-bezier(.86,0,.07,1);
     }
     h2 {
       text-align: center;
@@ -20,156 +21,234 @@
       color: #365f6b;
       font-weight: 700;
       margin-bottom: 2.1rem;
-      /* no background, no box, clean and classic */
+      animation: fadeInTop 0.75s cubic-bezier(.6,1.7,.65,.98);
     }
-    #login {
-      text-align: center;
-      margin-top: 2.7rem;
+    @keyframes fadeInTop {
+      from { opacity:0; transform: translateY(-55px);}
+      to { opacity:1; transform: translateY(0);}
     }
     #notificationList {
       max-width: 760px;
-      margin: 0 auto 50px auto;
-      padding: 0 8px 40px 8px;
+      margin: 0 auto 40px auto;
+      padding: 0 8px 30px 8px;
+      min-height: 130px;
+      transition: background 0.4s;
     }
     .notification-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 18px 26px 13px 26px;
-      margin-bottom: 27px;
-      box-shadow: 0 5px 24px rgba(60,80,120,0.12), 0 1.5px 7px #eaf6fb;
-      transition: box-shadow 0.23s, transform 0.23s;
-      animation: fadeInSlide 0.65s cubic-bezier(.49,1.6,.55,1.05);
+      background: rgba(255,255,255,0.93);
+      border-radius: 22px;
+      padding: 20px 35px 13px 35px;
+      margin-bottom: 30px;
+      box-shadow: 0 7px 40px rgba(30,90,120,0.12), 0 3px 10px #def5eb36;
+      border-left: 5px solid #7ae6c7;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       position: relative;
+      animation: slideIn 0.75s cubic-bezier(.62,1.55,.51,1.03);
+      will-change: transform, box-shadow;
+      transition: box-shadow 0.24s, border-color 0.24s;
+      opacity: 1;
+    }
+    .notification-card.removing {
+      animation: fadeOutCard 0.7s cubic-bezier(.21,1.1,.45,1.11) forwards;
+    }
+    @keyframes fadeOutCard {
+      from { opacity: 1; transform: scale(1) translateX(0);}
+      to { opacity: 0; transform: scale(0.88) translateX(80px);}
     }
     .notification-card:hover {
-      box-shadow: 0 12px 44px rgba(60,80,120,0.18), 0 2.5px 18px #c9f5e7;
-      transform: translateY(-3px) scale(1.017);
+      box-shadow: 0 16px 48px rgba(80,140,120,0.19), 0 4px 20px #74efd6;
+      border-left: 6px solid #60d6b4;
+      transform: translateY(-3px) scale(1.019);
     }
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateX(36px);}
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(60px);}
       to { opacity: 1; transform: translateX(0);}
     }
     .notification-message {
       font-size: 1.22rem;
       font-weight: 600;
-      color: #356c5d;
+      color: #2c6462;
       margin-bottom: 7px;
       word-break: break-word;
+      letter-spacing: .01em;
     }
     .notification-time {
       font-size: 1.01rem;
-      color: #7eacb4;
+      color: #85a3a8;
       text-align: right;
       padding-right: 2px;
       margin-bottom: 2px;
+      letter-spacing: .02em;
     }
     .no-notifications {
       text-align: center;
-      font-size: 1.2rem;
-      margin-top: 40px;
-      color: #888;
+      font-size: 1.23rem;
+      padding: 35px 0;
+      color: #828c92;
+      font-weight: 500;
+      letter-spacing: 1px;
     }
     .remove-btn {
       position: absolute;
-      top: 10px;
-      right: 18px;
-      background: linear-gradient(90deg,#ff7c7c,#ffe387 120%);
-      border: none;
-      color: #31414c;
-      padding: 4px 16px;
-      border-radius: 7px;
-      font-size: 1.03rem;
+      top: 18px;
+      right: 35px;
+      width: 38px;
+      height: 38px;
+      background: radial-gradient(circle, #fae1d8 60%, #ffb5a7 98%);
+      border: 2.5px solid #f77d7d77;
+      color: #c22929;
+      font-size: 1.7rem;
+      font-family: inherit;
+      border-radius: 50%;
+      font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 1px 7px rgba(255,115,51,0.07);
-      font-weight: 700;
-      opacity: 0.67;
-      transition: opacity 0.21s, box-shadow 0.17s, transform 0.14s;
+      box-shadow: 0 2px 15px #f98e8e1f;
+      opacity: 0.96;
+      transition: 
+        background 0.25s, 
+        color 0.25s, 
+        border 0.27s, 
+        box-shadow 0.2s, 
+        transform 0.23s;
+      line-height: 35px;
+      text-align: center;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       z-index: 3;
+      animation: popIn 0.5s;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform: scale(0.6);}
+      to { opacity:1; transform: scale(1);}
     }
     .remove-btn:hover {
-      opacity: 1;
-      background: linear-gradient(90deg,#ffe387,#ff7c7c 120%);
-      box-shadow: 0 2px 18px #fccfc7;
-      transform: scale(1.1);
+      background: radial-gradient(circle, #f24949 60%, #fec9a7 98%);
+      color: #fff;
+      border: 2.5px solid #f18076dd;
+      box-shadow: 0 5px 18px #ee606060;
+      transform: scale(1.14);
     }
-    /* Custom modal */
+    #pleaseSignIn {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 1.25rem;
+      color: #bc624d;
+      font-weight: 600;
+      display: none;
+    }
+    /* Modal */
     #confirmModalBG {
       display: none;
-      position: fixed; z-index: 9999; inset: 0; background: rgba(44,78,112,0.10);
-      justify-content: center; align-items: center;
-      width: 100vw; height: 100vh;
+      position: fixed;
+      z-index: 9999;
+      inset: 0;
+      background: rgba(44,78,112,0.10);
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
     }
     #confirmModal {
       background: #fff;
       padding: 36px 36px 28px 36px;
-      border-radius: 18px;
-      min-width: 280px;
-      max-width: 98vw;
-      box-shadow: 0 7px 32px #c9e1ed;
+      border-radius: 20px;
+      min-width: 270px;
+      max-width: 92vw;
+      box-shadow: 0 15px 55px #c9e1ed7a;
       text-align: center;
-      font-size: 1.15rem;
+      font-size: 1.19rem;
       font-weight: 500;
       color: #365f6b;
-      animation: fadeInModal 0.34s;
+      animation: fadeInModal 0.37s;
     }
     @keyframes fadeInModal {
-      from { opacity: 0; transform: translateY(70px);}
+      from { opacity: 0; transform: translateY(80px);}
       to { opacity: 1; transform: translateY(0);}
     }
     .confirm-actions {
       margin-top: 28px;
       display: flex;
-      gap: 18px;
+      gap: 22px;
       justify-content: center;
     }
     .modal-btn {
-      padding: 10px 42px;
-      font-size: 1.07rem;
+      padding: 13px 42px;
+      font-size: 1.13rem;
       border: none;
       border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
       background: linear-gradient(90deg,#dceee8 0%,#b3fff4 100%);
       color: #356c5d;
-      box-shadow: 0 2px 16px #eef8e3;
-      transition: background 0.17s, box-shadow 0.17s;
+      box-shadow: 0 2.5px 16px #eef8e3;
+      transition: background 0.16s, box-shadow 0.13s, color .12s;
     }
     .modal-btn:hover {
       background: linear-gradient(90deg,#bbe1e3 0%,#e5f3ee 100%);
       color: #245f39;
     }
     .danger-btn {
-      background: linear-gradient(90deg,#ffa67b 0%,#fc5864 100%);
-      color: #333;
+      background: linear-gradient(90deg,#fb7486 0%,#ff764b 100%);
+      color: #fff !important;
     }
     .danger-btn:hover {
-      background: linear-gradient(90deg,#fc5864 0%,#ffa67b 100%);
-      color: #fff;
+      background: linear-gradient(90deg,#ff764b 30%,#fb7486 90%);
+      color: #fff !important;
+      box-shadow: 0 1px 19px #ff938f60;
     }
-    @media (max-width: 600px) {
-      h2 { font-size: 1.5rem; margin-bottom: 1.2rem; padding:0;}
-      #notificationList { padding: 0 2px; }
-      .notification-card { padding: 9px 7px 8px 13px; }
-      .notification-message { font-size: 1.02rem;}
-      .remove-btn { padding: 2px 7px; font-size: 0.92rem;}
-      #confirmModal { padding:15px 7px 18px 7px; font-size:1rem;}
-      .modal-btn {padding: 9px 15px;}
+    /* Remove All Button */
+    #removeAllBtn {
+      margin: 0 auto 52px auto;
+      display: block;
+      padding: 16px 70px;
+      border-radius: 42px;
+      background: linear-gradient(90deg,#4ad9af 0%,#bddff1 100%);
+      border: none;
+      color: #225145;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      box-shadow: 0 6px 21px 2px #b3f0c4ba;
+      transition: background 0.22s, color 0.15s, transform 0.20s, box-shadow 0.20s;
+      outline: none;
+      animation: fadeRotateIn 0.67s cubic-bezier(.61,1.61,.38,.94);
+    }
+    @keyframes fadeRotateIn {
+      from {opacity:0; transform: rotate(-12deg) scale(0.7);}
+      to {opacity:1; transform: rotate(0) scale(1);}
+    }
+    #removeAllBtn:hover {
+      background: linear-gradient(90deg,#bddff1 0%, #4ad9af 100%);
+      color: #038f6a;
+      box-shadow: 0 15px 40px #b6eeb8c2;
+      transform: scale(1.10);
+    }
+    @media (max-width: 650px) {
+      .notification-card { padding: 12px 3vw;}
+      #removeAllBtn { width: 84vw; padding: 12px 0;}
+      .notification-message { font-size: 1rem;}
+    }
+    @media (max-width: 430px) {
+      h2 { font-size: 1.4rem; }
+      .modal-btn { font-size: 1.01rem; }
+      #removeAllBtn { font-size: 1.03rem; }
+      .notification-message { font-size: 0.97rem;}
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 </head>
 <body>
   <h2>Notifications</h2>
+  <div id="pleaseSignIn">Please sign in first to view your notifications.</div>
   <div id="notificationList">Loading...</div>
-  <div id="login" style="display:none">
-    <h3>Sign in to view notifications</h3>
-    <input id="email" type="email" placeholder="Email" autocomplete="email"/>
-    <input id="password" type="password" placeholder="Password" autocomplete="current-password"/>
-    <button onclick="login()">Sign In</button>
-    <p id="loginError" style="color:red;"></p>
-  </div>
+  <button id="removeAllBtn" style="display:none;">Remove All</button>
   <!-- Custom confirmation modal -->
   <div id="confirmModalBG">
     <div id="confirmModal">
@@ -180,11 +259,7 @@
       </div>
     </div>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script>
-    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
       apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
       authDomain: "digitalqueuesystem.firebaseapp.com",
@@ -199,12 +274,13 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // --- UI HOOKS ---
     const notificationList = document.getElementById("notificationList");
-    const loginDiv = document.getElementById("login");
-    const loginError = document.getElementById("loginError");
+    const pleaseSignIn = document.getElementById("pleaseSignIn");
+    const removeAllBtn = document.getElementById("removeAllBtn");
 
-    // --- Custom Confirmation Modal Logic ---
+    let currentDocElems = [];
+
+    // Modal Logic
     let confirmAction = null;
     function showConfirmModal(message, onConfirm) {
       document.getElementById("confirmModalMsg").innerText = message;
@@ -219,26 +295,50 @@
       document.getElementById("confirmModalBG").style.display = "none";
     };
 
-    // --- Stylish Remove ---
+    // Remove single notification with fade-out
     async function removeNotification(docId) {
-      showConfirmModal("Do you really want to remove this notification?", async () => {
+      const card = document.getElementById("card-"+docId);
+      if (card) card.classList.add("removing");
+      setTimeout(async ()=>{
         await db.collection("notifications").doc(docId).delete();
+      }, 650);
+    }
+    window.removeNotification = removeNotification;
+
+    // Remove all with fade-out
+    async function removeAllNotifications(userId) {
+      showConfirmModal("Are you sure you want to remove all your notifications?", async () => {
+        const snap = await db.collection("notifications")
+          .where("userId", "==", userId)
+          .get();
+        if (snap.empty) return;
+        // Fade out all current cards
+        currentDocElems.forEach(card => card.classList.add("removing"));
+        setTimeout(async ()=>{
+          const batch = db.batch();
+          snap.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+        }, 730);
       });
     }
 
-    // --- RENDER NOTIFICATIONS ---
+    // RENDER NOTIFICATIONS
     function renderNotifications(user) {
       db.collection("notifications")
+        .where("userId", "==", user.uid)
         .orderBy("timestamp", "desc")
         .onSnapshot(snapshot => {
+          currentDocElems = [];
           notificationList.innerHTML = "";
           if(snapshot.empty) {
             notificationList.innerHTML = "<div class='no-notifications'>No notifications found.</div>";
+            removeAllBtn.style.display = "none";
             return;
           }
+          let count = 0;
           snapshot.forEach(doc => {
+            count++;
             const data = doc.data();
-
             let userName = "";
             if (data.userName && typeof data.userName === "string") {
               userName = data.userName;
@@ -247,7 +347,6 @@
             } else {
               userName = "Unknown User";
             }
-
             let msg = "";
             if (data.type === "cancellation") {
               msg = `Ticket canceled by <b>${userName}</b>${data.bookingTime ? ` for <b>${data.bookingTime}</b>` : ''}.`;
@@ -261,47 +360,39 @@
             }
             const div = document.createElement("div");
             div.className = "notification-card";
+            div.id = "card-"+doc.id;
             div.innerHTML = `
-              <button class="remove-btn" title="Remove" onclick="removeNotification('${doc.id}')">&times; Remove</button>
+              <button class="remove-btn" title="Remove" onclick="removeNotification('${doc.id}')">&times;</button>
               <div class="notification-message">${msg}</div>
               <div class="notification-time">
                 ${data.timestamp ? data.timestamp.toDate().toLocaleString() : "Unknown time"}
               </div>
             `;
             notificationList.appendChild(div);
+            currentDocElems.push(div);
           });
+          removeAllBtn.style.display = count >= 1 ? "block" : "none";
         }, error => {
           console.error("Error loading notifications:", error);
           notificationList.innerHTML = "<div class='no-notifications'>Unable to load notifications.</div>";
+          removeAllBtn.style.display = "none";
         });
+
+      removeAllBtn.onclick = () => removeAllNotifications(user.uid);
     }
 
-    // --- AUTH HANDLING ---
+    // AUTH HANDLING
     auth.onAuthStateChanged(user => {
       if (user) {
-        loginDiv.style.display = "none";
         notificationList.innerHTML = "Loading...";
+        pleaseSignIn.style.display = "none";
         renderNotifications(user);
       } else {
         notificationList.innerHTML = "";
-        loginDiv.style.display = "";
+        pleaseSignIn.style.display = "";
+        removeAllBtn.style.display = "none";
       }
     });
-
-    function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          loginError.textContent = "";
-        })
-        .catch(err => {
-          loginError.textContent = err.message;
-        });
-    }
-
-    // Expose for inline onclick
-    window.removeNotification = removeNotification;
   </script>
 </body>
 </html>
