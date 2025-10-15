@@ -1,0 +1,188 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background: linear-gradient(-45deg, #eaf6fb, #99c1de, #fdf6e3, #b6e0c1);
+  background-size: 400% 400%;
+  box-shadow: inset 0 0 150px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 430px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 32px rgba(60, 80, 120, 0.15);
+  border-radius: 16px;
+  padding: 48px 36px 32px 36px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(40px);
+  animation: fadeInUp 0.8s ease forwards;
+  position: relative;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.site-logo {
+  width: 135px;
+  max-width: 180px;
+  margin: 0 auto 15px auto;
+  object-fit: contain;
+  border-radius: 16px;
+}
+
+h2 {
+  color: #3b5a6a;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  position: relative;
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+input[type='email'],
+input[type='password'],
+input[type='text'] {
+  width: 100%;
+  padding: 8px 44px 8px 12px;
+  height: 38px;
+  font-size: 14px;
+  border: 1px solid #c4cad0;
+  border-radius: 6px;
+  background: #f5fafb;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='text']:focus {
+  border-color: #79a4ea;
+  box-shadow: 0 0 8px 2px #79a4ea55;
+  background: #ffffff;
+  outline: none;
+  transform: scale(1.03);
+}
+
+#togglePwd {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  cursor: pointer;
+  color: #79a4ea;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+#togglePwd:hover {
+  color: #5277b6;
+}
+
+.primary-btn {
+  padding: 12px 0;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #99c1de, #b6e0c1 85%);
+  color: #3a5a5b;
+  font-size: 17px;
+  margin-top: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 8px rgba(76, 92, 105, 0.11);
+  transition: background 0.25s ease, transform 0.18s ease, box-shadow 0.25s ease;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.primary-btn:hover {
+  background: linear-gradient(90deg, #b6e0c1, #99c1de 85%);
+  box-shadow: 0 6px 18px rgba(76, 92, 105, 0.22);
+  transform: scale(1.05);
+}
+
+.primary-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 3px 10px rgba(76, 92, 105, 0.15);
+}
+
+#login-btn-spinner svg {
+  animation: spin 0.9s linear infinite;
+  stroke: #3a5a5b;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.switch-link {
+  margin-top: 14px;
+  font-size: 14px;
+}
+.switch-link a {
+  color: #79a4ea;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.switch-link a:hover {
+  color: #5277b6;
+  text-decoration: underline;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-10px);
+  }
+  40%,
+  80% {
+    transform: translateX(10px);
+  }
+}
+
+.shake {
+  animation: shake 0.4s;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 24px 16px 24px 16px;
+    border-radius: 0 0 18px 18px;
+  }
+  input[type='email'],
+  input[type='password'] {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+  }
+  .site-logo {
+    width: 80px;
+    margin-bottom: 14px;
+  }
+}

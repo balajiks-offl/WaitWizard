@@ -1,0 +1,1111 @@
+/* Base */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(130deg,#e2fcec,#fff1ff 95%);
+  margin: 0;
+  min-height: 100vh;
+  color: #12424f;
+  font-size: 12.5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 2rem;
+  background: #fff;
+  box-shadow: 0 6px 20px #21eaf028;
+  position: sticky;
+  top: 0;
+  z-index: 101;
+}
+.app-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #19cb95;
+  letter-spacing: -0.4px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.welcome-msg {
+  background: #e7fff7;
+  color: #147769;
+  border-radius: 30px;
+  padding: 0.35em 1.6em 0.35em 1em;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-right: 1rem;
+}
+.header-icons-row {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+.icon-btn {
+  background: linear-gradient(145deg, #24e1c0 0%, #c7eae9 100%);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 3px 16px #46ecc422;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.2s, box-shadow 0.2s;
+}
+.icon-btn:focus,
+.icon-btn:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 0 0 6px #acfffbe9;
+}
+.notif-badge {
+  display: none;
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  background: #e94a54;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  min-width: 18px;
+  min-height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.45em;
+  font-weight: bold;
+  box-shadow: 0 2px 8px #fa657a80;
+}
+
+
+/* Dropdown */
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 55px;
+  z-index: 111;
+  background: #fff;
+  border-radius: 18px;
+  min-width: 170px;
+  box-shadow: 0 4px 22px #36e49a45;
+  padding: 0.4em 0;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dropdown.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+.dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dropdown li {
+  padding: 0.75em 1.4em;
+  color: #17a688;
+  cursor: pointer;
+  font-size: 1rem;
+  border-bottom: 1px solid #e7fff7;
+  transition: background 0.15s ease;
+  user-select: none;
+}
+.dropdown li:last-child {
+  border-bottom: none;
+}
+.dropdown li:hover,
+.dropdown li:focus {
+  background: #e7fff7;
+}
+
+
+/* Navbar */
+.dashboard-navbar {
+  padding: 0.55rem 2rem;
+  background: transparent;
+}
+.nav-tabs {
+  display: flex;
+  list-style: none;
+  gap: 1rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.nav-btn {
+  flex: 1 1 0%;
+  padding: 1.1rem 0.4rem;
+  margin: 0 0.18em;
+  min-width: 0;
+  border-radius: 43px;
+  background: #fff;
+  color: #0ebf93;
+  font-weight: 700;
+  font-size: 1.13rem;
+  letter-spacing: 0.01em;
+  border: 2.1px solid #baf6eb;
+  transition: all 0.18s;
+  cursor: pointer;
+  box-shadow: 0 1px 8px #9af3e799;
+  outline-offset: 2px;
+}
+.nav-btn.active {
+  background: linear-gradient(91deg, #57e5c4 0%, #14d39a 80%);
+  color: #fff;
+  border: 2.1px solid #21e4a0;
+  box-shadow: 0 3px 14px #46ecc451;
+  font-size: 1.18rem;
+}
+.nav-btn:focus,
+.nav-btn:not(.active):hover {
+  color: #21e4a0;
+  border: 2.1px solid #21e4a0;
+  outline-offset: 2px;
+  outline: 3px solid #21e4a033;
+}
+
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d7f9ee;
+  border-radius: 10px;
+}
+
+
+/* Main content */
+.content-area {
+  width: 95%;
+  margin: 2rem auto 4rem auto;
+  min-height: 65vh;
+  overflow-x: hidden;
+  outline: none;
+}
+
+
+/* Sections */
+.section {
+  background: #fff;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 6px 26px #17d1ae16;
+  padding: 2.1rem 2em;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: fadeSlideIn 0.33s forwards ease-out;
+}
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #15ae80;
+  margin-bottom: 1.3em;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+
+/* Grid for homepage */
+.dashboard-grid-main {
+  display: grid;
+  grid-template-columns: 1.1fr 2.3fr 1.1fr;
+  gap: 2rem;
+}
+@media (max-width: 1200px) {
+  .dashboard-grid-main {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+}
+
+
+/* Cards inside sections */
+.card-box {
+  background: linear-gradient(135deg, #fafffc 60%, #eafff8 100%);
+  border-radius: 17px;
+  box-shadow: 0 2px 14px #36e49a22;
+  padding: 1.5em 1em 1.3em 1em;
+  margin-bottom: 1.1em;
+  opacity: 0;
+  animation: fadeInBox 0.42s ease forwards;
+  animation-delay: 0.18s;
+}
+@keyframes fadeInBox {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+/* Items */
+.upcoming-item,
+.dashboard-stat,
+.recent-item {
+  margin-bottom: 1rem;
+  padding: 0.9em 1em;
+  border-radius: 9px;
+  background: #f5fffb;
+  color: #2b7c6c;
+  box-shadow: 0 1px 5px #0ae1b510;
+  font-size: 0.95rem;
+  user-select: none;
+}
+
+
+.dashboard-stat .stat-title {
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0.78;
+}
+
+
+.dashboard-stat .stat-value {
+  font-size: 1.8em;
+  font-weight: 900;
+  color: #179da7;
+}
+
+
+.announcement-item {
+  background: #f5faff;
+  color: #ad347d;
+  border-left: 6px solid #ff94c1;
+  padding: 0.9em 1.4em;
+  border-radius: 9px;
+  margin-bottom: 1em;
+  font-size: 1em;
+  user-select: none;
+}
+
+
+/* Modal */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.19);
+  z-index: 9998;
+}
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 20px;
+  max-width: 450px;
+  width: 96%;
+  padding: 1.8rem 1.5rem 1.8rem 1.5rem;
+  z-index: 9999;
+  box-shadow: 0 8px 38px #0fffd233;
+  font-size: 1rem;
+  border: 1.9px solid #d8f3f0;
+}
+.modal-title {
+  font-weight: 800;
+  margin-bottom: 1.2rem;
+  font-size: 1.18rem;
+  color: #0f8275;
+}
+.modal-actions {
+  margin-top: 1.3rem;
+  text-align: right;
+}
+.modal-btn {
+  padding: 0.6em 1.25em;
+  border-radius: 11px;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.85rem;
+  font-weight: 800;
+  background: #f1fff9;
+  color: #187269;
+  transition: background 0.22s ease, color 0.22s ease;
+}
+.modal-btn:hover {
+  background: #15d4b8;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .dashboard-header,
+  .dashboard-navbar {
+    padding: 1rem 1.2rem;
+  }
+  .section {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+/* Booking form neaten and alignment */
+.ticket-form-card {
+  background: #f2fff6;
+  border-radius: 18px;
+  padding: 2em 2em 1em 2em;
+  max-width: 600px;
+  margin: 2em auto 3em auto;
+  box-shadow: 0 4px 18px #14dd9820;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.ticket-form-card h2 {
+  margin-bottom: 1.25rem;
+}
+.ticket-form-card label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.ticket-form-card input[type="text"],
+.ticket-form-card input[type="number"],
+.ticket-form-card input[type="date"],
+.ticket-form-card input[type="time"],
+.ticket-form-card select,
+.ticket-form-card textarea {
+  width: 100%;
+  padding: 0.7em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticket-form-card input[type="text"]:focus,
+.ticket-form-card input[type="number"]:focus,
+.ticket-form-card input[type="date"]:focus,
+.ticket-form-card input[type="time"]:focus,
+.ticket-form-card select:focus,
+.ticket-form-card textarea:focus {
+  outline: none;
+  border-color: #0ea78e;
+  box-shadow: 0 0 5px #0ea78eaa;
+}
+.ticket-form-card button[type="submit"] {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8em 1.8em;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+.ticket-form-card button[type="submit"]:hover {
+  background: #0ea78e;
+}
+.success-message {
+  margin-top: 12px;
+  font-weight: 700;
+  color: #19cb95;
+  background: #edfff9;
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* Add some space between radio buttons */
+.ticket-form-card div > label {
+  margin-right: 15px;
+  cursor: pointer;
+}
+/* Keep existing CSS ... */
+
+/* Booking form alignment and neat layout */
+.ticket-form-card {
+  background: #f2fff6;
+  border-radius: 18px;
+  padding: 2em 2em 1em 2em;
+  max-width: 600px;
+  margin: 2em auto 3em auto;
+  box-shadow: 0 4px 18px #14dd9820;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.ticket-form-card h2 {
+  margin-bottom: 1.25rem;
+}
+.ticket-form-card label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.ticket-form-card input[type="text"],
+.ticket-form-card input[type="number"],
+.ticket-form-card input[type="date"],
+.ticket-form-card input[type="time"],
+.ticket-form-card select,
+.ticket-form-card textarea {
+  width: 100%;
+  padding: 0.7em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticket-form-card input[type="text"]:focus,
+.ticket-form-card input[type="number"]:focus,
+.ticket-form-card input[type="date"]:focus,
+.ticket-form-card input[type="time"]:focus,
+.ticket-form-card select:focus,
+.ticket-form-card textarea:focus {
+  outline: none;
+  border-color: #0ea78e;
+  box-shadow: 0 0 5px #0ea78eaa;
+}
+.ticket-form-card button[type="submit"] {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8em 1.8em;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+.ticket-form-card button[type="submit"]:hover {
+  background: #0ea78e;
+}
+.success-message {
+  margin-top: 12px;
+  font-weight: 700;
+  color: #19cb95;
+  background: #edfff9;
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* Add space for radio buttons */
+.ticket-form-card div > label {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+/* Edit Profile Modal Styling */
+.edit-profile-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.edit-profile-modal label {
+  font-weight: 600;
+}
+.edit-profile-modal input {
+  padding: 0.6em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.edit-profile-modal button.save-btn {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.7em 1.8em;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: white;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.edit-profile-modal button.save-btn:hover {
+  background: #0ea78e;
+}
+  @media (max-width: 600px) {
+    .ticket-form-card {
+      padding: 1.5em 1.2em 1em 1.2em;
+    }
+  }
+  /* Patch: Booking form alignment and improved styling */
+.ticket-form-card {
+  background: #f2fff6;
+  border-radius: 18px;
+  padding: 2em 2em 1em 2em;
+  max-width: 600px;
+  margin: 2em auto 3em auto;
+  box-shadow: 0 4px 18px #14dd9820;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.ticket-form-card h2 {
+  margin-bottom: 1.25rem;
+}
+.ticket-form-card label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.ticket-form-card input[type="text"],
+.ticket-form-card input[type="number"],
+.ticket-form-card input[type="date"],
+.ticket-form-card input[type="time"],
+.ticket-form-card select,
+.ticket-form-card textarea {
+  width: 100%;
+  padding: 0.7em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticket-form-card input[type="text"]:focus,
+.ticket-form-card input[type="number"]:focus,
+.ticket-form-card input[type="date"]:focus,
+.ticket-form-card input[type="time"]:focus,
+.ticket-form-card select:focus,
+.ticket-form-card textarea:focus {
+  outline: none;
+  border-color: #0ea78e;
+  box-shadow: 0 0 5px #0ea78eaa;
+}
+.ticket-form-card button[type="submit"] {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8em 1.8em;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+.ticket-form-card button[type="submit"]:hover {
+  background: #0ea78e;
+}
+.success-message {
+  margin-top: 12px;
+  font-weight: 700;
+  color: #19cb95;
+  background: #edfff9;
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* Add space between radio buttons */
+.ticket-form-card div > label {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+/* Profile Edit Modal */
+.edit-profile-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.edit-profile-modal label {
+  font-weight: 600;
+}
+.edit-profile-modal input {
+  padding: 0.6em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.edit-profile-modal button.save-btn {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.7em 1.8em;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: white;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.edit-profile-modal button.save-btn:hover {
+  background: #0ea78e;
+}
+
+/* Recent Activity Improved Style */
+.recent-item {
+  background: linear-gradient(87deg, #e2fcec 83%, #f7e1ff 100%);
+  border-radius: 12px;
+  padding: 1em 1.1em;
+  margin-bottom: 0.8em;
+  font-size: 1em;
+  color: #037d95;
+  box-shadow: 0 1px 6px #15d4b857;
+}
+.recent-item:hover {
+  background: linear-gradient(87deg, #d0f7f0 83%, #f3d1ff 100%);
+  box-shadow: 0 2px 10px #15d4b880;
+}
+/* Append this to your existing dashboard.css */
+
+/* Booking form styling */
+.ticket-form-card {
+  background: #f2fff6;
+  border-radius: 18px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto 3rem auto;
+  box-shadow: 0 4px 18px #14dd9820;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.ticket-form-card h2 {
+  margin-bottom: 1.25rem;
+}
+.ticket-form-card label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.ticket-form-card input[type="text"],
+.ticket-form-card input[type="number"],
+.ticket-form-card input[type="date"],
+.ticket-form-card input[type="time"],
+.ticket-form-card select,
+.ticket-form-card textarea {
+  width: 100%;
+  padding: 0.7em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticket-form-card input[type="text"]:focus,
+.ticket-form-card input[type="number"]:focus,
+.ticket-form-card input[type="date"]:focus,
+.ticket-form-card input[type="time"]:focus,
+.ticket-form-card select:focus,
+.ticket-form-card textarea:focus {
+  outline: none;
+  border-color: #0ea78e;
+  box-shadow: 0 0 5px #0ea78eaa;
+}
+.ticket-form-card button[type="submit"] {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8em 1.8em;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+.ticket-form-card button[type="submit"]:hover {
+  background: #0ea78e;
+}
+.success-message {
+  margin-top: 12px;
+  font-weight: 700;
+  color: #19cb95;
+  background: #edfff9;
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Profile Edit Modal */
+.edit-profile-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.edit-profile-modal label {
+  font-weight: 600;
+}
+.edit-profile-modal input {
+  padding: 0.6em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.edit-profile-modal button.save-btn {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.7em 1.8em;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: white;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.edit-profile-modal button.save-btn:hover {
+  background: #0ea78e;
+}
+
+/* Recent Activity entry styling */
+.recent-item {
+  background: linear-gradient(87deg, #e2fcec 83%, #f7e1ff 100%);
+  border-radius: 12px;
+  padding: 1em 1.1em;
+  margin-bottom: 0.8em;
+  font-size: 1em;
+  color: #037d95;
+  box-shadow: 0 1px 6px #15d4b857;
+}
+.recent-item:hover {
+  background: linear-gradient(87deg, #d0f7f0 83%, #f3d1ff 100%);
+  box-shadow: 0 2px 10px #15d4b880;
+}
+.history-item {
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.status-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: bold;
+}
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.styled-table th {
+  background-color: #f2f4f6;
+  font-weight: bold;
+}
+
+.styled-table td {
+  background-color: #fff;
+}
+
+.cancel-btn,
+.details-btn {
+  padding: 6px 12px;
+  background-color: #a7f3d0;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-btn:hover,
+.details-btn:hover {
+  background-color: #6ee7b7;
+}
+.ticket-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.03);
+}
+
+.ticket-card button {
+  padding: 6px 12px;
+  margin-top: 10px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.requestSwapBtn,
+.confirmSwapBtn,
+.acceptSwapBtn {
+  background-color: #10b981;
+  color: white;
+}
+
+.declineSwapBtn {
+  background-color: #ef4444;
+  color: white;
+  margin-left: 8px;
+}
+
+.notif-card {
+  padding: 8px 14px;
+  background-color: #ecfdf5;
+  border: 1px solid #10b981;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.edit-profile-modal label {
+  margin-top: 12px;
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.edit-profile-modal input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #d0d7e2;
+  outline: none;
+  font-size: 0.95rem;
+  transition: 0.2s ease;
+}
+
+.edit-profile-modal input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px #d1fae5;
+}
+
+.save-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to right, #16a34a, #22c55e);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.save-btn:hover {
+  background: linear-gradient(to right, #22c55e, #16a34a);
+  transform: scale(1.02);
+}
+
+.profile-info p {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #1e293b;
+}
+/* Adjust modal height/scroll */
+.modal-content-scroll {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.modal {
+  background: white;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.modal-actions {
+  text-align: right;
+  margin-top: 16px;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background: #00b894;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.modal-btn:hover {
+  background: #01987a;
+}
+.modal-content-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 10px;
+}
+.modal-scrollable {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding-right: 10px;
+}
+
+.modal-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-scrollable::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 8px;
+}
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 1rem;
+  background: linear-gradient(to right, #f5fefb, #ebfefb);
+}
+
+.nav-btn {
+  background: white;
+  border-radius: 40px;
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #00a884;
+  border: 2px solid #aefce2;
+  box-shadow: 0 4px 10px rgba(0, 200, 150, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.3s ease;
+  min-width: 170px;
+  justify-content: center;
+}
+
+.nav-btn span {
+  display: inline-block;
+  font-size: 1.3rem; /* Make all icons same size */
+  width: 1.5rem;
+  text-align: center;
+}
+
+.nav-btn:hover {
+  background: #e8fef6;
+  border-color: #00c09e;
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, #00dbb6, #00b894);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 200, 150, 0.3);
+}
+/* Left-align the title/logo */
+.header-title {
+  text-align: left !important;
+  padding-left: 2rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00b894;
+}
+
+/* NavBar styles */
+.nav-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(to right, #f5fefb, #ebfefb);
+}
+
+.nav-btn {
+  background: white;
+  border-radius: 32px;
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #00a884;
+  border: 2px solid #aefce2;
+  box-shadow: 0 4px 10px rgba(0, 200, 150, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.3s ease;
+  width: 160px; /* 🔧 Consistent width like Home button */
+  justify-content: center;
+}
+
+.nav-btn span {
+  font-size: 1.2rem;
+  width: 1.5rem;
+  display: inline-block;
+  text-align: center;
+}
+
+.nav-btn:hover {
+  background: #e8fef6;
+  border-color: #00c09e;
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, #00dbb6, #00b894);
+  color: white;
+  border: none;
+  box-shadow: 0 8px 16px rgba(0, 200, 150, 0.3);
+}

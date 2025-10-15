@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css" />
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="card dashboard-card">
+      <h2>Admin Dashboard</h2>
+
+      <!-- Profile Icon Dropdown and Login Button -->
+      <div class="profile-container">
+        <img src="https://i.pravatar.cc/40" alt="Profile" class="profile-icon" id="profileIcon" style="display:none;" />
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-info">
+            <strong>User</strong>
+            <p>user@example.com</p>
+          </div>
+          <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        <button class="login-btn" id="loginBtn" style="display:none;">Login</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat-box">Total Tickets: <strong id="totalTickets" class="stat-number">0</strong></div>
+        <div class="stat-box">Emergencies: <strong id="emergencyCount" class="stat-number">0</strong></div>
+        <div class="stat-box">Cancellations: <strong id="cancelCount" class="stat-number">0</strong></div>
+        <div class="stat-box">Active Doctors: <strong id="doctorCount" class="stat-number">0</strong></div>
+      </div>
+
+      <h3>Active Tickets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Reason</th>
+            <th>Appt Date</th>
+            <th>Appt Time</th>
+            <th>Doctor</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="activeTicketsTableBody">
+          <tr><td colspan="9">Loading active tickets...</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Closed Tickets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Reason</th>
+            <th>Appt Date</th>
+            <th>Appt Time</th>
+            <th>Doctor</th>
+          </tr>
+        </thead>
+        <tbody id="closedTicketsTableBody">
+          <tr><td colspan="8">Loading closed tickets...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal placed inside page -->
+  <div id="confirmModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <p id="confirmMessage">Are you sure?</p>
+      <div class="modal-buttons">
+        <button id="confirmYesBtn" class="modal-btn">Yes</button>
+        <button id="confirmNoBtn" class="modal-btn">No</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

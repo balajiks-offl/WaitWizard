@@ -1,0 +1,202 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(130deg,#e2fcec,#fff1ff 95%);
+  margin: 0;
+  min-height: 100vh;
+  color: #12424f;
+  font-size: 15px;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #fff;
+  box-shadow: 0 6px 20px #21eaf028;
+  position: sticky;
+  top: 0;
+  z-index: 101;
+}
+.app-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #19cb95;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.welcome-msg {
+  background: #e7fff7;
+  color: #147769;
+  border-radius: 30px;
+  padding: 0.35em 1.6em;
+  font-weight: 600;
+  margin-right: 1rem;
+}
+.header-icons-row {
+  display: flex;
+  gap: 0.8rem;
+}
+.icon-btn {
+  background: linear-gradient(145deg, #24e1c0 0%, #c7eae9 100%);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 3px 16px #46ecc422;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notif-badge {
+  display: none;
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  background: #e94a54;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  min-width: 18px;
+  min-height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.45em;
+  font-weight: bold;
+}
+.dashboard-navbar {
+  padding: 1rem 2rem;
+}
+.nav-tabs {
+  display: flex;
+  list-style: none;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+.nav-btn {
+  flex: 1;
+  padding: 1.1rem 0.4rem;
+  border-radius: 43px;
+  background: #fff;
+  color: #0ebf93;
+  font-weight: 700;
+  font-size: 1.13rem;
+  border: 2.1px solid #baf6eb;
+  cursor: pointer;
+  box-shadow: 0 1px 8px #9af3e799;
+}
+.nav-btn.active {
+  background: linear-gradient(91deg, #57e5c4 0%, #14d39a 80%);
+  color: #fff;
+  border: 2.1px solid #21e4a0;
+}
+.content-area {
+  width: 95%;
+  margin: 2rem auto 4rem auto;
+  min-height: 65vh;
+  outline: none;
+}
+/* Sections */
+.section {
+  background: #fff;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 6px 26px #17d1ae16;
+  padding: 2rem 2em;
+}
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #19cb95;
+  margin-bottom: 1.2em;
+  letter-spacing: 0.01em;
+}
+/* Card style for home dashboard */
+.card-box {
+  background: linear-gradient(135deg, #fafffc 60%, #eafff8 100%);
+  border-radius: 17px;
+  box-shadow: 0 2px 14px #36e49a22;
+  padding: 1.5em 1em 1.3em 1em;
+  margin-bottom: 1.1em;
+}
+/* Booking form styles to align fields neatly */
+.ticket-form-card {
+  background: #f2fff6;
+  border-radius: 18px;
+  padding: 2em 2em 1em 2em;
+  max-width: 600px;
+  margin: 2em auto 3em auto;
+  box-shadow: 0 4px 18px #14dd9820;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.ticket-form-card h2 {
+  margin-bottom: 1.25rem;
+}
+.ticket-form-card label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.ticket-form-card input[type="text"],
+.ticket-form-card input[type="number"],
+.ticket-form-card input[type="date"],
+.ticket-form-card input[type="time"],
+.ticket-form-card select,
+.ticket-form-card textarea {
+  width: 100%;
+  padding: 0.7em;
+  border-radius: 8px;
+  border: 1.5px solid #19cb95;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticket-form-card input[type="text"]:focus,
+.ticket-form-card input[type="number"]:focus,
+.ticket-form-card input[type="date"]:focus,
+.ticket-form-card input[type="time"]:focus,
+.ticket-form-card select:focus,
+.ticket-form-card textarea:focus {
+  outline: none;
+  border-color: #0ea78e;
+  box-shadow: 0 0 5px #0ea78eaa;
+}
+.ticket-form-card button[type="submit"] {
+  background: #19cb95;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8em 1.8em;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+.ticket-form-card button[type="submit"]:hover {
+  background: #0ea78e;
+}
+.success-message {
+  margin-top: 12px;
+  font-weight: 700;
+  color: #19cb95;
+  background: #edfff9;
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* Add some space between radio buttons */
+.ticket-form-card div > label {
+  margin-right: 15px;
+  cursor: pointer;
+}

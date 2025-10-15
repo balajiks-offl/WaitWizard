@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="doctor.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="card dashboard-card" style="position: relative; padding-top: 60px;">
+      <!-- Profile icon and name top-right inside card -->
+      <div class="profile-container" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Doctor Profile" role="button" onclick="toggleProfileDetails()" onkeydown="if(event.key==='Enter'){toggleProfileDetails();}">
+        <img src="https://www.gravatar.com/avatar?d=mp&s=40" alt="Profile" id="profileIcon" />
+        <span id="profileName">Loading...</span>
+      </div>
+
+      <div id="profileDetails" class="profile-details" role="region" aria-label="Doctor Profile Details">
+        <h4>Doctor Profile</h4>
+        <p><b>Name:</b> <span id="doctorFullName"></span></p>
+        <p><b>Email:</b> <span id="doctorEmail"></span></p>
+        <button onclick="logout()" class="logout-btn">Logout</button>
+      </div>
+
+      <h2>Doctor Dashboard</h2>
+
+      <section aria-labelledby="openTicketsLabel" class="dashboard-section">
+        <h3 id="openTicketsLabel">Open Tickets <span id="openTicketsCount" class="badge" aria-live="polite">0</span></h3>
+        <input type="search" id="openTicketsSearch" placeholder="Search tickets or patients..." aria-label="Search open tickets" oninput="filterTickets()" />
+        <table aria-describedby="openTicketsDesc">
+          <caption id="openTicketsDesc" class="sr-only">List of open tickets awaiting acceptance</caption>
+          <thead>
+            <tr>
+              <th scope="col" onclick="sortTable('open', 0)">Ticket # <span class="sort-indicator">&#8693;</span></th>
+              <th scope="col" onclick="sortTable('open', 1)">Patient <span class="sort-indicator">&#8693;</span></th>
+              <th scope="col" onclick="sortTable('open', 2)">Type <span class="sort-indicator">&#8693;</span></th>
+              <th scope="col" onclick="sortTable('open', 3)">Status <span class="sort-indicator">&#8693;</span></th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ticketsTableBody">
+            <tr><td colspan="5">Loading tickets...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <button class="primary-btn" id="viewHistoryBtn" onclick="viewHistory()" aria-controls="historySection" aria-expanded="false">
+        View History <span id="historyCountBadge" class="badge" aria-live="polite"></span>
+      </button>
+
+      <section id="historySection" class="dashboard-section" style="display: none;" aria-labelledby="historyLabel">
+        <h3 id="historyLabel">Ticket History</h3>
+        <input type="search" id="historyTicketsSearch" placeholder="Search history tickets or patients..." aria-label="Search ticket history" oninput="filterHistory()" />
+        <table aria-describedby="historyDesc">
+          <caption id="historyDesc" class="sr-only">List of previously processed tickets</caption>
+          <thead>
+            <tr>
+              <th scope="col" onclick="sortTable('history', 0)">Ticket # <span class="sort-indicator">&#8693;</span></th>
+              <th scope="col" onclick="sortTable('history', 1)">Patient <span class="sort-indicator">&#8693;</span></th>
+              <th scope="col" onclick="sortTable('history', 2)">Type <span class="sort-indicator">&#8693;</span></th>
+              <th scope="col" onclick="sortTable('history', 3)">Status <span class="sort-indicator">&#8693;</span></th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr><td colspan="4">No history loaded.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+
+  <script src="doctor.js"></script>
+</body>
+</html>
