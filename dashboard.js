@@ -182,11 +182,8 @@ document.getElementById("profileViewBtn").onclick = (e) => {
   });
 };
 
+// PROFILE EDIT
 
-
-// =============================
-// ✏️ PROFILE EDIT
-// =============================
 document.getElementById("profileEditBtn").onclick = (e) => {
   e.stopPropagation();
   profileDropdown.classList.remove("show");
