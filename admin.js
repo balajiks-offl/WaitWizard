@@ -1,32 +1,21 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
-  authDomain: "digitalqueuesystem.firebaseapp.com",
-  databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
-  projectId: "digitalqueuesystem",
-  storageBucket: "digitalqueuesystem.appspot.com",
-  messagingSenderId: "934641075368",
-  appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
-  measurementId: "G-TJESH8R15H"
-};
-firebase.initializeApp(firebaseConfig);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://attbrskgcueofvcnfgwn.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0dGJyc2tnY3Vlb2Z2Y25mZ3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2MjQ2NTYsImV4cCI6MjA3NzIwMDY1Nn0.hxPxmC2a3Uv5X9yCVXz_AFE5FBj5fkyKsyAsTbzQKSI';
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const totalTicketsElem = document.getElementById("totalTickets");
-const emergencyCountElem = document.getElementById("emergencyCount");
-const cancelCountElem = document.getElementById("cancelCount");
-const doctorCountElem = document.getElementById("doctorCount");
+const pendingCountElem = document.getElementById("pendingCount");
+const ongoingCountElem = document.getElementById("ongoingCount");
+const rejectedCountElem = document.getElementById("rejectedCount");
 
-const activeTicketsTableBody = document.getElementById("activeTicketsTableBody");
-const closedTicketsTableBody = document.getElementById("closedTicketsTableBody");
+const pendingTicketsTableBody = document.getElementById("pendingTicketsTableBody");
+const ongoingTicketsTableBody = document.getElementById("ongoingTicketsTableBody");
+const rejectedTicketsTableBody = document.getElementById("rejectedTicketsTableBody");
 
 const profileIcon = document.getElementById('profileIcon');
 const profileDropdown = document.getElementById('profileDropdown');
 const logoutBtn = document.getElementById('logoutBtn');
 const loginBtn = document.getElementById('loginBtn');
-
-let unsubscribeActive = null;
 
 const confirmModal = document.getElementById('confirmModal');
 const confirmMessage = document.getElementById('confirmMessage');
@@ -34,40 +23,7 @@ const confirmYesBtn = document.getElementById('confirmYesBtn');
 const confirmNoBtn = document.getElementById('confirmNoBtn');
 
 let currentConfirmResolve = null;
-
-function capitalizeFirstLetter(text) {
-  if (!text) return '-';
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
-
-function updateUIForUser(user) {
-  if (user) {
-    profileIcon.style.display = 'block';
-    loginBtn.style.display = 'none';
-    profileDropdown.style.display = 'none';
-
-    document.querySelector('.profile-info strong').textContent = user.displayName || 'User';
-    document.querySelector('.profile-info p').textContent = user.email || '';
-    
-    loadTickets();
-  } else {
-    profileIcon.style.display = 'none';
-    profileDropdown.style.display = 'none';
-    loginBtn.style.display = 'block';
-
-    activeTicketsTableBody.innerHTML = "<tr><td colspan='9'>Please login to view tickets.</td></tr>";
-    closedTicketsTableBody.innerHTML = "<tr><td colspan='8'>Please login to view tickets.</td></tr>";
-
-    totalTicketsElem.textContent = '0';
-    emergencyCountElem.textContent = '0';
-    cancelCountElem.textContent = '0';
-    doctorCountElem.textContent = '0';
-  }
-}
-
-auth.onAuthStateChanged(user => {
-  updateUIForUser(user);
-});
+let ticketsSubscription = null;
 
 function showConfirmation(message) {
   confirmMessage.textContent = message;
@@ -101,175 +57,169 @@ window.addEventListener('click', (event) => {
   }
 });
 
-async function confirmAndUpdateStatus(ticketId, newStatus, buttonElement) {
-  const confirmMsg = `Are you sure you want to mark this ticket as "${newStatus}"?`;
-
-  const confirmed = await showConfirmation(confirmMsg);
+async function acceptTicket(ticketId) {
+  const confirmed = await showConfirmation('Are you sure you want to accept this ticket?');
   if (!confirmed) return;
 
   try {
-    await db.collection("tickets").doc(ticketId).update({ status: newStatus });
-    alert(`Ticket status updated to ${newStatus}`);
+    const { error } = await supabase
+      .from('tickets')
+      .update({ status: 'accepted' })
+      .eq('id', ticketId);
 
-    const row = buttonElement.closest('tr');
-    if (row) {
-      const statusCell = row.querySelector('.status-cell');
-      const actionsCell = buttonElement.parentElement;
-      if (statusCell) statusCell.textContent = newStatus;
-      if (actionsCell) actionsCell.innerHTML = '-';
-    }
+    if (error) throw error;
+    alert('Ticket accepted successfully');
   } catch (err) {
-    console.error("Error updating ticket:", err);
-    alert("Failed to update ticket status. Please try again.");
+    console.error('Error accepting ticket:', err);
+    alert('Failed to accept ticket. Please try again.');
+  }
+}
+
+async function rejectTicket(ticketId) {
+  const confirmed = await showConfirmation('Are you sure you want to reject this ticket?');
+  if (!confirmed) return;
+
+  try {
+    const { error } = await supabase
+      .from('tickets')
+      .update({ status: 'rejected' })
+      .eq('id', ticketId);
+
+    if (error) throw error;
+    alert('Ticket rejected successfully');
+  } catch (err) {
+    console.error('Error rejecting ticket:', err);
+    alert('Failed to reject ticket. Please try again.');
   }
 }
 
 function loadTickets() {
-  if (unsubscribeActive) unsubscribeActive();
+  if (ticketsSubscription) {
+    ticketsSubscription.unsubscribe();
+  }
 
-  unsubscribeActive = db.collection("tickets")
-    .onSnapshot(snapshot => {
-      let totalTickets = 0,
-          emergencyCount = 0,
-          cancelCount = 0;
-
-      const activeTickets = [];
-      const closedTickets = [];
-
-      snapshot.forEach(doc => {
-        const ticket = { id: doc.id, ...doc.data() };
-        totalTickets++;
-        if (ticket.ticketType === "emergency") emergencyCount++;
-        if (ticket.status === "cancelled") cancelCount++;
-
-        const status = ticket.status || (ticket.ticketType === "emergency" ? "Pending Approval" : "Open");
-
-        if (status.toLowerCase() === "closed") {
-          closedTickets.push({ ...ticket, status });
-        } else {
-          activeTickets.push({ ...ticket, status });
-        }
-      });
-
-      const sortFn = (a, b) => {
-        if (a.appointmentDate && a.appointmentTime && b.appointmentDate && b.appointmentTime) {
-          const [ay, am, ad] = a.appointmentDate.split('-').map(Number);
-          const [ah, amin] = a.appointmentTime.split(':').map(Number);
-          const [by, bm, bd] = b.appointmentDate.split('-').map(Number);
-          const [bh, bmin] = b.appointmentTime.split(':').map(Number);
-          return new Date(ay, am - 1, ad, ah, amin) - new Date(by, bm - 1, bd, bh, bmin);
-        }
-        return 0;
-      };
-
-      activeTickets.sort(sortFn);
-      closedTickets.sort(sortFn);
-
-      if (activeTickets.length === 0) {
-        activeTicketsTableBody.innerHTML = "<tr><td colspan='9'>No active tickets</td></tr>";
-      } else {
-        activeTicketsTableBody.innerHTML = "";
-        activeTickets.forEach((ticket, index) => {
-          let actionButtons = "";
-          if (ticket.status === "Open" || ticket.status === "Waiting" || ticket.status === "Not Arrived") {
-            actionButtons = `
-              <button class="arrived-btn">Arrived</button>
-              <button class="not-arrived-btn">Not Arrived</button>
-            `;
-          } else {
-            actionButtons = "-";
-          }
-
-          activeTicketsTableBody.innerHTML += `
-            <tr data-ticket-id="${ticket.id}">
-              <td>${index + 1}</td>
-              <td>${ticket.fullName || 'N/A'}</td>
-              <td class="status-cell">${ticket.status}</td>
-              <td>${capitalizeFirstLetter(ticket.ticketType)}</td>
-              <td>${ticket.symptoms || '-'}</td>
-              <td>${ticket.appointmentDate || '-'}</td>
-              <td>${ticket.appointmentTime || '-'}</td>
-              <td>${ticket.doctorAssigned || '-'}</td>
-              <td class="actions">${actionButtons}</td>
-            </tr>
-          `;
-        });
-
-        addButtonListeners();
+  ticketsSubscription = supabase
+    .channel('tickets-channel')
+    .on('postgres_changes',
+      { event: '*', schema: 'public', table: 'tickets' },
+      () => {
+        fetchAndRenderTickets();
       }
+    )
+    .subscribe();
 
-      if (closedTickets.length === 0) {
-        closedTicketsTableBody.innerHTML = "<tr><td colspan='8'>No closed tickets</td></tr>";
-      } else {
-        closedTicketsTableBody.innerHTML = "";
-        closedTickets.forEach((ticket, index) => {
-          closedTicketsTableBody.innerHTML += `
-            <tr>
-              <td>${index + 1}</td>
-              <td>${ticket.fullName || 'N/A'}</td>
-              <td>${ticket.status}</td>
-              <td>${capitalizeFirstLetter(ticket.ticketType)}</td>
-              <td>${ticket.symptoms || '-'}</td>
-              <td>${ticket.appointmentDate || '-'}</td>
-              <td>${ticket.appointmentTime || '-'}</td>
-              <td>${ticket.doctorAssigned || '-'}</td>
-            </tr>
-          `;
-        });
-      }
-
-      totalTicketsElem.textContent = totalTickets;
-      emergencyCountElem.textContent = emergencyCount;
-      cancelCountElem.textContent = cancelCount;
-      doctorCountElem.textContent = 8; // Static count example
-    }, error => {
-      console.error("Error fetching tickets: ", error);
-      activeTicketsTableBody.innerHTML = "<tr><td colspan='9'>Error loading active tickets</td></tr>";
-      closedTicketsTableBody.innerHTML = "<tr><td colspan='8'>Error loading closed tickets</td></tr>";
-    });
+  fetchAndRenderTickets();
 }
 
-// Add click listeners to the dynamically added buttons
-function addButtonListeners() {
-  const arrivedButtons = document.querySelectorAll('.arrived-btn');
-  const notArrivedButtons = document.querySelectorAll('.not-arrived-btn');
+async function fetchAndRenderTickets() {
+  try {
+    const { data: tickets, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .order('created_at', { ascending: true });
 
-  arrivedButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const row = btn.closest('tr');
-      const ticketId = row.getAttribute('data-ticket-id');
-      confirmAndUpdateStatus(ticketId, 'Waiting', btn);
-    });
-  });
+    if (error) throw error;
 
-  notArrivedButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const row = btn.closest('tr');
-      const ticketId = row.getAttribute('data-ticket-id');
-      confirmAndUpdateStatus(ticketId, 'Not Arrived', btn);
-    });
+    const pendingTickets = tickets.filter(t => t.status === 'pending');
+    const ongoingTickets = tickets.filter(t => t.status === 'accepted');
+    const rejectedTickets = tickets.filter(t => t.status === 'rejected');
+
+    totalTicketsElem.textContent = tickets.length;
+    pendingCountElem.textContent = pendingTickets.length;
+    ongoingCountElem.textContent = ongoingTickets.length;
+    rejectedCountElem.textContent = rejectedTickets.length;
+
+    renderPendingTickets(pendingTickets);
+    renderOngoingTickets(ongoingTickets);
+    renderRejectedTickets(rejectedTickets);
+  } catch (err) {
+    console.error('Error fetching tickets:', err);
+    pendingTicketsTableBody.innerHTML = "<tr><td colspan='6'>Error loading tickets</td></tr>";
+  }
+}
+
+function renderPendingTickets(tickets) {
+  if (tickets.length === 0) {
+    pendingTicketsTableBody.innerHTML = "<tr><td colspan='6'>No pending tickets</td></tr>";
+    return;
+  }
+
+  pendingTicketsTableBody.innerHTML = "";
+  tickets.forEach((ticket) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>#${ticket.id.substring(0, 8)}</td>
+      <td>${ticket.full_name || 'N/A'}</td>
+      <td>${ticket.symptoms || '-'}</td>
+      <td>${ticket.appointment_date || '-'}</td>
+      <td>${ticket.appointment_time || '-'}</td>
+      <td class="actions">
+        <button class="arrived-btn" onclick="acceptTicket('${ticket.id}')">Accept</button>
+        <button class="not-arrived-btn" onclick="rejectTicket('${ticket.id}')">Reject</button>
+      </td>
+    `;
+    pendingTicketsTableBody.appendChild(row);
   });
 }
 
-// Profile dropdown toggle
+function renderOngoingTickets(tickets) {
+  if (tickets.length === 0) {
+    ongoingTicketsTableBody.innerHTML = "<tr><td colspan='6'>No ongoing tickets</td></tr>";
+    return;
+  }
+
+  ongoingTicketsTableBody.innerHTML = "";
+  tickets.forEach((ticket) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>#${ticket.id.substring(0, 8)}</td>
+      <td>${ticket.full_name || 'N/A'}</td>
+      <td>${ticket.symptoms || '-'}</td>
+      <td>${ticket.appointment_date || '-'}</td>
+      <td>${ticket.appointment_time || '-'}</td>
+      <td>${ticket.doctor_assigned || '-'}</td>
+    `;
+    ongoingTicketsTableBody.appendChild(row);
+  });
+}
+
+function renderRejectedTickets(tickets) {
+  if (tickets.length === 0) {
+    rejectedTicketsTableBody.innerHTML = "<tr><td colspan='5'>No rejected tickets</td></tr>";
+    return;
+  }
+
+  rejectedTicketsTableBody.innerHTML = "";
+  tickets.forEach((ticket) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>#${ticket.id.substring(0, 8)}</td>
+      <td>${ticket.full_name || 'N/A'}</td>
+      <td>${ticket.symptoms || '-'}</td>
+      <td>${ticket.appointment_date || '-'}</td>
+      <td>${ticket.appointment_time || '-'}</td>
+    `;
+    rejectedTicketsTableBody.appendChild(row);
+  });
+}
+
 profileIcon.addEventListener('click', () => {
   const isShown = profileDropdown.style.display === 'flex';
   profileDropdown.style.display = isShown ? 'none' : 'flex';
 });
 
-// Close dropdown when clicking outside
 window.addEventListener('click', (e) => {
   if (!profileIcon.contains(e.target) && !profileDropdown.contains(e.target)) {
     profileDropdown.style.display = 'none';
   }
 });
 
-// Logout handler
 logoutBtn.addEventListener('click', () => {
-  auth.signOut().then(() => alert('Logged out.'));
+  alert('Logged out.');
 });
 
-// Login button redirect
 loginBtn.addEventListener('click', () => {
   window.location.href = 'index.html';
 });
+
+loadTickets();

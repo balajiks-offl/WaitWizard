@@ -4,11 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Doctor Dashboard</title>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     body {
@@ -20,7 +16,6 @@
       font-size: 15px;
     }
 
-    /* Container */
     .container {
       width: 95%;
       max-width: 1200px;
@@ -28,7 +23,6 @@
       padding: 2rem;
     }
 
-    /* Card */
     .dashboard-card {
       background: #fff;
       border-radius: 20px;
@@ -37,7 +31,6 @@
       position: relative;
     }
 
-    /* Profile */
     .profile-container {
       position: absolute;
       top: 10px;
@@ -64,13 +57,15 @@
       border-radius: 50%;
     }
 
-    h2 {
+    h2, h3 {
       margin-top: 0;
+      color: #19cb95;
     }
 
     table {
       width: 100%;
       margin-top: 1em;
+      margin-bottom: 2em;
       border-collapse: collapse;
     }
 
@@ -85,20 +80,6 @@
       cursor: pointer;
     }
 
-    .sort-indicator {
-      font-size: 0.8em;
-      margin-left: 0.4em;
-    }
-
-    input[type="search"] {
-      width: 100%;
-      max-width: 350px;
-      padding: 0.6em;
-      margin-top: 0.75em;
-      border: 1.5px solid #19cb95;
-      border-radius: 10px;
-    }
-
     .badge {
       background-color: #19cb95;
       color: white;
@@ -108,7 +89,7 @@
       font-size: 0.85em;
     }
 
-    .primary-btn, .accept-btn {
+    .accept-btn {
       background: #19cb95;
       color: white;
       border: none;
@@ -118,16 +99,18 @@
       cursor: pointer;
     }
 
-    .copy-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
+    .accept-btn:hover {
+      background: #0ea78e;
     }
 
     .logout-btn {
       margin-top: 1em;
       background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.5em 1em;
+      border-radius: 20px;
+      cursor: pointer;
     }
 
     .status-badge {
@@ -136,19 +119,76 @@
       background: #e1fff8;
       display: inline-block;
     }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #f9fbfa;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(80, 120, 96, 0.15);
+      width: 320px;
+      max-width: 90%;
+      text-align: center;
+      color: #446856;
+      font-size: 16px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .modal-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 15px;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+
+    #confirmYesBtn {
+      background-color: #4caf50;
+    }
+
+    #confirmYesBtn:hover {
+      background-color: #45a049;
+    }
+
+    #confirmNoBtn {
+      background-color: #f44336;
+    }
+
+    #confirmNoBtn:hover {
+      background-color: #da190b;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="dashboard-card" style="padding-top: 60px;">
-      
-      <!-- Profile Top Right -->
+
       <div class="profile-container" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Doctor Profile" role="button" onclick="toggleProfileDetails()" onkeydown="if(event.key==='Enter'){toggleProfileDetails();}">
         <img src="https://www.gravatar.com/avatar?d=mp&s=40" alt="Profile" id="profileIcon" />
         <span id="profileName">Loading...</span>
       </div>
 
-      <!-- Dropdown Details -->
       <div id="profileDetails" class="profile-details" role="region" aria-label="Doctor Profile Details">
         <h4>Doctor Profile</h4>
         <p><b>Name:</b> <span id="doctorFullName"></span></p>
@@ -158,285 +198,60 @@
 
       <h2>Doctor Dashboard</h2>
 
-      <!-- Open Tickets -->
-      <section aria-labelledby="openTicketsLabel" class="dashboard-section">
-        <h3 id="openTicketsLabel">Open Tickets <span id="openTicketsCount" class="badge" aria-live="polite">0</span></h3>
-        
-        <input type="search" id="openTicketsSearch" placeholder="Search tickets or patients..." aria-label="Search open tickets" oninput="filterTickets()" />
+      <section aria-labelledby="pendingTicketsLabel" class="dashboard-section">
+        <h3 id="pendingTicketsLabel">Pending Tickets <span id="pendingTicketsCount" class="badge" aria-live="polite">0</span></h3>
 
-        <table aria-describedby="openTicketsDesc">
-          <caption id="openTicketsDesc" class="sr-only">List of open tickets awaiting acceptance</caption>
+        <table aria-describedby="pendingTicketsDesc">
+          <caption id="pendingTicketsDesc" class="sr-only">List of pending tickets awaiting acceptance</caption>
           <thead>
             <tr>
-              <th scope="col" onclick="sortTable('open', 0)">Ticket # <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col" onclick="sortTable('open', 1)">Patient <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col" onclick="sortTable('open', 2)">Type <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col" onclick="sortTable('open', 3)">Status <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col">Reason</th>
-              <th scope="col">Appt Date</th>
-              <th scope="col">Appt Time</th>
+              <th scope="col">Ticket ID</th>
+              <th scope="col">Patient Name</th>
+              <th scope="col">Issue</th>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
-          <tbody id="ticketsTableBody">
-            <tr><td colspan="8">Loading tickets...</td></tr>
+          <tbody id="pendingTicketsTableBody">
+            <tr><td colspan="6">Loading tickets...</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- History Toggle -->
-      <button class="primary-btn" id="viewHistoryBtn" onclick="viewHistory()" aria-controls="historySection" aria-expanded="false">
-        View History <span id="historyCountBadge" class="badge" aria-live="polite"></span>
-      </button>
+      <section aria-labelledby="ongoingTicketsLabel" class="dashboard-section">
+        <h3 id="ongoingTicketsLabel">Ongoing Tickets <span id="ongoingTicketsCount" class="badge" aria-live="polite">0</span></h3>
 
-      <!-- Ticket History -->
-      <section id="historySection" class="dashboard-section" style="display: none;" aria-labelledby="historyLabel">
-        <h3 id="historyLabel">Ticket History</h3>
-        
-        <input type="search" id="historyTicketsSearch" placeholder="Search history tickets or patients..." aria-label="Search ticket history" oninput="filterHistory()" />
-
-        <table aria-describedby="historyDesc">
-          <caption id="historyDesc" class="sr-only">List of previously processed tickets</caption>
+        <table aria-describedby="ongoingTicketsDesc">
+          <caption id="ongoingTicketsDesc" class="sr-only">List of ongoing tickets accepted by the doctor</caption>
           <thead>
             <tr>
-              <th scope="col" onclick="sortTable('history', 0)">Ticket # <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col" onclick="sortTable('history', 1)">Patient <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col" onclick="sortTable('history', 2)">Type <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col" onclick="sortTable('history', 3)">Status <span class="sort-indicator">&#8693;</span></th>
-              <th scope="col">Reason</th>
-              <th scope="col">Appt Date</th>
-              <th scope="col">Appt Time</th>
-              <th scope="col">Doctor</th>
+              <th scope="col">Ticket ID</th>
+              <th scope="col">Patient Name</th>
+              <th scope="col">Issue</th>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Status</th>
             </tr>
           </thead>
-          <tbody id="historyTableBody">
-            <tr><td colspan="8">No history loaded.</td></tr>
+          <tbody id="ongoingTicketsTableBody">
+            <tr><td colspan="6">No ongoing tickets</td></tr>
           </tbody>
         </table>
       </section>
     </div>
   </div>
-    <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
-      authDomain: "digitalqueuesystem.firebaseapp.com",
-      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
-      projectId: "digitalqueuesystem",
-      storageBucket: "digitalqueuesystem.appspot.com",
-      messagingSenderId: "934641075368",
-      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
-      measurementId: "G-TJESH8R15H"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
 
-    const ticketsTableBody = document.getElementById("ticketsTableBody");
-    const historyTableBody = document.getElementById("historyTableBody");
-    const openTicketsCountElem = document.getElementById("openTicketsCount");
-    const historyCountBadge = document.getElementById("historyCountBadge");
-    const viewHistoryBtn = document.getElementById("viewHistoryBtn");
+  <div id="confirmModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <p id="confirmMessage">Are you sure?</p>
+      <div class="modal-buttons">
+        <button id="confirmYesBtn" class="modal-btn">Yes</button>
+        <button id="confirmNoBtn" class="modal-btn">No</button>
+      </div>
+    </div>
+  </div>
 
-    let currentDoctorId = null;
-    let currentOpenTickets = [];
-    let currentHistoryTickets = [];
-    let openTicketsSortIndex = 0;
-    let openTicketsSortAsc = true;
-    let historyTicketsSortIndex = 0;
-    let historyTicketsSortAsc = true;
-
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-        ticketsTableBody.innerHTML = `<tr><td colspan="8">You must be logged in as a doctor to view this page.</td></tr>`;
-        document.getElementById("profileName").textContent = "Not signed in";
-        return;
-      }
-      currentDoctorId = user.uid;
-      setProfile(user);
-      listenToTickets();
-    });
-
-    function setProfile(user) {
-      const profileNameElem = document.getElementById("profileName");
-      const doctorFullNameElem = document.getElementById("doctorFullName");
-      const doctorEmailElem = document.getElementById("doctorEmail");
-      db.collection("users").doc(user.uid).get().then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-          const fullName = `${data.firstname || ""} ${data.lastname || ""}`.trim();
-          profileNameElem.textContent = fullName || "Doctor";
-          doctorFullNameElem.textContent = fullName || "N/A";
-          doctorEmailElem.textContent = data.email || user.email || "N/A";
-        } else {
-          profileNameElem.textContent = user.displayName || "Doctor";
-          doctorFullNameElem.textContent = user.displayName || "N/A";
-          doctorEmailElem.textContent = user.email || "N/A";
-        }
-      }).catch(() => {
-        profileNameElem.textContent = user.displayName || "Doctor";
-        doctorFullNameElem.textContent = user.displayName || "N/A";
-        doctorEmailElem.textContent = user.email || "N/A";
-      });
-    }
-
-    function toggleProfileDetails() {
-      const details = document.getElementById("profileDetails");
-      details.style.display = details.style.display === "block" ? "none" : "block";
-    }
-
-    function logout() {
-      auth.signOut().then(() => {
-        alert("Logged out");
-        location.reload();
-      }).catch(err => alert("Logout Error: " + err.message));
-    }
-
-    function listenToTickets() {
-  db.collection("tickets")
-    .onSnapshot(snapshot => {
-      let tickets = [];
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        data.id = doc.id;
-        tickets.push(data);
-      });
-
-           currentOpenTickets = tickets.filter(t => 
-        (!t.doctorAssigned || t.doctorAssigned === "") &&
-        (t.status === "Open" || t.status === "Pending")
-      );
-
-      currentHistoryTickets = tickets.filter(t =>
-        t.doctorAssigned && ["accepted", "closed", "completed"].includes(String(t.status).toLowerCase())
-      );
-
-      updateOpenTickets();
-      updateHistoryCount();
-    }, err => {
-      ticketsTableBody.innerHTML = `<tr><td colspan="5">Error loading tickets: ${err.message}</td></tr>`;
-    });
-}
-    function updateOpenTickets() {
-      renderTickets(currentOpenTickets, ticketsTableBody, true);
-      openTicketsCountElem.textContent = currentOpenTickets.length;
-    }
-
-    function updateHistoryCount() {
-      historyCountBadge.textContent = currentHistoryTickets.length || "";
-    }
-
-    function renderTickets(tickets, tableBody, isOpenView = false) {
-      if (tickets.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="8">No tickets found.</td></tr>`;
-        return;
-      }
-
-      tableBody.innerHTML = "";
-      tickets.forEach(ticket => {
-        const row = document.createElement('tr');
-
-        const TicketID = "#" + ticket.id.substring(0, 6);
-        const actionBtn =
-          isOpenView && (!ticket.doctorAssigned)
-            ? `<button class="accept-btn" onclick="acceptTicket('${ticket.id}')">Accept</button>`
-            : ticket.doctorAssigned || "-";
-
-        row.innerHTML = `
-          <td>${TicketID} <button onclick="copyTicketId('${ticket.id}')" class="copy-btn" title="Copy Ticket #">📋</button></td>
-          <td>${ticket.fullName || "N/A"}</td>
-          <td>${ticket.ticketType || "-"}</td>
-          <td><span class="status-badge">${ticket.status || "-"}</span></td>
-          <td>${ticket.reason || "-"}</td>
-          <td>${ticket.appointmentDate || "-"}</td>
-          <td>${ticket.appointmentTime || "-"}</td>
-          <td>${actionBtn}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    function acceptTicket(ticketId) {
-      db.collection("tickets").doc(ticketId).update({
-        status: "Accepted",
-        doctorAssigned: currentDoctorId
-      }).then(() => alert("Ticket Accepted"))
-        .catch(err => alert("Accept failed: " + err.message));
-    }
-
-    function copyTicketId(ticketId) {
-      navigator.clipboard.writeText("#" + ticketId.substring(0, 6))
-        .then(() => alert("Ticket number copied!"))
-        .catch(() => alert("Failed to copy ticket number."));
-    }
-
-    function viewHistory() {
-      const section = document.getElementById("historySection");
-      const expanded = section.style.display === "block";
-      section.style.display = expanded ? "none" : "block";
-      viewHistoryBtn.setAttribute("aria-expanded", !expanded);
-      if (!expanded) {
-        renderTickets(currentHistoryTickets, historyTableBody, false);
-        document.getElementById("historyTicketsSearch").value = "";
-      }
-    }
-
-    function filterTickets() {
-      const val = document.getElementById("openTicketsSearch").value.toLowerCase();
-      const filtered = currentOpenTickets.filter(t =>
-        (t.id && t.id.toLowerCase().includes(val)) ||
-        (t.fullName && t.fullName.toLowerCase().includes(val))
-      );
-      renderTickets(filtered, ticketsTableBody, true);
-    }
-
-    function filterHistory() {
-      const val = document.getElementById("historyTicketsSearch").value.toLowerCase();
-      const filtered = currentHistoryTickets.filter(t =>
-        (t.id && t.id.toLowerCase().includes(val)) ||
-        (t.fullName && t.fullName.toLowerCase().includes(val))
-      );
-      renderTickets(filtered, historyTableBody, false);
-    }
-
-    function sortTable(type, columnIndex) {
-      let tickets = type === "open" ? currentOpenTickets : currentHistoryTickets;
-      let ascending = type === "open" ? openTicketsSortAsc : historyTicketsSortAsc;
-
-      if (type === "open" && openTicketsSortIndex === columnIndex) {
-        openTicketsSortAsc = !openTicketsSortAsc;
-        ascending = openTicketsSortAsc;
-      } else if (type === "history" && historyTicketsSortIndex === columnIndex) {
-        historyTicketsSortAsc = !historyTicketsSortAsc;
-        ascending = historyTicketsSortAsc;
-      } else {
-        if (type === "open") openTicketsSortAsc = true;
-        else historyTicketsSortAsc = true;
-      }
-
-      if (type === "open") openTicketsSortIndex = columnIndex;
-      else historyTicketsSortIndex = columnIndex;
-
-      const keys = ["id", "fullName", "ticketType", "status"];
-      const key = keys[columnIndex] || "id";
-
-      tickets.sort((a, b) => {
-        const valA = (a[key] || "").toLowerCase();
-        const valB = (b[key] || "").toLowerCase();
-        return ascending ? valA.localeCompare(valB) : valB.localeCompare(valA);
-      });
-
-      if (type === "open") renderTickets(tickets, ticketsTableBody, true);
-      else renderTickets(tickets, historyTableBody, false);
-    }
-
-    document.addEventListener("click", evt => {
-      const container = document.querySelector(".profile-container");
-      const details = document.getElementById("profileDetails");
-      if (!container.contains(evt.target) && !details.contains(evt.target)) {
-        details.style.display = "none";
-      }
-    });
-  </script>
+  <script src="doctor.js"></script>
 </body>
 </html>
