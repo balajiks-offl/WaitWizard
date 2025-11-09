@@ -88,6 +88,7 @@
     table tr:last-child td:first-child { border-bottom-left-radius: 18px; }
     table tr:last-child td:last-child { border-bottom-right-radius: 18px; }
   </style>
+  <script src="firebase-config.js"></script>
 </head>
 <body>
   <header class="header">
@@ -115,17 +116,7 @@
     </table>
   </div>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
-    authDomain: "digitalqueuesystem.firebaseapp.com",
-    databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
-    projectId: "digitalqueuesystem",
-    storageBucket: "digitalqueuesystem.appspot.com",
-    messagingSenderId: "934641075368",
-    appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
-    measurementId: "G-TJESH8R15H"
-  };
-  firebase.initializeApp(firebaseConfig);
+    // Using centralized Firebase config from firebase-config.js
   const auth = firebase.auth();
   const db = firebase.firestore();
 

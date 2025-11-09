@@ -243,6 +243,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
 <body>
   <h2>Notifications</h2>
@@ -260,17 +261,7 @@
     </div>
   </div>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
-      authDomain: "digitalqueuesystem.firebaseapp.com",
-      databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
-      projectId: "digitalqueuesystem",
-      storageBucket: "digitalqueuesystem.appspot.com",
-      messagingSenderId: "934641075368",
-      appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
-      measurementId: "G-TJESH8R15H"
-    };
-    firebase.initializeApp(firebaseConfig);
+    // Using centralized Firebase config from firebase-config.js
     const db = firebase.firestore();
     const auth = firebase.auth();
 
