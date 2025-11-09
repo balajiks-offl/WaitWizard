@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Take a Ticket - WaitWizard</title>
+  <link rel="stylesheet" href="take-ticket.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <style>
+    #successModal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(36,49,74,0.12);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #successModal.active {
+      display: flex;
+    }
+    #successModal .modal-content {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(60,80,120,0.12);
+      padding: 22px 28px;
+      max-width: 260px;
+      width: 88vw;
+      text-align: center;
+      z-index: 2;
+      animation: modalIn .2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    @keyframes modalIn { from{opacity:0; transform:translateY(18px) scale(0.97);} to{opacity:1; transform:translateY(0) scale(1);} }
+    .modal-title {
+      font-size: 1.19rem;
+      color: #365f6b;
+      font-weight: 700;
+      margin-bottom: 18px;
+      letter-spacing: 0.8px;
+    }
+    .modal-actions {
+      margin-top: 0;
+      width: 100%;
+    }
+    .success-ok-btn {
+      background: linear-gradient(90deg, #d1e7ff 0%, #e9ffd8 100%);
+      color: #355f6b;
+      border-radius: 9px;
+      border: none;
+      font-size: 1em;
+      font-weight: 600;
+      padding: 10px 0;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 1px 6px rgba(60,140,100,0.10);
+      transition: background .18s;
+    }
+    .success-ok-btn:hover {
+      background: linear-gradient(90deg, #b0d0f7 0%, #dafbbf 100%);
+    }
+    @media (max-width: 700px) {
+      #successModal .modal-content {
+        max-width: 93vw;
+        padding: 14px 7px;
+      }
+      .modal-title { font-size: 1.03rem; }
+      .success-ok-btn { font-size: 0.93em; padding: 8px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ticket-form-card">
+    <h2>Take a Ticket</h2>
+    <form id="takeTicketForm" novalidate>
+      <div>
+        <label for="fullname">Full Name *</label>
+        <input type="text" id="fullname" name="fullname" required placeholder="Your full name" />
+      </div>
+      <div>
+        <label for="mobile">Mobile Number *</label>
+        <input type="text" id="mobile" name="mobile" pattern="\d{10}" maxlength="10" inputmode="numeric" required placeholder="10-digit mobile number" title="Enter 10-digit mobile number" />
+      </div>
+      <div>
+        <label for="gender">Gender *</label>
+        <select id="gender" name="gender" required>
+          <option value="" disabled selected>Select gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="age">Age *</label>
+        <input type="number" id="age" name="age" min="0" max="120" required placeholder="Your age" />
+      </div>
+      <div>
+        <label>Ticket Type *</label>
+        <label id="normalLabel"><input type="radio" name="ticketType" value="normal" checked /> Normal</label>
+        <label id="emergencyLabel"><input type="radio" name="ticketType" value="emergency" /> Emergency</label>
+      </div>
+      <p id="emergencyMsg" style="display:none; color:red; font-weight:bold; margin-top:5px;">
+        Emergency tickets need admin approval before confirmation.
+      </p>
+      <div id="dateTimeFields" class="date-time-group">
+        <div>
+          <label for="apptDate">Appointment Date *</label>
+          <input type="date" id="apptDate" name="apptDate" required />
+        </div>
+        <div>
+          <label for="apptTime">Appointment Time *</label>
+          <input type="time" id="apptTime" name="apptTime" required step="300" />
+        </div>
+      </div>
+      <div>
+        <label for="symptoms">
+          Reason for Visit / Symptoms <span id="reasonRequired" style="color:red; display:none;">*</span>
+        </label>
+        <textarea id="symptoms" name="symptoms" placeholder="Briefly describe your symptoms or reason for visit"></textarea>
+      </div>
+      <div>
+        <label>
+          <input type="checkbox" id="terms" name="terms" required />
+          I agree to the Terms & Conditions and consent to data collection.
+        </label>
+      </div>
+      <div class="button-container">
+        <button type="submit" class="primary-btn">Take Ticket</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal">
+    <div class="modal-content">
+      <div class="modal-title">Ticket Booked Successfully!</div>
+      <div class="modal-actions">
+        <button onclick="closeSuccessModal()" class="success-ok-btn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="take-ticket.js"></script>
+</body>
+</html>

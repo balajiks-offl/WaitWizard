@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css" />
+
+  <!-- Firebase & Utility Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+  <header class="dashboard-header">
+    <div class="logo-area">
+      <img src="logo.jpg" class="logo" />
+      <h1>WaitWizard - Admin Panel</h1>
+    </div>
+    <div class="profile-area">
+      <img id="adminAvatar" src="default-avatar.png" class="avatar" onclick="toggleProfile()" />
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-details">
+          <strong id="adminName">Admin</strong>
+          <p id="adminEmail">admin@example.com</p>
+        </div>
+        <hr />
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-content">
+    <h2>Admin Dashboard</h2>
+
+    <!-- Summary -->
+    <div class="cards">
+      <div class="card" id="totalTickets">Total Tickets: 0</div>
+      <div class="card" id="emergencyCount">Emergencies: 0</div>
+      <div class="card" id="closedTickets">Closed Tickets: 0</div>
+      <div class="card" id="activeDoctors">Active Doctors: 0</div>
+    </div>
+
+    <!-- Filters -->
+    <section>
+      <h3>Global Filter</h3>
+      <label>Filter by Doctor:</label>
+      <select id="filterDoctor"></select>
+      <label>From:</label>
+      <input type="date" id="filterFromDate" />
+      <label>To:</label>
+      <input type="date" id="filterToDate" />
+      <button onclick="applyFilter()">Apply Filters</button>
+    </section>
+
+    <!-- ✅ Pending Tickets -->
+    <section>
+      <h3>Pending Tickets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket ID</th>
+            <th>Patient</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Appointment Date</th>
+            <th>Assigned Doctor</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="pendingTicketsTable">
+          <tr><td colspan="7">Loading...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Open Tickets -->
+    <section>
+      <h3>Open Tickets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket ID</th>
+            <th>Patient</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Appointment Date</th>
+            <th>Assigned Doctor</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="openTicketsTable">
+          <tr><td colspan="7">Loading...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Completed Tickets -->
+    <section>
+      <h3>Completed Tickets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket ID</th>
+            <th>Patient</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Appointment Date</th>
+            <th>Assigned Doctor</th>
+          </tr>
+        </thead>
+        <tbody id="completedTicketsTable">
+          <tr><td colspan="6">Loading...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Doctors Table -->
+    <section>
+      <h3>Active Doctors</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Doctor ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Assigned Tickets (Open / Closed)</th>
+          </tr>
+        </thead>
+        <tbody id="doctorsTable">
+          <tr><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

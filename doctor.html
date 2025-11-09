@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="doctor.css" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <!-- Header Section -->
+    <header class="dashboard-header">
+      <div class="logo-area">
+        <img src="logo.jpg" alt="Logo" class="logo" />
+        <h1>WaitWizard - Doctor Portal</h1>
+      </div>
+
+      <div class="profile-area">
+        <img id="doctorAvatar" src="default-avatar.png" alt="Profile" class="avatar" onclick="toggleProfile()" />
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-details">
+            <strong id="doctorName">Dr. Unnamed</strong>
+            <p id="doctorEmail">email@waitwizard.com</p>
+          </div>
+          <hr />
+          <button class="logout-action" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Section -->
+    <main class="dashboard-content">
+      <h2>Doctor Dashboard</h2>
+
+      <!-- Open Tickets Section -->
+      <section class="tickets-section">
+        <h3>Open Tickets</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket #</th>
+              <th>Patient</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Appointment Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ticketsTableBody">
+            <tr><td colspan="6">Loading tickets...</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Completed Tickets Section -->
+      <section class="tickets-section">
+        <h3>Completed Tickets</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket #</th>
+              <th>Patient</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Appointment Date</th>
+              <th>Actions</th> <!-- Make sure Actions column exists -->
+            </tr>
+          </thead>
+          <tbody id="completedTicketsBody">
+            <tr><td colspan="6">Loading completed tickets...</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="doctor.js"></script>
+  <script>
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
+
+    function toggleProfile() {
+      document.getElementById("profileDropdown").classList.toggle("show");
+    }
+
+    document.addEventListener("click", function (e) {
+      const dropdown = document.getElementById("profileDropdown");
+      const avatar = document.getElementById("doctorAvatar");
+      if (!dropdown.contains(e.target) && !avatar.contains(e.target)) {
+        dropdown.classList.remove("show");
+      }
+    });
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        const displayName = user.displayName || user.email.split('@')[0];
+        document.getElementById("doctorName").textContent = `Dr. ${displayName}`;
+        document.getElementById("doctorEmail").textContent = user.email;
+        document.getElementById("doctorAvatar").src = user.photoURL || "default-avatar.png";
+      }
+    });
+  </script>
+</body>
+</html>

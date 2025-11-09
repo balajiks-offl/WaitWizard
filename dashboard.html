@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WaitWizard Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+<header class="dashboard-header">
+  <div class="header-left">
+    <span class="app-title">WaitWizard</span>
+  </div>
+  <div class="header-right">
+    <span id="welcomeMsg" class="welcome-msg"></span>
+    <div class="header-icons-row">
+      <button id="notificationBtn" class="icon-btn" title="Notifications">🔔 <span id="notificationBadge" class="notif-badge"></span></button>
+      <button id="profileBtn" class="icon-btn" title="Profile">👤</button>
+      <button id="logoutBtn" class="icon-btn" title="Logout">🚪</button>
+    </div>
+    <div id="notifDropdown" class="dropdown notif-dropdown"></div>
+    <div id="profileDropdown" class="dropdown profile-dropdown">
+      <ul>
+        <li id="profileViewBtn" role="button" tabindex="0">👤 View Profile</li>
+        <li id="profileEditBtn" role="button" tabindex="0">✏️ Edit Profile</li>
+      </ul>
+    </div>
+  </div>
+</header>
+<div class="nav-bar">
+  <button class="nav-btn" data-tab="home"><span>🏠</span> Home</button>
+  <button class="nav-btn" data-tab="book"><span>🎟️</span> Book Appointment</button>
+  <button class="nav-btn" data-tab="tickets"><span>🗓️</span> My Appointments</button>
+  <button class="nav-btn" data-tab="swap"><span>🔁</span> Swap Appointment</button>
+  <button class="nav-btn" data-tab="cancel"><span>❌</span> Cancel Appointment</button>
+  <button class="nav-btn" data-tab="history"><span>📜</span> History</button>
+  <button class="nav-btn" data-tab="missed"><span>⏰</span> Missed Appointments</button>
+  <button class="nav-btn" data-tab="faq"><span>❓</span> Help & FAQ</button>
+</div>
+<main id="dashboardContent" class="content-area" tabindex="0" aria-live="polite"></main>
+<div id="modalBackdrop" class="modal-backdrop" aria-hidden="true"></div>
+<div id="popupModal" class="modal" role="dialog" aria-modal="true" tabindex="-1"></div>
+<script src="dashboard.js"></script>
+</body>
+</html>
