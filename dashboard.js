@@ -8,6 +8,7 @@ const firebaseConfig = {
   appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
   measurementId: "G-TJESH8R15H"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
@@ -23,7 +24,6 @@ firebase.auth().onAuthStateChanged((user) => {
     window.location.href = 'index.html';
   }
 });
-
 
 const navBtns = document.querySelectorAll(".nav-btn");
 const contentArea = document.getElementById("dashboardContent");
@@ -58,11 +58,13 @@ function updateWelcomeMsg() {
 }
 
 navBtns.forEach((btn) => (btn.onclick = () => renderSection(btn.dataset.tab)));
+
 function showPopup(icon, message) {
   showModal(`${icon} Info`, `<div style="font-size:1.2em;">${message}</div>`, [
     { label: "OK", onClick: () => {} }
   ]);
 }
+
 function showModal(title, content, actions) {
   modal.innerHTML =
     `<div class="modal-title">${title}</div><div>${content}</div>
@@ -78,32 +80,40 @@ function showModal(title, content, actions) {
     btn.onclick = () => {
       modalBackdrop.style.display = "none";
       modal.style.display = "none";
-      actions[idx].onClick();
+      if (typeof actions[idx].onClick === "function") {
+        actions[idx].onClick();
+      }
     };
   });
 }
+
 modalBackdrop.onclick = () => {
   modalBackdrop.style.display = "none";
   modal.style.display = "none";
 };
+
 // Dropdown logic
 document.body.addEventListener("click", () => {
   [notifDropdown, profileDropdown].forEach((d) => d.classList.remove("show"));
 });
+
 function toggleDropdown(dropdown) {
   const isVisible = dropdown.classList.contains("show");
   [notifDropdown, profileDropdown].forEach((d) => d.classList.remove("show"));
   if (!isVisible) dropdown.classList.add("show");
 }
+
 notificationBtn.onclick = (e) => {
   e.stopPropagation();
   toggleDropdown(notifDropdown);
   loadNotifications();
 };
+
 profileBtn.onclick = (e) => {
   e.stopPropagation();
   toggleDropdown(profileDropdown);
 };
+
 logoutBtn.onclick = (e) => {
   e.stopPropagation();
   showModal("🚪 Logout", "<p>Are you sure you want to logout?</p>", [
@@ -112,7 +122,7 @@ logoutBtn.onclick = (e) => {
       label: "Logout",
       onClick: () => {
         firebase.auth().signOut().then(() => {
-          window.location.href = "index.html";  // ✅ redirect to login page
+          window.location.href = "index.html";  // redirect to login page
         }).catch((error) => {
           console.error("Logout failed:", error.message);
           showPopup("❌", "Logout failed, please try again.");
@@ -121,6 +131,7 @@ logoutBtn.onclick = (e) => {
     }
   ]);
 };
+
 // ==========================
 // 👤 Profile View
 // ==========================
@@ -153,7 +164,7 @@ document.getElementById("profileViewBtn").onclick = (e) => {
 
 
 // =============================
-// 👤 PROFILE VIEW
+// 👤 PROFILE VIEW (duplicate handler, kept same)
 // =============================
 document.getElementById("profileViewBtn").onclick = (e) => {
   e.stopPropagation();
@@ -183,7 +194,6 @@ document.getElementById("profileViewBtn").onclick = (e) => {
 };
 
 // PROFILE EDIT
-
 document.getElementById("profileEditBtn").onclick = (e) => {
   e.stopPropagation();
   profileDropdown.classList.remove("show");
@@ -238,6 +248,7 @@ document.getElementById("profileEditBtn").onclick = (e) => {
     };
   });
 };
+
 function loadNotifications() {
   notifDropdown.innerHTML = `<div style="text-align:center;padding:16px;">Loading...</div>`;
   db.ref("tickets").orderByChild("userId").equalTo(USER_ID).once("value").then((snapshot) => {
@@ -253,11 +264,13 @@ function loadNotifications() {
     notificationBadge.textContent = arr.length;
   });
 }
+
 function activateTab(tab) {
   navBtns.forEach((btn) => btn.classList.remove("active"));
   const btn = document.querySelector(`.nav-btn[data-tab="${tab}"]`);
   if (btn) btn.classList.add("active");
 }
+
 function renderSection(tab) {
   activateTab(tab);
   contentArea.innerHTML = "";
@@ -282,7 +295,9 @@ function renderSection(tab) {
       return showHome();
   }
 }
+
 navBtns.forEach((btn) => (btn.onclick = () => renderSection(btn.dataset.tab)));
+
 /// ===== Home Section =====
 function showHome() {
   contentArea.innerHTML = `
@@ -312,6 +327,7 @@ function showHome() {
   updateDashboardStats();
   updateRecentActivity();
 }
+
 function updateUpcomingAppointments() {
   db.ref("tickets")
     .orderByChild("userId")
@@ -331,7 +347,7 @@ function updateUpcomingAppointments() {
         }
       });
 
-      //  Sort based on ticketIdNum
+      // Sort based on ticketIdNum
       appointments.sort((a, b) => {
         return (parseInt(a.ticketIdNum || 9999)) - (parseInt(b.ticketIdNum || 9999));
       });
@@ -348,6 +364,7 @@ function updateUpcomingAppointments() {
         html || "<p>No upcoming appointments.</p>";
     });
 }
+
 function updateAnnouncements() {
   document.getElementById("announcementsSection").innerHTML = `
     <div class="announcement-item">🔔 Please verify your mobile for contactless check-in.</div>
@@ -355,6 +372,7 @@ function updateAnnouncements() {
     <div class="announcement-item">🚨 Emergency appointments available online.</div>
   `;
 }
+
 function updateDashboardStats() {
   db.ref("tickets")
     .orderByChild("userId")
@@ -381,6 +399,7 @@ function updateDashboardStats() {
         <span class="stat-value">${stats.upcoming}</span></div>`;
     });
 }
+
 function updateRecentActivity() {
   db.ref("tickets")
     .orderByChild("userId")
@@ -407,6 +426,7 @@ function updateRecentActivity() {
         html || "<p>No recent activity.</p>";
     });
 }
+
 function showBook() {
   contentArea.innerHTML = `
     <section class="ticket-form-card">
@@ -440,7 +460,6 @@ function showBook() {
       </form>
     </section>
   `;
-
   const form = document.getElementById("takeTicketForm");
   const emergencyMsg = document.getElementById("emergencyMsg");
 
@@ -450,57 +469,57 @@ function showBook() {
     });
   });
 
- form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
-
-  try {
-    // Generate a random 4-digit number
-    const randomId = Math.floor(1000 + Math.random() * 9000);
-    const ticketIdStr = String(randomId);
-
-    // Make sure this ticketId does not already exist
-    const existing = await db.ref("tickets").orderByChild("ticketId").equalTo(ticketIdStr).once("value");
-
-    if (existing.exists()) {
-      // Recursively retry — or just show error
-      showPopup("⚠️", "Ticket ID already in use. Please try again.");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
       return;
     }
 
-    const ticketKey = db.ref("tickets").push().key;
+    try {
+      // Generate a random 4-digit number
+      const randomId = Math.floor(1000 + Math.random() * 9000);
+      const ticketIdStr = String(randomId);
 
-    const ticketData = {
-      ticketId: ticketIdStr, // Random
-      ticketIdNum: parseInt(ticketIdStr),
-      userId: USER_ID,
-      fullName: form.fullname.value.trim(),
-      mobile: form.mobile.value.trim(),
-      gender: form.gender.value,
-      age: parseInt(form.age.value, 10),
-      ticketType: form.ticketType.value,
-      apptDate: form.apptDate.value,
-      apptTime: form.apptTime.value,
-      symptoms: form.symptoms.value.trim(),
-      status: "Booked",
-      createdAt: new Date().toISOString()
-    };
+      // Make sure this ticketId does not already exist
+      const existing = await db.ref("tickets").orderByChild("ticketId").equalTo(ticketIdStr).once("value");
 
-    await db.ref("tickets/" + ticketKey).set(ticketData);
+      if (existing.exists()) {
+        showPopup("⚠️", "Ticket ID already in use. Please try again.");
+        return;
+      }
 
-    form.reset();
-    showPopup("✅", `Ticket booked! ID: #${ticketIdStr}`);
-    renderSection("home");
+      const ticketKey = db.ref("tickets").push().key;
 
-  } catch (err) {
-    console.error("❌ Booking error:", err);
-    showPopup("❌", "Booking failed, please try again.");
-  }
-});
+      const ticketData = {
+        ticketId: ticketIdStr, // Random
+        ticketIdNum: parseInt(ticketIdStr),
+        userId: USER_ID,
+        fullName: form.fullname.value.trim(),
+        mobile: form.mobile.value.trim(),
+        gender: form.gender.value,
+        age: parseInt(form.age.value, 10),
+        ticketType: form.ticketType.value,
+        apptDate: form.apptDate.value,
+        apptTime: form.apptTime.value,
+        symptoms: form.symptoms.value.trim(),
+        status: "Booked",
+        createdAt: new Date().toISOString()
+      };
+
+      await db.ref("tickets/" + ticketKey).set(ticketData);
+
+      form.reset();
+      showPopup("✅", `Ticket booked! ID: #${ticketIdStr}`);
+      renderSection("home");
+
+    } catch (err) {
+      console.error("❌ Booking error:", err);
+      showPopup("❌", "Booking failed, please try again.");
+    }
+  });
 }
+
 function showMyTickets() {
   contentArea.innerHTML = `
     <section class="section" aria-label="My Tickets">
@@ -534,7 +553,6 @@ function showMyTickets() {
         return bDate.localeCompare(aDate);
       });
 
-      // Display
       const html = tickets.map(t => `
         <div class="ticket-card" style="background:#f3fdfb; margin-bottom:16px; padding:14px 18px; border-radius:8px;">
           <b>${t.apptDate || "N/A"} ${t.apptTime || ""}</b>
@@ -556,7 +574,10 @@ function showMyTickets() {
       ticketsListEl.innerHTML = "<p>Could not load your tickets. Please try again later.</p>";
     });
 }
-// Swap Dashboard Main View
+
+// ==========================
+// 🔁 Swap Section
+// ==========================
 function showSwap() {
   contentArea.innerHTML = `
     <section class="section">
@@ -608,15 +629,34 @@ function showOpenTicketsForSwap() {
     });
   });
 }
-// Find tickets from other users to swap with
-function findSwapOptions(fromTicketId) {
-  db.ref("tickets").once("value").then(snapshot => {
+
+// Find tickets from other users to swap with (same-day only)
+async function findSwapOptions(fromTicketId) {
+  try {
+    // 1) Load the requesting ticket
+    const fromSnap = await db.ref("tickets/" + fromTicketId).once("value");
+    if (!fromSnap.exists()) {
+      showPopup("❌", "Original ticket not found.");
+      return;
+    }
+    const fromTicket = fromSnap.val();
+    const fromDate = fromTicket.apptDate;
+
+    if (!fromDate) {
+      showPopup("❌", "Original ticket does not have a valid appointment date.");
+      return;
+    }
+
+    // 2) Load all tickets and filter: other users, same date, open/booked
+    const snapshot = await db.ref("tickets").once("value");
     const options = [];
     snapshot.forEach(child => {
       const t = child.val();
       if (
-        t.userId !== USER_ID &&
-        (t.status === "Open" || t.status === "Booked")
+        child.key !== fromTicketId &&                 // different ticket
+        t.userId !== USER_ID &&                       // different user
+        (t.status === "Open" || t.status === "Booked") &&
+        t.apptDate === fromDate                       // same day
       ) {
         options.push({
           id: child.key,
@@ -625,12 +665,12 @@ function findSwapOptions(fromTicketId) {
       }
     });
 
-    if (options.length === 0) {
-      showPopup("ℹ️", "No swap options found at this time.");
+    if (!options.length) {
+      showPopup("ℹ️", "No swap options found for this day.");
       return;
     }
 
-    // Generate scrollable content
+    // 3) Build modal content with scroll
     const content = `
       <div style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
         ${options.map(opt => `
@@ -651,45 +691,50 @@ function findSwapOptions(fromTicketId) {
       { label: "Close", onClick: () => {} }
     ]);
 
-    setTimeout(() => {
-      document.querySelectorAll(".confirmSwapBtn").forEach(btn => {
-        btn.onclick = () => {
-          const fromId = btn.dataset.from;
-          const toId = btn.dataset.to;
+    // 4) Attach "Swap with this" handlers
+    document.querySelectorAll(".confirmSwapBtn").forEach(btn => {
+      btn.onclick = async () => {
+        const fromId = btn.dataset.from;
+        const toId = btn.dataset.to;
 
-          const request = {
-            fromUserId: USER_ID,
-            fromTicketId: fromId,
-            toUserId: null, // To be filled in next step
-            toTicketId: toId,
-            status: "Pending"
-          };
-
-          db.ref("tickets/" + toId).once("value").then(snap => {
-            if (!snap.exists()) return;
-
-            request.toUserId = snap.val().userId;
-
-            const requestId = db.ref("swapRequests").push().key;
-            db.ref("swapRequests/" + requestId).set(request).then(() => {
-              showPopup("✅", "Swap request sent.");
-            });
-          });
+        const request = {
+          fromUserId: USER_ID,
+          fromTicketId: fromId,
+          toUserId: null, // will be set below
+          toTicketId: toId,
+          status: "Pending"  // consistent status
         };
-      });
-    }, 200);
-  });
+
+        const toSnap = await db.ref("tickets/" + toId).once("value");
+        if (!toSnap.exists()) {
+          showPopup("❌", "Selected ticket no longer exists.");
+          return;
+        }
+
+        request.toUserId = toSnap.val().userId;
+
+        const requestId = db.ref("swapRequests").push().key;
+        await db.ref("swapRequests/" + requestId).set(request);
+        showPopup("✅", "Swap request sent.");
+      };
+    });
+
+  } catch (err) {
+    console.error("findSwapOptions error:", err);
+    showPopup("❌", "Could not load swap options.");
+  }
 }
+
 // Show Incoming Swap Requests
 function showIncomingSwapRequests() {
   const el = document.getElementById("incomingRequests");
   db.ref("swapRequests").orderByChild("toUserId").equalTo(USER_ID).once("value").then(snapshot => {
-    const incoming = [];
     const requests = [];
 
     snapshot.forEach(snap => {
       const r = snap.val();
-      if (r.status === "pending") {
+      // FIX: status should be "Pending" (capital P)
+      if (r.status === "Pending") {
         requests.push({ id: snap.key, ...r });
       }
     });
@@ -699,7 +744,7 @@ function showIncomingSwapRequests() {
       return;
     }
 
-    // Now fetch user names and ticketIds in parallel
+    // Fetch user names and ticket details
     const userPromises = requests.map(r => db.ref(`users/${r.fromUserId}`).once("value"));
     const ticketPromises = requests.map(r => db.ref(`tickets/${r.fromTicketId}`).once("value"));
 
@@ -739,6 +784,7 @@ function showIncomingSwapRequests() {
     });
   });
 }
+
 // Accept/Decline Swap
 function handleSwapDecision(requestId, accept) {
   db.ref("swapRequests/" + requestId).once("value").then(async (snap) => {
@@ -746,33 +792,51 @@ function handleSwapDecision(requestId, accept) {
 
     const req = snap.val();
 
+    // Ensure request is still pending
+    if (req.status !== "Pending") {
+      showPopup("ℹ️", "This swap request is no longer pending.");
+      return;
+    }
+
     if (accept) {
-      // Swap times between tickets
       const fromRef = db.ref("tickets/" + req.fromTicketId);
       const toRef = db.ref("tickets/" + req.toTicketId);
 
-      const [fromSnap, toSnap] = await Promise.all([fromRef.get(), toRef.get()]);
+      const [fromSnap, toSnap] = await Promise.all([
+        fromRef.once("value"),
+        toRef.once("value")
+      ]);
+
+      if (!fromSnap.exists() || !toSnap.exists()) {
+        showPopup("❌", "One of the tickets no longer exists.");
+        return;
+      }
 
       const fromTicket = fromSnap.val();
       const toTicket = toSnap.val();
 
+      // Double-check same-day at accept time too
+      if (fromTicket.apptDate !== toTicket.apptDate) {
+        await db.ref("swapRequests/" + requestId).update({ status: "Declined" });
+        showPopup("❌", "These appointments are no longer on the same day. Swap cancelled.");
+        return;
+      }
+
       // Swap apptDate and apptTime between tickets
-      await fromRef.update({
-        apptDate: toTicket.apptDate,
-        apptTime: toTicket.apptTime
-      });
+      await Promise.all([
+        fromRef.update({
+          apptDate: toTicket.apptDate,
+          apptTime: toTicket.apptTime
+        }),
+        toRef.update({
+          apptDate: fromTicket.apptDate,
+          apptTime: fromTicket.apptTime
+        }),
+        db.ref("swapRequests/" + requestId).update({
+          status: "Accepted"
+        })
+      ]);
 
-      await toRef.update({
-        apptDate: fromTicket.apptDate,
-        apptTime: fromTicket.apptTime
-      });
-
-      // Mark as accepted
-      await db.ref("swapRequests/" + requestId).update({
-        status: "Accepted"
-      });
-
-      // Notification for both users (optional)
       showPopup("✅", "Swap completed successfully");
     } else {
       await db.ref("swapRequests/" + requestId).update({
@@ -781,7 +845,10 @@ function handleSwapDecision(requestId, accept) {
       showPopup("❌", "Swap declined");
     }
 
-    showSwap(); // Refresh
+    showSwap(); // Refresh Swap page
+  }).catch(err => {
+    console.error("handleSwapDecision error:", err);
+    showPopup("❌", "Failed to process swap request.");
   });
 }
 
@@ -790,8 +857,6 @@ function showSwapNotifications() {
   const el = document.getElementById("swapNotifications");
 
   db.ref("swapRequests").once("value").then(async snapshot => {
-    const swapNotes = [];
-
     const allRequests = [];
     snapshot.forEach(snap => {
       const n = snap.val();
@@ -809,7 +874,6 @@ function showSwapNotifications() {
       return;
     }
 
-    // Fetch both tickets for each request
     const fromTicketPromises = allRequests.map(r => db.ref(`tickets/${r.fromTicketId}`).once("value"));
     const toTicketPromises = allRequests.map(r => db.ref(`tickets/${r.toTicketId}`).once("value"));
 
@@ -817,6 +881,8 @@ function showSwapNotifications() {
     const middle = allRequests.length;
     const fromTickets = results.slice(0, middle).map(s => s.val());
     const toTickets = results.slice(middle).map(s => s.val());
+
+    const swapNotes = [];
 
     for (let i = 0; i < allRequests.length; i++) {
       const r = allRequests[i];
@@ -835,6 +901,7 @@ function showSwapNotifications() {
     el.innerHTML = swapNotes.join("");
   });
 }
+
 function showCancel() {
   contentArea.innerHTML = `
     <section class="section" aria-label="Cancel Ticket">
@@ -875,7 +942,6 @@ function showCancel() {
 
     tbody.innerHTML = rows.length ? rows.join("") : `<tr><td colspan="4" style="text-align:center;">No active tickets to cancel.</td></tr>`;
 
-    // Add event listeners
     document.querySelectorAll(".cancel-btn").forEach(btn => {
       btn.onclick = () => {
         const id = btn.getAttribute("data-id");
@@ -889,6 +955,7 @@ function showCancel() {
     });
   });
 }
+
 function showHistory() {
   contentArea.innerHTML = `
     <section class="section" aria-label="Appointment History">
@@ -944,12 +1011,13 @@ function showHistory() {
             <b>Type:</b> ${d.ticketType}<br>
             <b>Date & Time:</b> ${d.apptDate} ${d.apptTime}<br>
             <b>Symptoms:</b> ${d.symptoms || "-"}
-          `, [{ label: "Close" }]);
+          `, [{ label: "Close", onClick: () => {} }]);
         });
       };
     });
   });
 }
+
 function showMissedAppointments() {
   contentArea.innerHTML = `
     <section class="section" aria-label="Missed Appointments">
@@ -960,19 +1028,18 @@ function showMissedAppointments() {
   `;
 
   const listEL = document.getElementById("missedAppointmentsList");
-  const today = new Date().toISOString().split("T")[0];
   const nowTime = new Date();
 
   db.ref("tickets").orderByChild("userId").equalTo(USER_ID).once("value").then(snapshot => {
     const missed = [];
     snapshot.forEach(child => {
       const t = child.val();
+      if (!t.apptDate || !t.apptTime) return;
       const fullDate = `${t.apptDate}T${t.apptTime}`;
       const apptDateTime = new Date(fullDate);
 
       if (
         (t.status === "Booked" || t.status === "Open") &&
-        t.apptDate &&
         apptDateTime < nowTime
       ) {
         missed.push(t);
@@ -1003,6 +1070,7 @@ function showMissedAppointments() {
     listEL.innerHTML = `<p>Error loading missed appointments. Please try again.</p>`;
   });
 }
+
 function showFaq() {
   contentArea.innerHTML = `
     <section class="section" aria-label="Help & FAQ">
@@ -1023,4 +1091,6 @@ function showFaq() {
   });
   document.getElementById("faqList").innerHTML = html;
 }
+
+// Initial render (will be overridden by auth redirect if not logged in)
 renderSection("home");
