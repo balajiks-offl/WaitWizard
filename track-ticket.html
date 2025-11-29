@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Tickets</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg,#f6fafb 0%,#f7f4ed 100%);
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .header {
+      margin: 40px 0 16px 0;
+      text-align: center;
+    }
+    h1 {
+      color: #365f6b;
+      font-size: 2.8rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .header p {
+      font-size: 1.2rem;
+      color: #5a7484;
+      margin-top: 0;
+    }
+    .container {
+      width: 96%;
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 0 0 36px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 12px 40px 0 rgba(54, 95, 107, 0.12);
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+    thead th {
+      font-weight: bold;
+      font-size: 1.05rem;
+      color: #365f6b;
+      padding: 14px 12px;
+      background: #f5f7fa;
+      border-bottom: 2px solid #e9ecf2;
+      letter-spacing: 0.5px;
+    }
+    tbody td {
+      padding: 13px 12px;
+      font-size: 1.02rem;
+      font-weight: 500;
+      border-bottom: 1px solid #f2f2f2;
+      color: #355f6b;
+      background: #fff;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .ticket-id {
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 1.04rem;
+      color: #365f6b;
+      background: #fff;
+      border-radius: 8px;
+      padding: 7px 8px;
+      text-align: left;
+      min-width: 80px;
+      display: inline-block;
+      white-space: nowrap;
+      box-sizing: border-box;
+      letter-spacing: 1px;
+    }
+    table tr:first-child th:first-child { border-top-left-radius: 18px; }
+    table tr:first-child th:last-child { border-top-right-radius: 18px; }
+    table tr:last-child td:first-child { border-bottom-left-radius: 18px; }
+    table tr:last-child td:last-child { border-bottom-right-radius: 18px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>My Tickets</h1>
+    <p>All your tickets (Open, Pending, Closed, Cancelled)</p>
+  </header>
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>Ticket ID</th>
+          <th>Full Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+          <th>Mobile</th>
+          <th>Appointment Date</th>
+          <th>Appointment Time</th>
+          <th>Status</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody id="ticketsTable">
+        <tr><td colspan="9">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsy799iekDizixCe0LEGJWC-msj6MsvIs",
+    authDomain: "digitalqueuesystem.firebaseapp.com",
+    databaseURL: "https://digitalqueuesystem-default-rtdb.firebaseio.com",
+    projectId: "digitalqueuesystem",
+    storageBucket: "digitalqueuesystem.appspot.com",
+    messagingSenderId: "934641075368",
+    appId: "1:934641075368:web:fa23d50116ef2fd92e6e9d",
+    measurementId: "G-TJESH8R15H"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  const tableBody = document.getElementById('ticketsTable');
+
+  function ticketIdToFiveDigit(ticketId) {
+    let hash = 0;
+    for (let i = 0; i < ticketId.length; i++) {
+      hash = ((hash << 5) - hash) + ticketId.charCodeAt(i);
+      hash |= 0;
+    }
+    const num = Math.abs(hash % 100000);
+    return num.toString().padStart(5, '0');
+  }
+
+  function renderTickets(tickets) {
+    tableBody.innerHTML = "";
+    if (tickets.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="9">No tickets found for your account</td></tr>`;
+      return;
+    }
+    tickets.forEach(t => {
+      const fiveDigitId = ticketIdToFiveDigit(t.id);
+      tableBody.innerHTML += `
+        <tr>
+          <td class="ticket-id">${fiveDigitId}</td>
+          <td>${t.fullName || 'N/A'}</td>
+          <td>${t.age || '-'}</td>
+          <td>${t.gender || '-'}</td>
+          <td>${t.mobile || '-'}</td>
+          <td>${t.appointmentDate || '-'}</td>
+          <td>${t.appointmentTime || '-'}</td>
+          <td>${t.status || '-'}</td>
+          <td>${t.ticketType || '-'}</td>
+        </tr>
+      `;
+    });
+  }
+
+  async function fetchAndFilterTickets(user) {
+    try {
+      const snapshot = await db.collection("tickets").get();
+      const allTickets = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        allTickets.push({ id: doc.id, ...data });
+      });
+      const myTickets = allTickets.filter(
+        t => t.userId === user.uid || t.userEmail === user.email
+      );
+      renderTickets(myTickets);
+    } catch (err) {
+      tableBody.innerHTML = `<tr><td colspan="9">Error loading tickets</td></tr>`;
+    }
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      fetchAndFilterTickets(user);
+    } else {
+      window.location.href = "index.html";
+    }
+  });
+</script>
+</body>
+</html>

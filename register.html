@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register</title>
+  <link rel="stylesheet" href="register.css" />
+
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Register</h2>
+      <form id="registerForm" novalidate>
+        <label for="firstname" class="label-title">First Name</label>
+        <input type="text" id="firstname" name="firstname" required />
+
+        <label for="lastname" class="label-title">Last Name</label>
+        <input type="text" id="lastname" name="lastname" required />
+
+        <div class="gender-group">
+          <label class="label-title">Gender</label>
+          <label class="gender-option">
+            <input type="radio" name="gender" value="male" required />
+            <span class="gender-icon">♂</span> Male
+          </label>
+          <label class="gender-option">
+            <input type="radio" name="gender" value="female" />
+            <span class="gender-icon">♀</span> Female
+          </label>
+          <label class="gender-option">
+            <input type="radio" name="gender" value="other" />
+            <span class="gender-icon">⚧</span> Other
+          </label>
+        </div>
+
+        <label for="phoneInput" class="label-title">Phone Number</label>
+        <input type="tel" id="phoneInput" name="phone" required />
+        <div id="phoneError" class="error-msg"></div>
+
+        <label for="altphoneInput" class="label-title">Alternate Phone Number</label>
+        <input type="tel" id="altphoneInput" name="altphone" />
+        <div id="altphoneError" class="error-msg"></div>
+
+        <label for="emailInput" class="label-title">Email</label>
+        <input type="email" id="emailInput" name="email" required />
+        <div id="emailError" class="error-msg">Invalid email address</div>
+
+        <label for="passwordInput" class="label-title">Password</label>
+        <input type="password" id="passwordInput" name="password" required />
+
+        <label for="confirmPasswordInput" class="label-title">Confirm Password</label>
+        <input type="password" id="confirmPasswordInput" name="confirmPassword" required />
+        <div id="confirmPasswordError" class="error-msg"></div>
+
+        <label for="dob" class="label-title">Date of Birth</label>
+        <input type="date" id="dob" name="dob" required />
+
+        <label for="address" class="label-title">Address</label>
+        <textarea id="address" name="address" rows="3" required></textarea>
+
+        <button type="submit" class="primary-btn">Register</button>
+      </form>
+      <div class="switch-link">
+        Already have an account? <a href="index.html">Login here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="register.js"></script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+/* ===================
+   Base Layout
+=================== */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f0fff6;
+  overflow-x: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ccf7da;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+  margin-right: 15px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  float: right;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 20px;
+  top: 65px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  display: none;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 100;
+  animation: fadeIn 0.25s ease;
+}
+
+.profile-dropdown.show {
+  display: block;
+}
+
+.profile-details p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #555;
+}
+
+/* ===================
+   Dashboard Content
+=================== */
+.dashboard-content {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  animation: slideUp 0.4s ease-out;
+}
+
+/* ===================
+   Cards
+=================== */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.card {
+  background: #e0fff1;
+  padding: 15px 25px;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  flex: 1 1 180px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+/* ===================
+   Filter Section
+=================== */
+section h3 {
+  margin-top: 40px;
+  font-size: 1.4em;
+  margin-bottom: 10px;
+}
+
+#filterDoctor,
+#filterFromDate,
+#filterToDate,
+select {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-right: 10px;
+  font-size: 0.95em;
+}
+
+input[type="date"] {
+  max-width: 180px;
+}
+
+button {
+  padding: 8px 14px;
+  background-color: #00cc88;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #009e6b;
+  transform: translateY(-1px);
+}
+
+/* ===================
+   Tables
+=================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  background-color: white;
+  animation: fadeIn 0.4s ease;
+}
+
+thead {
+  background-color: #ccf7da;
+  font-size: 1em;
+}
+
+thead th {
+  text-align: left;
+  padding: 12px 14px;
+}
+
+tbody td {
+  padding: 14px;
+  border-bottom: 1px solid #f2f2f2;
+  vertical-align: center;
+}
+
+tbody tr:hover {
+  background-color: #f6fff9;
+}
+
+select {
+  min-width: 120px;
+}
+
+tr td:last-child select {
+  width: 100%;
+  font-size: 0.95em;
+}
+
+/* ===================
+   Animations
+=================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===================
+   Responsive
+=================== */
+@media (max-width: 760px) {
+  .cards {
+    flex-direction: column;
+  }
+
+  .dashboard-header, .logo-area {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #filterDoctor, #filterFromDate, #filterToDate, button {
+    width: 100%;
+    margin: 8px 0;
+  }
+
+  table, thead, tbody, th, td, tr {
+    font-size: 0.9em;
+  }
+}

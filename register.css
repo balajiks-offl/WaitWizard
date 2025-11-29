@@ -1,0 +1,202 @@
+body {
+  background: linear-gradient(135deg, #fff9ea 0%, #e5f6ec 100%);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding-top: 48px;
+  box-sizing: border-box;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  background: #fff;
+  padding: 28px 28px 24px 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(80, 120, 96, 0.085);
+  min-width: 320px;
+  max-width: 420px;
+  width: 100%;
+  margin: 24px 12px;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0.8, 0.2, 1);
+}
+
+h2 {
+  color: #467470;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.label-title {
+  margin-top: 4px;
+  color: #446856;
+  margin-bottom: 2px;
+  font-weight: 500;
+  display: block;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+textarea {
+  font-size: 15px;
+  padding: 10px 14px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  border: 1px solid #b3c3b7;
+  border-radius: 6px;
+  background: #f9fbfa;
+  transition: border 0.2s, box-shadow 0.25s, background 0.25s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #62bd92;
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 0 2px #62bd92;
+}
+
+.primary-btn {
+  padding: 12px 0;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #b6e0c1, #e0e9b6 90%);
+  color: #446856;
+  font-size: 17px;
+  margin-top: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 8px rgba(76, 92, 105, 0.11);
+  transition: background 0.21s, transform 0.18s, box-shadow 0.18s;
+}
+
+.primary-btn:hover {
+  background: linear-gradient(90deg, #e0e9b6, #b6e0c1 90%);
+  transform: scale(1.04);
+  box-shadow: 0 3px 12px rgba(76, 92, 105, 0.15);
+}
+
+.switch-link {
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.switch-link a {
+  color: #7daa7b;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.switch-link a:hover {
+  color: #52775b;
+  text-decoration: underline;
+}
+
+.gender-group {
+  display: flex;
+  gap: 2px;               /* Reduced space between options */
+  justify-content: flex-start;
+  margin-bottom: 10px;
+  flex-wrap: nowrap;       /* Keep single line */
+  align-items: center;     /* Vertically align */
+}
+
+.gender-option {
+  display: flex;
+  align-items: center;
+  background: #f7f9fa;
+  border: 1.5px solid #b4d5be;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 15px;
+  gap: 6px;
+  min-width: auto;         /* Unset fixed min width */
+  box-sizing: border-box;
+  white-space: nowrap;     /* Prevent line breaks */
+  transition: border 0.2s, background 0.2s;
+}
+
+.gender-option input[type="radio"] {
+  accent-color: #62bd92;
+  margin: 0 6px 0 0;
+}
+
+.gender-option:hover,
+.gender-option input[type="radio"]:checked + .gender-icon {
+  border-color: #4cbf7f;
+  background: #e8faec;
+}
+
+.gender-icon {
+  font-size: 1.2em;
+  margin-right: 4px;
+}
+
+.error-msg {
+  color: #d9534f;
+  font-size: 13px;
+  margin-top: -6px;
+  margin-bottom: 8px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.4s, transform 0.4s;
+  height: 14px;
+  display: block;
+  pointer-events: none;
+}
+
+input:invalid + .error-msg,
+textarea:invalid + .error-msg {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  33% { transform: translateX(-7px); }
+  66% { transform: translateX(7px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.4s;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-top: 10px;
+  }
+  .card {
+    min-width: 100%;
+    padding: 16px 10px;
+    border-radius: 0 0 18px 18px;
+  }
+  .gender-group {
+    justify-content: center;
+  }
+}

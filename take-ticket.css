@@ -1,0 +1,130 @@
+body {
+  background: linear-gradient(135deg, #eaf6fb 0%, #fdf6e3 100%);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  color: #2c3e50;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+.ticket-form-card {
+  background: #fff;
+  padding: 28px 30px 24px 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(60, 80, 120, 0.10);
+  max-width: 420px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+h2 {
+  text-align: center;
+  color: #365f6b;
+  margin-bottom: 28px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 1.8rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #4a6f61;
+  display: block;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #b3c3b7;
+  border-radius: 8px;
+  background: #f9fbfa;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  width: 100%;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #62bd92;
+  background: #fff;
+  outline: none;
+}
+
+textarea {
+  min-height: 60px;
+}
+
+.date-time-group {
+  display: flex;
+  gap: 12px;
+}
+
+.date-time-group > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.button-container {
+  margin-top: 20px;
+}
+
+button.primary-btn {
+  width: 100%;
+  padding: 14px 0;
+  background: linear-gradient(90deg, #b6e0c1, #e0e9b6 90%);
+  color: #446856;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 1px 8px rgba(76, 92, 105, 0.11);
+  transition: background 0.25s ease;
+}
+
+button.primary-btn:hover {
+  background: linear-gradient(90deg, #e0e9b6, #b6e0c1 90%);
+}
+
+/* Responsive styling for mobile */
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+    align-items: center;
+  }
+
+  .ticket-form-card {
+    max-width: 100%;
+    padding: 24px 20px 20px 20px;
+    border-radius: 12px;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 22px;
+  }
+
+  .date-time-group {
+    flex-direction: column;
+    gap: 14px;
+  }
+}
